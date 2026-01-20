@@ -93,7 +93,22 @@
 
         <!-- Sidebar Navigation -->
         <nav class="p-2">
-          <slot name="sidebar" />
+          <div class="space-y-1">
+            <NuxtLink
+              v-for="item in currentSidebarItems"
+              :key="item.to"
+              :to="item.to"
+              :class="[
+                'flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors',
+                isActiveSidebarItem(item.to)
+                  ? 'bg-teal-50 dark:bg-teal-950/50 text-teal-600 dark:text-teal-400 font-medium'
+                  : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+              ]"
+            >
+              <UIcon :name="item.icon" class="w-4 h-4" />
+              <span v-if="!sidebarCollapsed">{{ item.label }}</span>
+            </NuxtLink>
+          </div>
         </nav>
       </aside>
 
@@ -114,7 +129,10 @@ const colorMode = useColorMode();
 // Color mode
 const isDark = computed(() => {
   if (colorMode.preference === 'system') {
-    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (import.meta.client) {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    }
+    return false;
   }
   return colorMode.preference === 'dark';
 });
@@ -149,6 +167,57 @@ const currentModuleTitle = computed(() => {
 const isActiveModule = (path: string) => {
   return route.path.startsWith(path);
 };
+
+// Check active sidebar item
+const isActiveSidebarItem = (path: string) => {
+  return route.path === path;
+};
+
+// Sidebar items for each module
+const moduleSidebarItems: Record<string, { label: string; icon: string; to: string }[]> = {
+  '/platform/d2c': [
+    { label: '设计稿转换', icon: 'i-lucide-wand-2', to: '/platform/d2c' },
+    { label: '组件识别', icon: 'i-lucide-scan', to: '/platform/d2c/components' },
+    { label: '转换记录', icon: 'i-lucide-history', to: '/platform/d2c/history' },
+    { label: '设置', icon: 'i-lucide-settings', to: '/platform/d2c/settings' },
+  ],
+  '/platform/coding': [
+    { label: '对话', icon: 'i-lucide-message-square', to: '/platform/coding' },
+    { label: '代码片段', icon: 'i-lucide-code', to: '/platform/coding/snippets' },
+    { label: '历史记录', icon: 'i-lucide-history', to: '/platform/coding/history' },
+    { label: '收藏', icon: 'i-lucide-star', to: '/platform/coding/favorites' },
+  ],
+  '/platform/docs': [
+    { label: '文档检索', icon: 'i-lucide-search', to: '/platform/docs' },
+    { label: '组件文档', icon: 'i-lucide-component', to: '/platform/docs/components' },
+    { label: '接口文档', icon: 'i-lucide-plug', to: '/platform/docs/api' },
+    { label: '上传管理', icon: 'i-lucide-upload', to: '/platform/docs/upload' },
+  ],
+  '/platform/api': [
+    { label: '接口管理', icon: 'i-lucide-folder', to: '/platform/api' },
+    { label: 'Mock 数据', icon: 'i-lucide-database', to: '/platform/api/mock' },
+    { label: '接口调试', icon: 'i-lucide-play', to: '/platform/api/debug' },
+    { label: '设置', icon: 'i-lucide-settings', to: '/platform/api/settings' },
+  ],
+  '/platform/testing': [
+    { label: '测试用例', icon: 'i-lucide-list-checks', to: '/platform/testing' },
+    { label: '覆盖率', icon: 'i-lucide-pie-chart', to: '/platform/testing/coverage' },
+    { label: '性能测试', icon: 'i-lucide-gauge', to: '/platform/testing/performance' },
+    { label: '报告', icon: 'i-lucide-file-text', to: '/platform/testing/reports' },
+  ],
+  '/platform/engineering': [
+    { label: '项目脚手架', icon: 'i-lucide-folder-plus', to: '/platform/engineering' },
+    { label: '代码规范', icon: 'i-lucide-shield-check', to: '/platform/engineering/lint' },
+    { label: 'CI/CD', icon: 'i-lucide-git-branch', to: '/platform/engineering/cicd' },
+    { label: '依赖管理', icon: 'i-lucide-package', to: '/platform/engineering/deps' },
+  ],
+};
+
+// Current sidebar items based on route
+const currentSidebarItems = computed(() => {
+  const moduleKey = Object.keys(moduleSidebarItems).find(key => route.path.startsWith(key));
+  return moduleKey ? moduleSidebarItems[moduleKey] : [];
+});
 
 // User menu
 const userMenuItems = computed(() => [
