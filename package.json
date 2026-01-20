@@ -1,0 +1,27 @@
+{
+  "name": "zeta",
+  "version": "0.1.0",
+  "private": true,
+  "description": "前端提效平台 - Frontend Efficiency Platform",
+  "scripts": {
+    "dev": "pnpm -r --parallel dev",
+    "dev:web": "pnpm --filter @zeta/web dev",
+    "dev:server": "pnpm --filter @zeta/server dev",
+    "build": "pnpm -r build",
+    "build:web": "pnpm --filter @zeta/web build",
+    "build:server": "pnpm --filter @zeta/server build",
+    "lint": "pnpm -r lint",
+    "test": "pnpm -r test",
+    "db:generate": "pnpm --filter @zeta/server prisma:generate",
+    "db:migrate": "pnpm --filter @zeta/server prisma:migrate",
+    "db:seed": "pnpm --filter @zeta/server prisma:seed",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "clean": "pnpm -r exec rm -rf node_modules dist .nuxt .output && rm -rf node_modules"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "packageManager": "pnpm@9.15.0"
+}

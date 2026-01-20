@@ -1,0 +1,236 @@
+@import "tailwindcss";
+@import "@nuxt/ui";
+
+/* Hero grid background */
+.hero-grid {
+  background-size: 60px 60px;
+  background-image:
+    linear-gradient(to right, var(--color-neutral-200) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--color-neutral-200) 1px, transparent 1px);
+  mask-image: radial-gradient(ellipse 80% 70% at 50% 50%, black 30%, transparent 100%);
+}
+
+.dark .hero-grid {
+  background-image:
+    linear-gradient(to right, var(--color-neutral-800) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--color-neutral-800) 1px, transparent 1px);
+}
+
+/* Custom sidebar theme - light teal/mint */
+.sidebar-wrapper {
+  background: linear-gradient(180deg, #e8fffe 0%, #d5f7f5 100%);
+}
+
+.dark .sidebar-wrapper {
+  background: linear-gradient(180deg, #0f2a2a 0%, #0d2424 100%);
+}
+
+/* Sidebar navigation item styles */
+.sidebar-nav-item {
+  @apply flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors;
+  @apply text-slate-600 hover:bg-teal-100/60 hover:text-teal-700;
+}
+
+.dark .sidebar-nav-item {
+  @apply text-slate-300 hover:bg-teal-900/40 hover:text-teal-300;
+}
+
+.sidebar-nav-item.active {
+  @apply bg-teal-500 text-white hover:bg-teal-500 hover:text-white;
+}
+
+.dark .sidebar-nav-item.active {
+  @apply bg-teal-600 text-white hover:bg-teal-600 hover:text-white;
+}
+
+/* Sidebar section label */
+.sidebar-section-label {
+  @apply text-xs font-medium text-slate-400 uppercase tracking-wider px-3 py-2;
+}
+
+/* Card with teal accent */
+.card-header-teal {
+  @apply bg-gradient-to-r from-teal-50 to-cyan-50 border-b border-teal-100;
+}
+
+.dark .card-header-teal {
+  @apply bg-gradient-to-r from-teal-950/50 to-cyan-950/50 border-teal-800;
+}
+
+/* Status indicator dot */
+.status-dot {
+  @apply w-2 h-2 rounded-full inline-block mr-2;
+}
+
+.status-dot.active {
+  @apply bg-green-500;
+}
+
+.status-dot.inactive {
+  @apply bg-yellow-500;
+}
+
+.status-dot.suspended {
+  @apply bg-red-500;
+}
+
+/* Page transitions */
+.page-enter-active,
+.page-leave-active {
+  transition: all 0.2s ease-out;
+}
+
+.page-enter-from {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.page-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+/* Layout transitions */
+.layout-enter-active,
+.layout-leave-active {
+  transition: all 0.3s ease-out;
+}
+
+.layout-enter-from,
+.layout-leave-to {
+  opacity: 0;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-neutral-300);
+  border-radius: 3px;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: var(--color-neutral-700);
+}
+
+/* SPA loading animation */
+#__nuxt {
+  min-height: 100vh;
+}
+
+/* Table row hover effect */
+.table-row-hover {
+  @apply transition-colors hover:bg-slate-50;
+}
+
+.dark .table-row-hover {
+  @apply hover:bg-slate-800/50;
+}
+
+/* Action button group */
+.action-btn-group {
+  @apply flex items-center gap-2;
+}
+
+.action-btn {
+  @apply px-3 py-1.5 text-sm rounded-lg border transition-colors;
+  @apply border-slate-200 text-slate-600 hover:bg-slate-50;
+}
+
+.dark .action-btn {
+  @apply border-slate-700 text-slate-300 hover:bg-slate-800;
+}
+
+/* Platform module active indicator */
+.module-nav-active {
+  @apply bg-teal-50 text-teal-600;
+}
+
+.dark .module-nav-active {
+  @apply bg-teal-950/50 text-teal-400;
+}
+
+/* Code block styling */
+.code-block {
+  @apply bg-slate-900 rounded-lg p-4 font-mono text-sm text-slate-100 overflow-x-auto;
+}
+
+/* Chat message styles */
+.chat-message {
+  @apply p-4 rounded-xl max-w-[80%];
+}
+
+.chat-message.user {
+  @apply bg-teal-500 text-white ml-auto;
+}
+
+.chat-message.assistant {
+  @apply bg-slate-100 text-slate-900 mr-auto;
+}
+
+.dark .chat-message.assistant {
+  @apply bg-slate-800 text-slate-100;
+}
+
+/* Empty state styling */
+.empty-state {
+  @apply flex flex-col items-center justify-center py-12 text-center;
+}
+
+.empty-state-icon {
+  @apply w-16 h-16 text-slate-300 mb-4;
+}
+
+.dark .empty-state-icon {
+  @apply text-slate-600;
+}
+
+/* Gradient text */
+.gradient-text {
+  @apply bg-gradient-to-r from-teal-500 to-cyan-500 bg-clip-text text-transparent;
+}
+
+/* Platform card hover effect */
+.platform-card {
+  @apply bg-white rounded-xl border border-slate-200 transition-all duration-200;
+  @apply hover:border-teal-300 hover:shadow-lg hover:shadow-teal-500/10;
+}
+
+.dark .platform-card {
+  @apply bg-slate-900 border-slate-800;
+  @apply hover:border-teal-700;
+}
+
+/* Upload area */
+.upload-area {
+  @apply border-2 border-dashed border-slate-300 rounded-xl p-12 text-center cursor-pointer transition-colors;
+  @apply hover:border-teal-400 hover:bg-teal-50/50;
+}
+
+.dark .upload-area {
+  @apply border-slate-700 hover:border-teal-600 hover:bg-teal-950/30;
+}
+
+/* AI typing indicator */
+.ai-typing {
+  @apply flex items-center gap-1;
+}
+
+.ai-typing span {
+  @apply w-2 h-2 rounded-full bg-teal-500 animate-bounce;
+}
+
+.ai-typing span:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.ai-typing span:nth-child(3) {
+  animation-delay: 0.2s;
+}

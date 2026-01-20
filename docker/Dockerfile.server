@@ -1,0 +1,44 @@
+# Build stage
+FROM node:20-alpine AS builder
+
+RUN corepack enable && corepack prepare pnpm@9.15.0 --activate
+
+WORKDIR /app
+
+# Copy workspace files
+COPY pnpm-workspace.yaml package.json pnpm-lock.yaml* ./
+COPY packages/shared ./packages/shared
+COPY apps/server ./apps/server
+
+# Install dependencies
+RUN pnpm install --frozen-lockfile
+
+# Generate Prisma client
+RUN cd apps/server && pnpm prisma generate
+
+# Build the server
+RUN pnpm --filter @zeta/server build
+
+# Production stage
+FROM node:20-alpine AS production
+
+RUN corepack enable && corepack prepare pnpm@9.15.0 --activate
+
+WORKDIR /app
+
+ENV NODE_ENV=production
+
+# Copy necessary files
+COPY --from=builder /app/package.json ./
+COPY --from=builder /app/pnpm-workspace.yaml ./
+COPY --from=builder /app/apps/server/dist ./apps/server/dist
+COPY --from=builder /app/apps/server/package.json ./apps/server/
+COPY --from=builder /app/apps/server/prisma ./apps/server/prisma
+COPY --from=builder /app/apps/server/node_modules ./apps/server/node_modules
+COPY --from=builder /app/packages/shared ./packages/shared
+
+EXPOSE 3001
+
+WORKDIR /app/apps/server
+
+CMD ["node", "dist/main.js"]

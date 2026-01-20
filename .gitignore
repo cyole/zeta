@@ -1,0 +1,40 @@
+# Dependencies
+node_modules
+.pnpm-store
+
+# Build outputs
+dist
+.output
+.nuxt
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+.DS_Store
+
+# Testing
+coverage
+
+# Prisma
+apps/server/prisma/migrations/*_migration_lock.toml
+
+# Docker
+docker/data
+
+# Temporary files
+*.tmp
+*.temp
+.cache

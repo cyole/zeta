@@ -1,0 +1,82 @@
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: zeta-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-zeta}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-zeta123}
+      POSTGRES_DB: ${POSTGRES_DB:-zeta}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-zeta}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: zeta-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-zeta123}
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-zeta123}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # NestJS Backend (Production)
+  server:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.server
+    container_name: zeta-server
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://${POSTGRES_USER:-zeta}:${POSTGRES_PASSWORD:-zeta123}@postgres:5432/${POSTGRES_DB:-zeta}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-zeta123}
+      JWT_SECRET: ${JWT_SECRET:-your-super-secret-jwt-key-change-in-production}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-your-super-secret-refresh-key-change-in-production}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    profiles:
+      - prod
+
+  # Nuxt Frontend (Production with Nginx)
+  web:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.web
+    container_name: zeta-web
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    depends_on:
+      - server
+    profiles:
+      - prod
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  default:
+    name: zeta-network
