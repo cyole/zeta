@@ -1,14 +1,27 @@
 import type { LoginRequest, RegisterRequest, User } from '@zeta/shared'
 
-interface _AuthState {
-  user: User | null
-  isAuthenticated: boolean
-  isLoading: boolean
+interface AuthApiOptions extends RequestInit {
+  showError?: boolean
+}
+
+function getErrorTitle(status: number): string {
+  const titles: Record<number, string> = {
+    400: '请求参数错误',
+    401: '账号或密码错误',
+    403: '权限不足',
+    404: '资源不存在',
+    409: '该邮箱已被注册',
+    422: '数据验证失败',
+    429: '请求过于频繁，请稍后重试',
+    500: '服务器错误',
+  }
+  return titles[status] || '请求失败'
 }
 
 export function useAuth() {
   const config = useRuntimeConfig()
   const router = useRouter()
+  const toast = useToast()
 
   // State
   const user = useState<User | null>('auth:user', () => null)
@@ -33,11 +46,12 @@ export function useAuth() {
   // API helper
   const api = async <T>(
     path: string,
-    options: RequestInit = {},
+    options: AuthApiOptions = {},
   ): Promise<T> => {
+    const { showError = true, ...fetchOptions } = options
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
-      ...(options.headers as Record<string, string>),
+      ...(fetchOptions.headers as Record<string, string>),
     }
 
     if (accessToken.value) {
@@ -45,14 +59,26 @@ export function useAuth() {
     }
 
     const response = await fetch(`${config.public.apiBase}${path}`, {
-      ...options,
+      ...fetchOptions,
       headers,
     })
 
     const data = await response.json()
 
     if (!response.ok) {
-      throw new Error(data.message || 'Request failed')
+      const message = Array.isArray(data.message)
+        ? data.message.join('\n')
+        : data.message || '请求失败'
+
+      if (showError) {
+        toast.add({
+          title: getErrorTitle(response.status),
+          description: message,
+          color: 'error',
+        })
+      }
+
+      throw new Error(message)
     }
 
     return data.data
@@ -90,6 +116,7 @@ export function useAuth() {
       await api('/auth/logout', {
         method: 'POST',
         body: JSON.stringify({ refreshToken: refreshToken.value }),
+        showError: false,
       })
     }
     catch {
@@ -114,6 +141,7 @@ export function useAuth() {
     }>('/auth/refresh', {
       method: 'POST',
       body: JSON.stringify({ refreshToken: refreshToken.value }),
+      showError: false,
     })
 
     accessToken.value = result.accessToken
@@ -129,7 +157,7 @@ export function useAuth() {
     }
 
     try {
-      const userData = await api<User>('/auth/me')
+      const userData = await api<User>('/auth/me', { showError: false })
       user.value = userData
       return userData
     }
@@ -137,7 +165,7 @@ export function useAuth() {
       // Try to refresh token
       try {
         await refreshTokens()
-        const userData = await api<User>('/auth/me')
+        const userData = await api<User>('/auth/me', { showError: false })
         user.value = userData
         return userData
       }

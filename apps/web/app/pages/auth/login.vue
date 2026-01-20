@@ -36,12 +36,8 @@ async function onSubmit() {
     const redirect = (route.query.redirect as string) || '/platform'
     navigateTo(redirect)
   }
-  catch (error: any) {
-    toast.add({
-      title: '登录失败',
-      description: error.message || '请检查邮箱和密码',
-      color: 'error',
-    })
+  catch {
+    // 错误提示已由 useAuth 统一处理
   }
   finally {
     loading.value = false

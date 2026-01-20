@@ -77,12 +77,8 @@ async function onSubmit() {
     })
     navigateTo('/auth/login')
   }
-  catch (error: any) {
-    toast.add({
-      title: '注册失败',
-      description: error.message || '请稍后重试',
-      color: 'error',
-    })
+  catch {
+    // 错误提示已由 useAuth 统一处理
   }
   finally {
     loading.value = false

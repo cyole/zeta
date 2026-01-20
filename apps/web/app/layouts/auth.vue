@@ -92,14 +92,6 @@ function toggleColorMode() {
 
         <!-- Slot for login/register form -->
         <slot />
-
-        <!-- Footer -->
-        <p class="text-center text-xs text-slate-400 dark:text-slate-500 mt-8">
-          继续即表示您同意我们的
-          <a href="#" class="text-teal-500 hover:underline">服务条款</a>
-          和
-          <a href="#" class="text-teal-500 hover:underline">隐私政策</a>
-        </p>
       </div>
     </div>
   </div>

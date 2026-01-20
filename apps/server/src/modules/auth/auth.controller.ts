@@ -1,5 +1,4 @@
 import type { Request } from 'express'
-import type { LoginDto, RefreshTokenDto, RegisterDto, VerifyEmailDto } from './dto'
 import {
   Body,
   Controller,
@@ -13,6 +12,7 @@ import { AuthGuard } from '@nestjs/passport'
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { CurrentUser, Public } from '@/common/decorators'
 import { AuthService } from './auth.service'
+import { LoginDto, RefreshTokenDto, RegisterDto, VerifyEmailDto } from './dto'
 
 @ApiTags('认证')
 @Controller('auth')
