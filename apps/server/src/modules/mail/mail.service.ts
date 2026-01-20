@@ -1,6 +1,6 @@
-import type { ConfigService } from '@nestjs/config'
 import type { Transporter } from 'nodemailer'
 import { Injectable, Logger } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
 import * as nodemailer from 'nodemailer'
 
 @Injectable()

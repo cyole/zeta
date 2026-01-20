@@ -1,5 +1,4 @@
 import type { CreateRoleDto, UpdateRoleDto, UpdateRolePermissionsDto } from './dto'
-import type { RoleService } from './role.service'
 import {
   Body,
   Controller,
@@ -13,6 +12,7 @@ import {
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { Permissions } from '@/common/decorators'
 import { PermissionsGuard } from '@/common/guards'
+import { RoleService } from './role.service'
 
 @ApiTags('角色管理')
 @ApiBearerAuth()

@@ -4,7 +4,6 @@ import type {
   UpdateUserRolesDto,
   UserQueryDto,
 } from './dto'
-import type { UserService } from './user.service'
 import {
   Body,
   Controller,
@@ -19,6 +18,7 @@ import {
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { Permissions } from '@/common/decorators'
 import { PermissionsGuard } from '@/common/guards'
+import { UserService } from './user.service'
 
 @ApiTags('用户管理')
 @ApiBearerAuth()

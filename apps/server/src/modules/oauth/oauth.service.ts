@@ -1,9 +1,9 @@
-import type { ConfigService } from '@nestjs/config'
-import type { JwtService } from '@nestjs/jwt'
-import type { PrismaService } from '@/modules/prisma/prisma.service'
 import * as crypto from 'node:crypto'
 import { Injectable, Logger, UnauthorizedException } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
+import { JwtService } from '@nestjs/jwt'
 import { OAuthProvider } from '@prisma/client'
+import { PrismaService } from '@/modules/prisma/prisma.service'
 
 interface GitHubUser {
   id: number

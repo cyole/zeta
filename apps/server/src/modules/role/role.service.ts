@@ -1,11 +1,11 @@
 import type { CreateRoleDto, UpdateRoleDto, UpdateRolePermissionsDto } from './dto'
-import type { PrismaService } from '@/modules/prisma/prisma.service'
 import {
   BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common'
+import { PrismaService } from '@/modules/prisma/prisma.service'
 
 @Injectable()
 export class RoleService {

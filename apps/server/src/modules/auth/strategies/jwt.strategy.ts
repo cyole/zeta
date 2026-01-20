@@ -1,9 +1,9 @@
-import type { ConfigService } from '@nestjs/config'
-import type { PrismaService } from '@/modules/prisma/prisma.service'
-import type { RedisService } from '@/modules/redis/redis.service'
 import { Injectable, UnauthorizedException } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
 import { PassportStrategy } from '@nestjs/passport'
 import { ExtractJwt, Strategy } from 'passport-jwt'
+import { PrismaService } from '@/modules/prisma/prisma.service'
+import { RedisService } from '@/modules/redis/redis.service'
 
 export interface JwtPayload {
   sub: string

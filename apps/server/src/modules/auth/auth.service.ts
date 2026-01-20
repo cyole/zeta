@@ -1,9 +1,4 @@
-import type { ConfigService } from '@nestjs/config'
-import type { JwtService } from '@nestjs/jwt'
 import type { LoginDto, RegisterDto } from './dto'
-import type { MailService } from '@/modules/mail/mail.service'
-import type { PrismaService } from '@/modules/prisma/prisma.service'
-import type { RedisService } from '@/modules/redis/redis.service'
 import * as crypto from 'node:crypto'
 import {
   BadRequestException,
@@ -11,7 +6,12 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
+import { JwtService } from '@nestjs/jwt'
 import * as bcrypt from 'bcrypt'
+import { MailService } from '@/modules/mail/mail.service'
+import { PrismaService } from '@/modules/prisma/prisma.service'
+import { RedisService } from '@/modules/redis/redis.service'
 
 @Injectable()
 export class AuthService {

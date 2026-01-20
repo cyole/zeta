@@ -1,8 +1,8 @@
-import type { PermissionService } from './permission.service'
 import { Controller, Get, UseGuards } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { Permissions } from '@/common/decorators'
 import { PermissionsGuard } from '@/common/guards'
+import { PermissionService } from './permission.service'
 
 @ApiTags('权限管理')
 @ApiBearerAuth()

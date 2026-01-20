@@ -4,13 +4,13 @@ import type {
   UpdateUserRolesDto,
   UserQueryDto,
 } from './dto'
-import type { PrismaService } from '@/modules/prisma/prisma.service'
 import {
   ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common'
 import * as bcrypt from 'bcrypt'
+import { PrismaService } from '@/modules/prisma/prisma.service'
 
 @Injectable()
 export class UserService {

@@ -1,6 +1,4 @@
-import type { ConfigService } from '@nestjs/config'
 import type { Request, Response } from 'express'
-import type { OAuthService } from './oauth.service'
 import {
   Controller,
   Get,
@@ -9,8 +7,10 @@ import {
   Req,
   Res,
 } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
 import { ApiOperation, ApiTags } from '@nestjs/swagger'
 import { Public } from '@/common/decorators'
+import { OAuthService } from './oauth.service'
 
 @ApiTags('OAuth')
 @Controller('oauth')

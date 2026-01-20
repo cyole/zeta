@@ -2,11 +2,11 @@ import type {
   CanActivate,
   ExecutionContext,
 } from '@nestjs/common'
-import type { Reflector } from '@nestjs/core'
 import {
   ForbiddenException,
   Injectable,
 } from '@nestjs/common'
+import { Reflector } from '@nestjs/core'
 import { ROLES_KEY } from '../decorators/roles.decorator'
 
 @Injectable()
