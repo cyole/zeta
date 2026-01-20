@@ -1,15 +1,76 @@
+<script setup lang="ts">
+import { z } from 'zod'
+
+definePageMeta({
+  layout: 'auth',
+  middleware: 'guest',
+})
+
+const config = useRuntimeConfig()
+const { login } = useAuth()
+const toast = useToast()
+const route = useRoute()
+
+const loading = ref(false)
+const rememberMe = ref(false)
+
+const schema = z.object({
+  email: z.string().email('请输入有效的邮箱地址'),
+  password: z.string().min(1, '请输入密码'),
+})
+
+const form = reactive({
+  email: '',
+  password: '',
+})
+
+async function onSubmit() {
+  loading.value = true
+  try {
+    await login(form)
+    toast.add({
+      title: '登录成功',
+      description: '欢迎回来！',
+      color: 'success',
+    })
+    const redirect = (route.query.redirect as string) || '/platform'
+    navigateTo(redirect)
+  }
+  catch (error: any) {
+    toast.add({
+      title: '登录失败',
+      description: error.message || '请检查邮箱和密码',
+      color: 'error',
+    })
+  }
+  finally {
+    loading.value = false
+  }
+}
+
+function loginWithGitHub() {
+  window.location.href = `${config.public.apiBase}/oauth/github`
+}
+
+function loginWithDingTalk() {
+  window.location.href = `${config.public.apiBase}/oauth/dingtalk`
+}
+</script>
+
 <template>
   <div>
     <!-- Header -->
     <div class="text-center mb-8">
-      <h2 class="text-2xl font-bold text-slate-900 dark:text-white">欢迎回来</h2>
+      <h2 class="text-2xl font-bold text-slate-900 dark:text-white">
+        欢迎回来
+      </h2>
       <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">
         登录您的账号，继续高效开发
       </p>
     </div>
 
     <!-- Login form -->
-    <UForm :state="form" :schema="schema" @submit="onSubmit" class="space-y-5">
+    <UForm :state="form" :schema="schema" class="space-y-5" @submit="onSubmit">
       <UFormField name="email" label="邮箱地址">
         <UInput
           v-model="form.email"
@@ -37,7 +98,7 @@
 
       <!-- Remember me -->
       <div class="flex items-center gap-2">
-        <UCheckbox v-model="rememberMe" id="remember" />
+        <UCheckbox id="remember" v-model="rememberMe" />
         <label for="remember" class="text-sm text-slate-600 dark:text-slate-400 cursor-pointer">
           记住登录状态
         </label>
@@ -65,8 +126,8 @@
         color="neutral"
         variant="outline"
         size="lg"
-        @click="loginWithGitHub"
         class="hover:bg-slate-100 dark:hover:bg-slate-900"
+        @click="loginWithGitHub"
       >
         <UIcon name="i-simple-icons-github" class="w-5 h-5 mr-2" />
         GitHub
@@ -75,8 +136,8 @@
         color="neutral"
         variant="outline"
         size="lg"
-        @click="loginWithDingTalk"
         class="hover:bg-slate-100 dark:hover:bg-slate-900"
+        @click="loginWithDingTalk"
       >
         <UIcon name="i-simple-icons-dingtalk" class="w-5 h-5 mr-2" />
         钉钉
@@ -92,60 +153,3 @@
     </p>
   </div>
 </template>
-
-<script setup lang="ts">
-import { z } from 'zod';
-
-definePageMeta({
-  layout: 'auth',
-  middleware: 'guest',
-});
-
-const config = useRuntimeConfig();
-const { login } = useAuth();
-const toast = useToast();
-const route = useRoute();
-
-const loading = ref(false);
-const rememberMe = ref(false);
-
-const schema = z.object({
-  email: z.string().email('请输入有效的邮箱地址'),
-  password: z.string().min(1, '请输入密码'),
-});
-
-const form = reactive({
-  email: '',
-  password: '',
-});
-
-const onSubmit = async () => {
-  loading.value = true;
-  try {
-    await login(form);
-    toast.add({
-      title: '登录成功',
-      description: '欢迎回来！',
-      color: 'success',
-    });
-    const redirect = (route.query.redirect as string) || '/platform';
-    navigateTo(redirect);
-  } catch (error: any) {
-    toast.add({
-      title: '登录失败',
-      description: error.message || '请检查邮箱和密码',
-      color: 'error',
-    });
-  } finally {
-    loading.value = false;
-  }
-};
-
-const loginWithGitHub = () => {
-  window.location.href = `${config.public.apiBase}/oauth/github`;
-};
-
-const loginWithDingTalk = () => {
-  window.location.href = `${config.public.apiBase}/oauth/dingtalk`;
-};
-</script>

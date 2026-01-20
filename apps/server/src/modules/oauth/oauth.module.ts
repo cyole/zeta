@@ -1,8 +1,8 @@
-import { Module } from '@nestjs/common';
-import { JwtModule } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
-import { OAuthController } from './oauth.controller';
-import { OAuthService } from './oauth.service';
+import { Module } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
+import { JwtModule } from '@nestjs/jwt'
+import { OAuthController } from './oauth.controller'
+import { OAuthService } from './oauth.service'
 
 @Module({
   imports: [

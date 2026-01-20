@@ -1,6 +1,6 @@
 export default () => ({
   // Application
-  port: parseInt(process.env.PORT || '3001', 10),
+  port: Number.parseInt(process.env.PORT || '3001', 10),
   nodeEnv: process.env.NODE_ENV || 'development',
 
   // Database
@@ -11,7 +11,7 @@ export default () => ({
   // Redis
   redis: {
     host: process.env.REDIS_HOST || 'localhost',
-    port: parseInt(process.env.REDIS_PORT || '6379', 10),
+    port: Number.parseInt(process.env.REDIS_PORT || '6379', 10),
     password: process.env.REDIS_PASSWORD,
   },
 
@@ -40,7 +40,7 @@ export default () => ({
   // Mail
   mail: {
     host: process.env.MAIL_HOST,
-    port: parseInt(process.env.MAIL_PORT || '587', 10),
+    port: Number.parseInt(process.env.MAIL_PORT || '587', 10),
     user: process.env.MAIL_USER,
     password: process.env.MAIL_PASSWORD,
     from: process.env.MAIL_FROM || 'Zeta <noreply@zeta.dev>',
@@ -48,4 +48,4 @@ export default () => ({
 
   // Frontend
   frontendUrl: process.env.FRONTEND_URL || 'http://localhost:3000',
-});
+})

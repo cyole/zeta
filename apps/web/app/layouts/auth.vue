@@ -1,3 +1,18 @@
+<script setup lang="ts">
+const colorMode = useColorMode()
+
+// Color mode
+const isDark = computed(() => {
+  if (colorMode.preference === 'system') {
+    return window.matchMedia('(prefers-color-scheme: dark)').matches
+  }
+  return colorMode.preference === 'dark'
+})
+function toggleColorMode() {
+  colorMode.preference = isDark.value ? 'light' : 'dark'
+}
+</script>
+
 <template>
   <div class="min-h-screen flex">
     <!-- Left side - Branding -->
@@ -89,18 +104,3 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-const colorMode = useColorMode();
-
-// Color mode
-const isDark = computed(() => {
-  if (colorMode.preference === 'system') {
-    return window.matchMedia('(prefers-color-scheme: dark)').matches;
-  }
-  return colorMode.preference === 'dark';
-});
-const toggleColorMode = () => {
-  colorMode.preference = isDark.value ? 'light' : 'dark';
-};
-</script>

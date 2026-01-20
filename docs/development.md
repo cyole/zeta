@@ -5,6 +5,7 @@
 ### 1. 安装依赖
 
 确保已安装以下工具：
+
 - Node.js >= 20.0.0
 - pnpm >= 9.0.0
 - Docker & Docker Compose
@@ -150,7 +151,7 @@ pnpm nest g service modules/example
 - 访问 http://localhost:3001/api/docs 查看
 
 ```typescript
-import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger'
 
 @ApiTags('示例')
 @Controller('example')
@@ -212,7 +213,7 @@ pnpm --filter @zeta/server prisma studio
 definePageMeta({
   layout: 'dashboard',
   middleware: 'admin',
-});
+})
 ```
 
 ## 测试
@@ -233,6 +234,7 @@ pnpm --filter @zeta/web typecheck
 ### 1. 数据库连接失败
 
 确保 Docker 容器正在运行：
+
 ```bash
 docker-compose -f docker-compose.dev.yml ps
 ```

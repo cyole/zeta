@@ -1,10 +1,96 @@
+<script setup lang="ts">
+const { user, logout } = useAuth()
+const { isAdmin } = usePermissions()
+const router = useRouter()
+const route = useRoute()
+const colorMode = useColorMode()
+
+const sidebarCollapsed = ref(false)
+
+// Color mode
+const isDark = computed(() => {
+  if (colorMode.preference === 'system') {
+    return window.matchMedia('(prefers-color-scheme: dark)').matches
+  }
+  return colorMode.preference === 'dark'
+})
+function toggleColorMode() {
+  colorMode.preference = isDark.value ? 'light' : 'dark'
+}
+
+// Page info
+const pageTitle = computed(() => {
+  const titles: Record<string, string> = {
+    '/dashboard': '仪表盘',
+    '/dashboard/profile': '个人资料',
+    '/admin/users': '用户管理',
+    '/admin/roles': '角色管理',
+  }
+  return titles[route.path] || 'Zeta'
+})
+
+const pageSubtitle = computed(() => {
+  const subtitles: Record<string, string> = {
+    '/admin/users': '管理用户账户和权限',
+    '/admin/roles': '管理角色和权限',
+    '/dashboard/profile': '管理个人账户设置',
+  }
+  return subtitles[route.path] || ''
+})
+
+// User role label
+const userRoleLabel = computed(() => {
+  const roles = user.value?.roles
+  if (!roles || roles.length === 0)
+    return '用户'
+  const role = roles[0]
+  return role?.displayName || role?.name || '用户'
+})
+
+// Navigation items
+const mainNavItems = [
+  { label: '仪表盘', icon: 'i-lucide-layout-dashboard', to: '/dashboard' },
+]
+
+const adminNavItems = [
+  { label: '用户管理', icon: 'i-lucide-users', to: '/admin/users' },
+  { label: '角色管理', icon: 'i-lucide-shield', to: '/admin/roles' },
+]
+
+const accountNavItems = [
+  { label: '个人资料', icon: 'i-lucide-user', to: '/dashboard/profile' },
+]
+
+// Check active route
+function isActiveRoute(path: string) {
+  return route.path === path || route.path.startsWith(`${path}/`)
+}
+
+// User menu items
+const userMenuItems = computed(() => [
+  [
+    {
+      label: '个人设置',
+      icon: 'i-lucide-user',
+      click: () => router.push('/dashboard/profile'),
+    },
+  ],
+  [
+    {
+      label: '退出登录',
+      icon: 'i-lucide-log-out',
+      click: () => logout(),
+    },
+  ],
+])
+</script>
+
 <template>
   <div class="flex h-screen bg-slate-100 dark:bg-slate-900">
     <!-- Sidebar -->
     <aside
-      :class="[
-        'sidebar-wrapper flex flex-col transition-all duration-300 border-r border-teal-200/50 dark:border-teal-800/50',
-        sidebarCollapsed ? 'w-16' : 'w-64'
+      class="sidebar-wrapper flex flex-col transition-all duration-300 border-r border-teal-200/50 dark:border-teal-800/50" :class="[
+        sidebarCollapsed ? 'w-16' : 'w-64',
       ]"
     >
       <!-- Logo -->
@@ -26,9 +112,8 @@
             v-for="item in mainNavItems"
             :key="item.to"
             :to="item.to"
-            :class="[
-              'sidebar-nav-item',
-              { active: isActiveRoute(item.to) }
+            class="sidebar-nav-item" :class="[
+              { active: isActiveRoute(item.to) },
             ]"
           >
             <UIcon :name="item.icon" class="w-5 h-5 shrink-0" />
@@ -38,16 +123,17 @@
 
         <!-- Admin section -->
         <template v-if="isAdmin">
-          <div v-if="!sidebarCollapsed" class="sidebar-section-label mt-6">管理</div>
+          <div v-if="!sidebarCollapsed" class="sidebar-section-label mt-6">
+            管理
+          </div>
           <div v-else class="my-4 border-t border-teal-200/50 dark:border-teal-700/50" />
           <div class="space-y-1">
             <NuxtLink
               v-for="item in adminNavItems"
               :key="item.to"
               :to="item.to"
-              :class="[
-                'sidebar-nav-item',
-                { active: isActiveRoute(item.to) }
+              class="sidebar-nav-item" :class="[
+                { active: isActiveRoute(item.to) },
               ]"
             >
               <UIcon :name="item.icon" class="w-5 h-5 shrink-0" />
@@ -57,16 +143,17 @@
         </template>
 
         <!-- My account section -->
-        <div v-if="!sidebarCollapsed" class="sidebar-section-label mt-6">我的账户</div>
+        <div v-if="!sidebarCollapsed" class="sidebar-section-label mt-6">
+          我的账户
+        </div>
         <div v-else class="my-4 border-t border-teal-200/50 dark:border-teal-700/50" />
         <div class="space-y-1">
           <NuxtLink
             v-for="item in accountNavItems"
             :key="item.to"
             :to="item.to"
-            :class="[
-              'sidebar-nav-item',
-              { active: isActiveRoute(item.to) }
+            class="sidebar-nav-item" :class="[
+              { active: isActiveRoute(item.to) },
             ]"
           >
             <UIcon :name="item.icon" class="w-5 h-5 shrink-0" />
@@ -79,10 +166,8 @@
       <div class="px-3 py-4 border-t border-teal-200/30 dark:border-teal-800/30 space-y-2">
         <!-- Dark mode toggle -->
         <button
+          class="sidebar-nav-item w-full"
           @click="toggleColorMode"
-          :class="[
-            'sidebar-nav-item w-full',
-          ]"
         >
           <UIcon :name="isDark ? 'i-lucide-moon' : 'i-lucide-sun'" class="w-5 h-5 shrink-0" />
           <span v-if="!sidebarCollapsed">{{ isDark ? '深色模式' : '浅色模式' }}</span>
@@ -90,8 +175,8 @@
 
         <!-- Collapse toggle -->
         <button
-          @click="sidebarCollapsed = !sidebarCollapsed"
           class="sidebar-nav-item w-full"
+          @click="sidebarCollapsed = !sidebarCollapsed"
         >
           <UIcon :name="sidebarCollapsed ? 'i-lucide-chevrons-right' : 'i-lucide-chevrons-left'" class="w-5 h-5 shrink-0" />
           <span v-if="!sidebarCollapsed">收起</span>
@@ -106,8 +191,12 @@
         <div class="flex items-center gap-4">
           <!-- Page title will be set by pages -->
           <div>
-            <h1 class="text-lg font-semibold text-slate-800 dark:text-white">{{ pageTitle }}</h1>
-            <p v-if="pageSubtitle" class="text-xs text-slate-500">{{ pageSubtitle }}</p>
+            <h1 class="text-lg font-semibold text-slate-800 dark:text-white">
+              {{ pageTitle }}
+            </h1>
+            <p v-if="pageSubtitle" class="text-xs text-slate-500">
+              {{ pageSubtitle }}
+            </p>
           </div>
         </div>
 
@@ -140,8 +229,12 @@
             <button class="flex items-center gap-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg px-2 py-1 transition-colors">
               <UAvatar :src="user?.avatar || undefined" :alt="user?.name" size="sm" />
               <div v-if="user" class="text-left">
-                <p class="text-sm font-medium text-slate-800 dark:text-white">{{ user.name }}</p>
-                <p class="text-xs text-slate-500">{{ userRoleLabel }}</p>
+                <p class="text-sm font-medium text-slate-800 dark:text-white">
+                  {{ user.name }}
+                </p>
+                <p class="text-xs text-slate-500">
+                  {{ userRoleLabel }}
+                </p>
               </div>
               <UIcon name="i-lucide-chevron-down" class="w-4 h-4 text-slate-400" />
             </button>
@@ -156,89 +249,3 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-const { user, logout } = useAuth();
-const { isAdmin } = usePermissions();
-const router = useRouter();
-const route = useRoute();
-const colorMode = useColorMode();
-
-const sidebarCollapsed = ref(false);
-
-// Color mode
-const isDark = computed(() => {
-  if (colorMode.preference === 'system') {
-    return window.matchMedia('(prefers-color-scheme: dark)').matches;
-  }
-  return colorMode.preference === 'dark';
-});
-const toggleColorMode = () => {
-  colorMode.preference = isDark.value ? 'light' : 'dark';
-};
-
-// Page info
-const pageTitle = computed(() => {
-  const titles: Record<string, string> = {
-    '/dashboard': '仪表盘',
-    '/dashboard/profile': '个人资料',
-    '/admin/users': '用户管理',
-    '/admin/roles': '角色管理',
-  };
-  return titles[route.path] || 'Zeta';
-});
-
-const pageSubtitle = computed(() => {
-  const subtitles: Record<string, string> = {
-    '/admin/users': '管理用户账户和权限',
-    '/admin/roles': '管理角色和权限',
-    '/dashboard/profile': '管理个人账户设置',
-  };
-  return subtitles[route.path] || '';
-});
-
-// User role label
-const userRoleLabel = computed(() => {
-  const roles = user.value?.roles;
-  if (!roles || roles.length === 0) return '用户';
-  const role = roles[0];
-  return role?.displayName || role?.name || '用户';
-});
-
-// Navigation items
-const mainNavItems = [
-  { label: '仪表盘', icon: 'i-lucide-layout-dashboard', to: '/dashboard' },
-];
-
-const adminNavItems = [
-  { label: '用户管理', icon: 'i-lucide-users', to: '/admin/users' },
-  { label: '角色管理', icon: 'i-lucide-shield', to: '/admin/roles' },
-];
-
-const accountNavItems = [
-  { label: '个人资料', icon: 'i-lucide-user', to: '/dashboard/profile' },
-];
-
-// Check active route
-const isActiveRoute = (path: string) => {
-  return route.path === path || route.path.startsWith(path + '/');
-};
-
-// User menu items
-const userMenuItems = computed(() => [
-  [
-    {
-      label: '个人设置',
-      icon: 'i-lucide-user',
-      click: () => router.push('/dashboard/profile'),
-    },
-  ],
-  [
-    {
-      label: '退出登录',
-      icon: 'i-lucide-log-out',
-      click: () => logout(),
-    },
-  ],
-]);
-</script>

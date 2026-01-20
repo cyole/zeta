@@ -8,15 +8,15 @@ Zeta 是一个前端提效平台，提供开箱即用的基础能力，包括用
 
 ## 技术栈
 
-| 层级 | 技术选型 |
-|------|----------|
-| 后端框架 | NestJS v11 |
-| 数据库 | PostgreSQL + Prisma ORM |
-| 缓存 | Redis |
-| 前端框架 | Nuxt 4 (SPA模式) |
-| UI框架 | Nuxt UI v4 |
-| 构建工具 | pnpm + monorepo |
-| 部署 | Docker Compose |
+| 层级     | 技术选型                |
+| -------- | ----------------------- |
+| 后端框架 | NestJS v11              |
+| 数据库   | PostgreSQL + Prisma ORM |
+| 缓存     | Redis                   |
+| 前端框架 | Nuxt 4 (SPA模式)        |
+| UI框架   | Nuxt UI v4              |
+| 构建工具 | pnpm + monorepo         |
+| 部署     | Docker Compose          |
 
 ## 快速开始
 

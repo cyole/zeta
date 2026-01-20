@@ -1,3 +1,61 @@
+<script setup lang="ts">
+definePageMeta({
+  layout: false,
+})
+
+// Redirect to platform if authenticated
+const { isAuthenticated, fetchUser } = useAuth()
+
+onMounted(async () => {
+  await fetchUser()
+  if (isAuthenticated.value) {
+    navigateTo('/platform')
+  }
+})
+
+const features = [
+  {
+    icon: 'i-lucide-figma',
+    title: '设计转代码',
+    description: '智能识别 Figma 设计稿，自动匹配组件库，精准生成 Vue/React 代码。',
+  },
+  {
+    icon: 'i-lucide-code-2',
+    title: '智能编码助手',
+    description: '自然语言转代码，代码补全与优化，组件快速生成，实时语法纠错。',
+  },
+  {
+    icon: 'i-lucide-book-open',
+    title: '文档智能管理',
+    description: '自然语言检索文档，多轮问答，支持组件库、接口文档智能检索。',
+  },
+  {
+    icon: 'i-lucide-plug',
+    title: '接口协作助手',
+    description: '自动解析 Swagger 文档，生成前端代码、Mock 数据和参数校验。',
+  },
+  {
+    icon: 'i-lucide-test-tube',
+    title: '测试与优化',
+    description: 'AI 生成测试用例，性能优化建议，兼容性检查和代码评审。',
+  },
+  {
+    icon: 'i-lucide-settings-2',
+    title: '项目工程化',
+    description: '智能项目初始化，配置优化建议，依赖升级管理和安全检测。',
+  },
+]
+
+const quickLinks = [
+  { title: '设计转代码', desc: 'Figma 设计稿智能转代码', icon: 'i-lucide-figma', to: '/platform/d2c', bgClass: 'bg-gradient-to-br from-teal-500 to-cyan-500' },
+  { title: '编码助手', desc: '自然语言生成代码', icon: 'i-lucide-code-2', to: '/platform/coding', bgClass: 'bg-gradient-to-br from-cyan-500 to-blue-500' },
+  { title: '文档管理', desc: '智能检索文档', icon: 'i-lucide-book-open', to: '/platform/docs', bgClass: 'bg-gradient-to-br from-green-500 to-emerald-500' },
+  { title: '接口协作', desc: '解析接口文档', icon: 'i-lucide-plug', to: '/platform/api', bgClass: 'bg-gradient-to-br from-orange-500 to-amber-500' },
+  { title: '测试优化', desc: 'AI 生成测试用例', icon: 'i-lucide-test-tube', to: '/platform/testing', bgClass: 'bg-gradient-to-br from-red-500 to-rose-500' },
+  { title: '工程化', desc: '项目初始化配置', icon: 'i-lucide-settings-2', to: '/platform/engineering', bgClass: 'bg-gradient-to-br from-slate-500 to-slate-600' },
+]
+</script>
+
 <template>
   <div class="min-h-screen bg-white dark:bg-slate-950">
     <!-- Navigation -->
@@ -124,12 +182,16 @@
             :to="link.to"
             class="group flex items-center gap-4 p-5 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-teal-300 dark:hover:border-teal-700 hover:shadow-lg transition-all"
           >
-            <div :class="['w-12 h-12 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform', link.bgClass]">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform" :class="[link.bgClass]">
               <UIcon :name="link.icon" class="w-6 h-6 text-white" />
             </div>
             <div>
-              <div class="font-semibold text-slate-900 dark:text-white">{{ link.title }}</div>
-              <div class="text-sm text-slate-500">{{ link.desc }}</div>
+              <div class="font-semibold text-slate-900 dark:text-white">
+                {{ link.title }}
+              </div>
+              <div class="text-sm text-slate-500">
+                {{ link.desc }}
+              </div>
             </div>
             <UIcon name="i-lucide-arrow-right" class="w-5 h-5 text-slate-400 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
           </NuxtLink>
@@ -191,61 +253,3 @@
     </footer>
   </div>
 </template>
-
-<script setup lang="ts">
-definePageMeta({
-  layout: false,
-});
-
-// Redirect to platform if authenticated
-const { isAuthenticated, fetchUser } = useAuth();
-
-onMounted(async () => {
-  await fetchUser();
-  if (isAuthenticated.value) {
-    navigateTo('/platform');
-  }
-});
-
-const features = [
-  {
-    icon: 'i-lucide-figma',
-    title: '设计转代码',
-    description: '智能识别 Figma 设计稿，自动匹配组件库，精准生成 Vue/React 代码。',
-  },
-  {
-    icon: 'i-lucide-code-2',
-    title: '智能编码助手',
-    description: '自然语言转代码，代码补全与优化，组件快速生成，实时语法纠错。',
-  },
-  {
-    icon: 'i-lucide-book-open',
-    title: '文档智能管理',
-    description: '自然语言检索文档，多轮问答，支持组件库、接口文档智能检索。',
-  },
-  {
-    icon: 'i-lucide-plug',
-    title: '接口协作助手',
-    description: '自动解析 Swagger 文档，生成前端代码、Mock 数据和参数校验。',
-  },
-  {
-    icon: 'i-lucide-test-tube',
-    title: '测试与优化',
-    description: 'AI 生成测试用例，性能优化建议，兼容性检查和代码评审。',
-  },
-  {
-    icon: 'i-lucide-settings-2',
-    title: '项目工程化',
-    description: '智能项目初始化，配置优化建议，依赖升级管理和安全检测。',
-  },
-];
-
-const quickLinks = [
-  { title: '设计转代码', desc: 'Figma 设计稿智能转代码', icon: 'i-lucide-figma', to: '/platform/d2c', bgClass: 'bg-gradient-to-br from-teal-500 to-cyan-500' },
-  { title: '编码助手', desc: '自然语言生成代码', icon: 'i-lucide-code-2', to: '/platform/coding', bgClass: 'bg-gradient-to-br from-cyan-500 to-blue-500' },
-  { title: '文档管理', desc: '智能检索文档', icon: 'i-lucide-book-open', to: '/platform/docs', bgClass: 'bg-gradient-to-br from-green-500 to-emerald-500' },
-  { title: '接口协作', desc: '解析接口文档', icon: 'i-lucide-plug', to: '/platform/api', bgClass: 'bg-gradient-to-br from-orange-500 to-amber-500' },
-  { title: '测试优化', desc: 'AI 生成测试用例', icon: 'i-lucide-test-tube', to: '/platform/testing', bgClass: 'bg-gradient-to-br from-red-500 to-rose-500' },
-  { title: '工程化', desc: '项目初始化配置', icon: 'i-lucide-settings-2', to: '/platform/engineering', bgClass: 'bg-gradient-to-br from-slate-500 to-slate-600' },
-];
-</script>

@@ -94,6 +94,7 @@ node dist/main.js
 ```
 
 推荐使用 PM2 进行进程管理：
+
 ```bash
 pm2 start dist/main.js --name zeta-server
 ```
@@ -157,12 +158,12 @@ server {
 
 ## 服务端口
 
-| 服务 | 端口 | 说明 |
-|------|------|------|
-| Web | 3000 | 前端应用 |
-| API | 3001 | 后端 API |
-| PostgreSQL | 5432 | 数据库 |
-| Redis | 6379 | 缓存 |
+| 服务       | 端口 | 说明     |
+| ---------- | ---- | -------- |
+| Web        | 3000 | 前端应用 |
+| API        | 3001 | 后端 API |
+| PostgreSQL | 5432 | 数据库   |
+| Redis      | 6379 | 缓存     |
 
 ## 健康检查
 
@@ -175,11 +176,13 @@ server {
 ### 1. 后端无法启动
 
 检查日志：
+
 ```bash
 docker-compose logs server
 ```
 
 常见问题：
+
 - 数据库连接失败
 - 环境变量未配置
 - 端口被占用
@@ -187,6 +190,7 @@ docker-compose logs server
 ### 2. 前端访问 404
 
 确保 Nginx 配置了 SPA 路由：
+
 ```nginx
 try_files $uri $uri/ /index.html;
 ```

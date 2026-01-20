@@ -1,9 +1,165 @@
+<script setup lang="ts">
+import { z } from 'zod'
+
+definePageMeta({
+  layout: 'dashboard',
+  middleware: 'admin',
+})
+
+const api = useApi()
+const toast = useToast()
+
+// State
+const roles = ref<any[]>([])
+const permissionGroups = ref<any[]>([])
+const showModal = ref(false)
+const showPermissionsModal = ref(false)
+const editingRole = ref<any>(null)
+const submitting = ref(false)
+const selectedPermissions = ref<string[]>([])
+
+const moduleLabels: Record<string, string> = {
+  user: '用户管理',
+  role: '角色管理',
+  permission: '权限管理',
+}
+
+// Form
+const formSchema = z.object({
+  name: z.string().min(1, '请输入角色标识').regex(/^[A-Z_]+$/, '只能包含大写字母和下划线'),
+  displayName: z.string().min(1, '请输入显示名称'),
+  description: z.string().optional(),
+})
+
+const form = reactive({
+  name: '',
+  displayName: '',
+  description: '',
+})
+
+// Methods
+async function fetchRoles() {
+  try {
+    roles.value = await api.get('/roles')
+  }
+  catch (error) {
+    console.error('Failed to fetch roles', error)
+  }
+}
+
+async function fetchPermissions() {
+  try {
+    permissionGroups.value = await api.get('/permissions/modules')
+  }
+  catch (error) {
+    console.error('Failed to fetch permissions', error)
+  }
+}
+
+function openCreateModal() {
+  editingRole.value = null
+  form.name = ''
+  form.displayName = ''
+  form.description = ''
+  showModal.value = true
+}
+
+function openEditModal(role: any) {
+  editingRole.value = role
+  form.name = role.name
+  form.displayName = role.displayName
+  form.description = role.description || ''
+  showModal.value = true
+}
+
+function openPermissionsModal(role: any) {
+  editingRole.value = role
+  selectedPermissions.value = role.permissions?.map((p: any) => p.id) || []
+  showPermissionsModal.value = true
+}
+
+function togglePermission(permId: string) {
+  const index = selectedPermissions.value.indexOf(permId)
+  if (index > -1) {
+    selectedPermissions.value.splice(index, 1)
+  }
+  else {
+    selectedPermissions.value.push(permId)
+  }
+}
+
+async function onSubmit() {
+  submitting.value = true
+  try {
+    if (editingRole.value) {
+      await api.patch(`/roles/${editingRole.value.id}`, {
+        displayName: form.displayName,
+        description: form.description,
+      })
+    }
+    else {
+      await api.post('/roles', form)
+    }
+    toast.add({ title: '保存成功', color: 'success' })
+    showModal.value = false
+    fetchRoles()
+  }
+  catch (error: any) {
+    toast.add({ title: '保存失败', description: error.message, color: 'error' })
+  }
+  finally {
+    submitting.value = false
+  }
+}
+
+async function savePermissions() {
+  submitting.value = true
+  try {
+    await api.patch(`/roles/${editingRole.value.id}/permissions`, {
+      permissionIds: selectedPermissions.value,
+    })
+    toast.add({ title: '保存成功', color: 'success' })
+    showPermissionsModal.value = false
+    fetchRoles()
+  }
+  catch (error: any) {
+    toast.add({ title: '保存失败', description: error.message, color: 'error' })
+  }
+  finally {
+    submitting.value = false
+  }
+}
+
+async function deleteRole(role: any) {
+  // eslint-disable-next-line no-alert
+  if (!confirm(`确定要删除角色 "${role.displayName}" 吗？`))
+    return
+
+  try {
+    await api.del(`/roles/${role.id}`)
+    toast.add({ title: '删除成功', color: 'success' })
+    fetchRoles()
+  }
+  catch (error: any) {
+    toast.add({ title: '删除失败', description: error.message, color: 'error' })
+  }
+}
+
+// Init
+onMounted(() => {
+  fetchRoles()
+  fetchPermissions()
+})
+</script>
+
 <template>
   <div>
     <!-- Page header -->
     <div class="flex items-center justify-between mb-8">
       <div>
-        <h1 class="text-2xl font-bold text-neutral-900 dark:text-white">角色管理</h1>
+        <h1 class="text-2xl font-bold text-neutral-900 dark:text-white">
+          角色管理
+        </h1>
         <p class="mt-1 text-neutral-500 dark:text-neutral-400">
           管理系统角色和分配权限
         </p>
@@ -29,8 +185,12 @@
         <div class="space-y-4">
           <!-- Role info -->
           <div>
-            <h3 class="text-lg font-semibold">{{ role.displayName }}</h3>
-            <p class="text-sm text-neutral-500">{{ role.name }}</p>
+            <h3 class="text-lg font-semibold">
+              {{ role.displayName }}
+            </h3>
+            <p class="text-sm text-neutral-500">
+              {{ role.name }}
+            </p>
             <p v-if="role.description" class="mt-2 text-sm text-neutral-600 dark:text-neutral-400">
               {{ role.description }}
             </p>
@@ -108,10 +268,12 @@
       <template #content>
         <UCard>
           <template #header>
-            <h3 class="font-semibold">{{ editingRole ? '编辑角色' : '创建角色' }}</h3>
+            <h3 class="font-semibold">
+              {{ editingRole ? '编辑角色' : '创建角色' }}
+            </h3>
           </template>
 
-          <UForm :state="form" :schema="formSchema" @submit="onSubmit" class="space-y-4">
+          <UForm :state="form" :schema="formSchema" class="space-y-4" @submit="onSubmit">
             <UFormField name="name" label="角色标识">
               <UInput
                 v-model="form.name"
@@ -129,7 +291,9 @@
             </UFormField>
 
             <div class="flex gap-2 justify-end">
-              <UButton variant="outline" @click="showModal = false">取消</UButton>
+              <UButton variant="outline" @click="showModal = false">
+                取消
+              </UButton>
               <UButton type="submit" :loading="submitting">
                 {{ editingRole ? '保存' : '创建' }}
               </UButton>
@@ -144,12 +308,16 @@
       <template #content>
         <UCard class="max-h-[80vh] overflow-auto">
           <template #header>
-            <h3 class="font-semibold">分配权限 - {{ editingRole?.displayName }}</h3>
+            <h3 class="font-semibold">
+              分配权限 - {{ editingRole?.displayName }}
+            </h3>
           </template>
 
           <div class="space-y-6">
             <div v-for="group in permissionGroups" :key="group.module">
-              <h4 class="font-medium mb-3 capitalize">{{ moduleLabels[group.module] || group.module }}</h4>
+              <h4 class="font-medium mb-3 capitalize">
+                {{ moduleLabels[group.module] || group.module }}
+              </h4>
               <div class="space-y-2">
                 <div
                   v-for="perm in group.permissions"
@@ -158,12 +326,16 @@
                 >
                   <UCheckbox
                     :model-value="selectedPermissions.includes(perm.id)"
-                    @update:model-value="togglePermission(perm.id)"
                     :disabled="editingRole?.isSystem && editingRole?.name === 'SUPER_ADMIN'"
+                    @update:model-value="togglePermission(perm.id)"
                   />
                   <div>
-                    <p class="font-medium text-sm">{{ perm.displayName }}</p>
-                    <p class="text-xs text-neutral-500">{{ perm.name }}</p>
+                    <p class="font-medium text-sm">
+                      {{ perm.displayName }}
+                    </p>
+                    <p class="text-xs text-neutral-500">
+                      {{ perm.name }}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -171,11 +343,13 @@
           </div>
 
           <div class="flex gap-2 justify-end mt-4 pt-4 border-t border-neutral-200 dark:border-neutral-800">
-            <UButton variant="outline" @click="showPermissionsModal = false">取消</UButton>
+            <UButton variant="outline" @click="showPermissionsModal = false">
+              取消
+            </UButton>
             <UButton
-              @click="savePermissions"
               :loading="submitting"
               :disabled="editingRole?.isSystem && editingRole?.name === 'SUPER_ADMIN'"
+              @click="savePermissions"
             >
               保存
             </UButton>
@@ -185,146 +359,3 @@
     </UModal>
   </div>
 </template>
-
-<script setup lang="ts">
-import { z } from 'zod';
-
-definePageMeta({
-  layout: 'dashboard',
-  middleware: 'admin',
-});
-
-const api = useApi();
-const toast = useToast();
-
-// State
-const roles = ref<any[]>([]);
-const permissionGroups = ref<any[]>([]);
-const showModal = ref(false);
-const showPermissionsModal = ref(false);
-const editingRole = ref<any>(null);
-const submitting = ref(false);
-const selectedPermissions = ref<string[]>([]);
-
-const moduleLabels: Record<string, string> = {
-  user: '用户管理',
-  role: '角色管理',
-  permission: '权限管理',
-};
-
-// Form
-const formSchema = z.object({
-  name: z.string().min(1, '请输入角色标识').regex(/^[A-Z_]+$/, '只能包含大写字母和下划线'),
-  displayName: z.string().min(1, '请输入显示名称'),
-  description: z.string().optional(),
-});
-
-const form = reactive({
-  name: '',
-  displayName: '',
-  description: '',
-});
-
-// Methods
-const fetchRoles = async () => {
-  try {
-    roles.value = await api.get('/roles');
-  } catch (error) {
-    console.error('Failed to fetch roles', error);
-  }
-};
-
-const fetchPermissions = async () => {
-  try {
-    permissionGroups.value = await api.get('/permissions/modules');
-  } catch (error) {
-    console.error('Failed to fetch permissions', error);
-  }
-};
-
-const openCreateModal = () => {
-  editingRole.value = null;
-  form.name = '';
-  form.displayName = '';
-  form.description = '';
-  showModal.value = true;
-};
-
-const openEditModal = (role: any) => {
-  editingRole.value = role;
-  form.name = role.name;
-  form.displayName = role.displayName;
-  form.description = role.description || '';
-  showModal.value = true;
-};
-
-const openPermissionsModal = (role: any) => {
-  editingRole.value = role;
-  selectedPermissions.value = role.permissions?.map((p: any) => p.id) || [];
-  showPermissionsModal.value = true;
-};
-
-const togglePermission = (permId: string) => {
-  const index = selectedPermissions.value.indexOf(permId);
-  if (index > -1) {
-    selectedPermissions.value.splice(index, 1);
-  } else {
-    selectedPermissions.value.push(permId);
-  }
-};
-
-const onSubmit = async () => {
-  submitting.value = true;
-  try {
-    if (editingRole.value) {
-      await api.patch(`/roles/${editingRole.value.id}`, {
-        displayName: form.displayName,
-        description: form.description,
-      });
-    } else {
-      await api.post('/roles', form);
-    }
-    toast.add({ title: '保存成功', color: 'success' });
-    showModal.value = false;
-    fetchRoles();
-  } catch (error: any) {
-    toast.add({ title: '保存失败', description: error.message, color: 'error' });
-  } finally {
-    submitting.value = false;
-  }
-};
-
-const savePermissions = async () => {
-  submitting.value = true;
-  try {
-    await api.patch(`/roles/${editingRole.value.id}/permissions`, {
-      permissionIds: selectedPermissions.value,
-    });
-    toast.add({ title: '保存成功', color: 'success' });
-    showPermissionsModal.value = false;
-    fetchRoles();
-  } catch (error: any) {
-    toast.add({ title: '保存失败', description: error.message, color: 'error' });
-  } finally {
-    submitting.value = false;
-  }
-};
-
-const deleteRole = async (role: any) => {
-  if (!confirm(`确定要删除角色 "${role.displayName}" 吗？`)) return;
-
-  try {
-    await api.del(`/roles/${role.id}`);
-    toast.add({ title: '删除成功', color: 'success' });
-    fetchRoles();
-  } catch (error: any) {
-    toast.add({ title: '删除失败', description: error.message, color: 'error' });
-  }
-};
-
-// Init
-onMounted(() => {
-  fetchRoles();
-  fetchPermissions();
-});
-</script>

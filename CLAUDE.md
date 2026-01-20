@@ -62,16 +62,16 @@ pnpm --filter @zeta/web typecheck            # Frontend type check
 
 ### Backend Modules (apps/server/src/modules/)
 
-| Module | Purpose |
-|--------|---------|
-| auth | JWT authentication (access + refresh tokens) |
-| oauth | GitHub and DingTalk OAuth login |
-| user | User CRUD operations |
-| role | RBAC role management |
-| permission | Fine-grained permission control |
-| prisma | Database service |
-| redis | Caching service |
-| mail | Email verification |
+| Module     | Purpose                                      |
+| ---------- | -------------------------------------------- |
+| auth       | JWT authentication (access + refresh tokens) |
+| oauth      | GitHub and DingTalk OAuth login              |
+| user       | User CRUD operations                         |
+| role       | RBAC role management                         |
+| permission | Fine-grained permission control              |
+| prisma     | Database service                             |
+| redis      | Caching service                              |
+| mail       | Email verification                           |
 
 ### Backend Common Patterns (apps/server/src/common/)
 

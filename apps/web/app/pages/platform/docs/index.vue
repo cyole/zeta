@@ -1,10 +1,36 @@
+<script setup lang="ts">
+definePageMeta({
+  layout: 'platform',
+  middleware: 'auth',
+})
+
+const searchQuery = ref('')
+
+const categories = [
+  { name: '组件库', icon: 'i-lucide-component', count: 56, bgClass: 'bg-blue-500' },
+  { name: '接口文档', icon: 'i-lucide-plug', count: 128, bgClass: 'bg-green-500' },
+  { name: '开发规范', icon: 'i-lucide-book', count: 24, bgClass: 'bg-purple-500' },
+  { name: '业务文档', icon: 'i-lucide-briefcase', count: 89, bgClass: 'bg-orange-500' },
+]
+
+const recentDocs = [
+  { id: 1, title: 'Table 组件使用文档', category: '组件库', time: '10 分钟前' },
+  { id: 2, title: '用户管理接口', category: '接口文档', time: '1 小时前' },
+  { id: 3, title: 'ESLint 配置规范', category: '开发规范', time: '2 小时前' },
+]
+</script>
+
 <template>
   <div class="p-6">
     <!-- Page Header -->
     <div class="flex items-center justify-between mb-8">
       <div>
-        <h1 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">文档智能管理</h1>
-        <p class="text-slate-500 dark:text-slate-400">自然语言检索、多轮问答、文档自动更新</p>
+        <h1 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">
+          文档智能管理
+        </h1>
+        <p class="text-slate-500 dark:text-slate-400">
+          自然语言检索、多轮问答、文档自动更新
+        </p>
       </div>
       <UButton>
         <UIcon name="i-lucide-plus" class="w-4 h-4 mr-2" />
@@ -36,32 +62,39 @@
         class="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 cursor-pointer hover:border-green-300 dark:hover:border-green-700 transition-colors"
       >
         <div class="flex items-center gap-3 mb-2">
-          <div :class="['w-8 h-8 rounded-lg flex items-center justify-center', category.bgClass]">
+          <div class="w-8 h-8 rounded-lg flex items-center justify-center" :class="[category.bgClass]">
             <UIcon :name="category.icon" class="w-4 h-4 text-white" />
           </div>
           <span class="font-medium text-slate-900 dark:text-white">{{ category.name }}</span>
         </div>
-        <p class="text-sm text-slate-500 dark:text-slate-400">{{ category.count }} 篇文档</p>
+        <p class="text-sm text-slate-500 dark:text-slate-400">
+          {{ category.count }} 篇文档
+        </p>
       </div>
     </div>
 
     <!-- Recent Documents -->
     <div>
-      <h2 class="text-lg font-semibold text-slate-900 dark:text-white mb-4">最近浏览</h2>
+      <h2 class="text-lg font-semibold text-slate-900 dark:text-white mb-4">
+        最近浏览
+      </h2>
       <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800">
         <div
           v-for="(doc, index) in recentDocs"
           :key="doc.id"
-          :class="[
-            'flex items-center justify-between p-4 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors',
-            index !== recentDocs.length - 1 && 'border-b border-slate-100 dark:border-slate-800'
+          class="flex items-center justify-between p-4 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors" :class="[
+            index !== recentDocs.length - 1 && 'border-b border-slate-100 dark:border-slate-800',
           ]"
         >
           <div class="flex items-center gap-3">
             <UIcon name="i-lucide-file-text" class="w-5 h-5 text-slate-400" />
             <div>
-              <h4 class="font-medium text-slate-900 dark:text-white">{{ doc.title }}</h4>
-              <p class="text-sm text-slate-500 dark:text-slate-400">{{ doc.category }}</p>
+              <h4 class="font-medium text-slate-900 dark:text-white">
+                {{ doc.title }}
+              </h4>
+              <p class="text-sm text-slate-500 dark:text-slate-400">
+                {{ doc.category }}
+              </p>
             </div>
           </div>
           <span class="text-xs text-slate-400">{{ doc.time }}</span>
@@ -70,25 +103,3 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-definePageMeta({
-  layout: 'platform',
-  middleware: 'auth',
-});
-
-const searchQuery = ref('');
-
-const categories = [
-  { name: '组件库', icon: 'i-lucide-component', count: 56, bgClass: 'bg-blue-500' },
-  { name: '接口文档', icon: 'i-lucide-plug', count: 128, bgClass: 'bg-green-500' },
-  { name: '开发规范', icon: 'i-lucide-book', count: 24, bgClass: 'bg-purple-500' },
-  { name: '业务文档', icon: 'i-lucide-briefcase', count: 89, bgClass: 'bg-orange-500' },
-];
-
-const recentDocs = [
-  { id: 1, title: 'Table 组件使用文档', category: '组件库', time: '10 分钟前' },
-  { id: 2, title: '用户管理接口', category: '接口文档', time: '1 小时前' },
-  { id: 3, title: 'ESLint 配置规范', category: '开发规范', time: '2 小时前' },
-];
-</script>

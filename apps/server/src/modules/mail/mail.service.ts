@@ -1,12 +1,12 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import * as nodemailer from 'nodemailer';
-import { Transporter } from 'nodemailer';
+import type { ConfigService } from '@nestjs/config'
+import type { Transporter } from 'nodemailer'
+import { Injectable, Logger } from '@nestjs/common'
+import * as nodemailer from 'nodemailer'
 
 @Injectable()
 export class MailService {
-  private readonly logger = new Logger(MailService.name);
-  private transporter: Transporter;
+  private readonly logger = new Logger(MailService.name)
+  private transporter: Transporter
 
   constructor(private configService: ConfigService) {
     this.transporter = nodemailer.createTransport({
@@ -17,7 +17,7 @@ export class MailService {
         user: this.configService.get('mail.user'),
         pass: this.configService.get('mail.password'),
       },
-    });
+    })
   }
 
   async sendMail(to: string, subject: string, html: string): Promise<void> {
@@ -27,11 +27,12 @@ export class MailService {
         to,
         subject,
         html,
-      });
-      this.logger.log(`Email sent to ${to}`);
-    } catch (error) {
-      this.logger.error(`Failed to send email to ${to}`, error);
-      throw error;
+      })
+      this.logger.log(`Email sent to ${to}`)
+    }
+    catch (error) {
+      this.logger.error(`Failed to send email to ${to}`, error)
+      throw error
     }
   }
 
@@ -40,8 +41,8 @@ export class MailService {
     name: string,
     token: string,
   ): Promise<void> {
-    const frontendUrl = this.configService.get('frontendUrl');
-    const verificationUrl = `${frontendUrl}/auth/verify-email?token=${token}`;
+    const frontendUrl = this.configService.get('frontendUrl')
+    const verificationUrl = `${frontendUrl}/auth/verify-email?token=${token}`
 
     const html = `
       <!DOCTYPE html>
@@ -68,9 +69,9 @@ export class MailService {
         </div>
       </body>
       </html>
-    `;
+    `
 
-    await this.sendMail(to, '验证您的 Zeta 账号邮箱', html);
+    await this.sendMail(to, '验证您的 Zeta 账号邮箱', html)
   }
 
   async sendPasswordResetEmail(
@@ -78,8 +79,8 @@ export class MailService {
     name: string,
     token: string,
   ): Promise<void> {
-    const frontendUrl = this.configService.get('frontendUrl');
-    const resetUrl = `${frontendUrl}/auth/reset-password?token=${token}`;
+    const frontendUrl = this.configService.get('frontendUrl')
+    const resetUrl = `${frontendUrl}/auth/reset-password?token=${token}`
 
     const html = `
       <!DOCTYPE html>
@@ -106,8 +107,8 @@ export class MailService {
         </div>
       </body>
       </html>
-    `;
+    `
 
-    await this.sendMail(to, '重置您的 Zeta 账号密码', html);
+    await this.sendMail(to, '重置您的 Zeta 账号密码', html)
   }
 }

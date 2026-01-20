@@ -1,9 +1,20 @@
+<script setup lang="ts">
+definePageMeta({
+  layout: 'platform',
+  middleware: 'auth',
+})
+</script>
+
 <template>
   <div class="p-6">
     <!-- Page Header -->
     <div class="mb-8">
-      <h1 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">测试与优化助手</h1>
-      <p class="text-slate-500 dark:text-slate-400">测试用例生成、性能优化建议、兼容性检查</p>
+      <h1 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">
+        测试与优化助手
+      </h1>
+      <p class="text-slate-500 dark:text-slate-400">
+        测试用例生成、性能优化建议、兼容性检查
+      </p>
     </div>
 
     <!-- Stats -->
@@ -11,30 +22,46 @@
       <div class="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800">
         <div class="flex items-center justify-between mb-2">
           <span class="text-sm text-slate-500 dark:text-slate-400">测试覆盖率</span>
-          <UBadge color="success" variant="soft">+5%</UBadge>
+          <UBadge color="success" variant="soft">
+            +5%
+          </UBadge>
         </div>
-        <div class="text-2xl font-bold text-slate-900 dark:text-white">78.5%</div>
+        <div class="text-2xl font-bold text-slate-900 dark:text-white">
+          78.5%
+        </div>
       </div>
       <div class="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800">
         <div class="flex items-center justify-between mb-2">
           <span class="text-sm text-slate-500 dark:text-slate-400">测试用例</span>
-          <UBadge color="primary" variant="soft">+12</UBadge>
+          <UBadge color="primary" variant="soft">
+            +12
+          </UBadge>
         </div>
-        <div class="text-2xl font-bold text-slate-900 dark:text-white">256</div>
+        <div class="text-2xl font-bold text-slate-900 dark:text-white">
+          256
+        </div>
       </div>
       <div class="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800">
         <div class="flex items-center justify-between mb-2">
           <span class="text-sm text-slate-500 dark:text-slate-400">性能得分</span>
-          <UBadge color="warning" variant="soft">待优化</UBadge>
+          <UBadge color="warning" variant="soft">
+            待优化
+          </UBadge>
         </div>
-        <div class="text-2xl font-bold text-slate-900 dark:text-white">85</div>
+        <div class="text-2xl font-bold text-slate-900 dark:text-white">
+          85
+        </div>
       </div>
       <div class="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800">
         <div class="flex items-center justify-between mb-2">
           <span class="text-sm text-slate-500 dark:text-slate-400">问题数量</span>
-          <UBadge color="error" variant="soft">3 个</UBadge>
+          <UBadge color="error" variant="soft">
+            3 个
+          </UBadge>
         </div>
-        <div class="text-2xl font-bold text-slate-900 dark:text-white">12</div>
+        <div class="text-2xl font-bold text-slate-900 dark:text-white">
+          12
+        </div>
       </div>
     </div>
 
@@ -47,8 +74,12 @@
             <UIcon name="i-lucide-test-tube" class="w-5 h-5 text-white" />
           </div>
           <div>
-            <h3 class="font-medium text-slate-900 dark:text-white">测试用例生成</h3>
-            <p class="text-sm text-slate-500 dark:text-slate-400">AI 智能生成单元测试</p>
+            <h3 class="font-medium text-slate-900 dark:text-white">
+              测试用例生成
+            </h3>
+            <p class="text-sm text-slate-500 dark:text-slate-400">
+              AI 智能生成单元测试
+            </p>
           </div>
         </div>
         <UTextarea
@@ -69,8 +100,12 @@
             <UIcon name="i-lucide-scan" class="w-5 h-5 text-white" />
           </div>
           <div>
-            <h3 class="font-medium text-slate-900 dark:text-white">代码评审</h3>
-            <p class="text-sm text-slate-500 dark:text-slate-400">检查代码质量和潜在问题</p>
+            <h3 class="font-medium text-slate-900 dark:text-white">
+              代码评审
+            </h3>
+            <p class="text-sm text-slate-500 dark:text-slate-400">
+              检查代码质量和潜在问题
+            </p>
           </div>
         </div>
         <UTextarea
@@ -88,58 +123,69 @@
     <!-- Performance & Compatibility -->
     <div class="grid md:grid-cols-2 gap-6">
       <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6">
-        <h3 class="font-semibold text-slate-900 dark:text-white mb-4">性能优化建议</h3>
+        <h3 class="font-semibold text-slate-900 dark:text-white mb-4">
+          性能优化建议
+        </h3>
         <div class="space-y-3">
           <div class="flex items-start gap-3 p-3 bg-yellow-50 dark:bg-yellow-950/30 rounded-lg">
             <UIcon name="i-lucide-alert-triangle" class="w-5 h-5 text-yellow-500 mt-0.5" />
             <div>
-              <p class="text-sm font-medium text-slate-900 dark:text-white">Bundle 体积过大</p>
-              <p class="text-xs text-slate-500 dark:text-slate-400">lodash 建议按需引入</p>
+              <p class="text-sm font-medium text-slate-900 dark:text-white">
+                Bundle 体积过大
+              </p>
+              <p class="text-xs text-slate-500 dark:text-slate-400">
+                lodash 建议按需引入
+              </p>
             </div>
           </div>
           <div class="flex items-start gap-3 p-3 bg-blue-50 dark:bg-blue-950/30 rounded-lg">
             <UIcon name="i-lucide-info" class="w-5 h-5 text-blue-500 mt-0.5" />
             <div>
-              <p class="text-sm font-medium text-slate-900 dark:text-white">可开启 Tree Shaking</p>
-              <p class="text-xs text-slate-500 dark:text-slate-400">预计减少 15% 体积</p>
+              <p class="text-sm font-medium text-slate-900 dark:text-white">
+                可开启 Tree Shaking
+              </p>
+              <p class="text-xs text-slate-500 dark:text-slate-400">
+                预计减少 15% 体积
+              </p>
             </div>
           </div>
         </div>
       </div>
 
       <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6">
-        <h3 class="font-semibold text-slate-900 dark:text-white mb-4">兼容性检查</h3>
+        <h3 class="font-semibold text-slate-900 dark:text-white mb-4">
+          兼容性检查
+        </h3>
         <div class="space-y-3">
           <div class="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
             <div class="flex items-center gap-2">
               <UIcon name="i-simple-icons-googlechrome" class="w-5 h-5 text-slate-600" />
               <span class="text-sm text-slate-700 dark:text-slate-300">Chrome 90+</span>
             </div>
-            <UBadge color="success" variant="soft">兼容</UBadge>
+            <UBadge color="success" variant="soft">
+              兼容
+            </UBadge>
           </div>
           <div class="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
             <div class="flex items-center gap-2">
               <UIcon name="i-simple-icons-firefox" class="w-5 h-5 text-slate-600" />
               <span class="text-sm text-slate-700 dark:text-slate-300">Firefox 85+</span>
             </div>
-            <UBadge color="success" variant="soft">兼容</UBadge>
+            <UBadge color="success" variant="soft">
+              兼容
+            </UBadge>
           </div>
           <div class="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
             <div class="flex items-center gap-2">
               <UIcon name="i-simple-icons-safari" class="w-5 h-5 text-slate-600" />
               <span class="text-sm text-slate-700 dark:text-slate-300">Safari 14+</span>
             </div>
-            <UBadge color="warning" variant="soft">部分兼容</UBadge>
+            <UBadge color="warning" variant="soft">
+              部分兼容
+            </UBadge>
           </div>
         </div>
       </div>
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-definePageMeta({
-  layout: 'platform',
-  middleware: 'auth',
-});
-</script>

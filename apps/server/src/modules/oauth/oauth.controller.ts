@@ -1,16 +1,16 @@
+import type { ConfigService } from '@nestjs/config'
+import type { Request, Response } from 'express'
+import type { OAuthService } from './oauth.service'
 import {
   Controller,
   Get,
-  Query,
-  Res,
-  Req,
   Headers,
-} from '@nestjs/common';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
-import { Response, Request } from 'express';
-import { ConfigService } from '@nestjs/config';
-import { OAuthService } from './oauth.service';
-import { Public } from '@/common/decorators';
+  Query,
+  Req,
+  Res,
+} from '@nestjs/common'
+import { ApiOperation, ApiTags } from '@nestjs/swagger'
+import { Public } from '@/common/decorators'
 
 @ApiTags('OAuth')
 @Controller('oauth')
@@ -26,9 +26,9 @@ export class OAuthController {
   @Get('github')
   @ApiOperation({ summary: '跳转到 GitHub 授权' })
   githubAuth(@Res() res: Response) {
-    const state = this.oauthService.generateState();
-    const authUrl = this.oauthService.getGitHubAuthUrl(state);
-    res.redirect(authUrl);
+    const state = this.oauthService.generateState()
+    const authUrl = this.oauthService.getGitHubAuthUrl(state)
+    res.redirect(authUrl)
   }
 
   @Public()
@@ -42,26 +42,27 @@ export class OAuthController {
     @Req() req: Request,
     @Res() res: Response,
   ) {
-    const frontendUrl = this.configService.get('frontendUrl');
+    const frontendUrl = this.configService.get('frontendUrl')
 
     if (error) {
-      return res.redirect(`${frontendUrl}/auth/callback/github?error=${encodeURIComponent(error)}`);
+      return res.redirect(`${frontendUrl}/auth/callback/github?error=${encodeURIComponent(error)}`)
     }
 
     try {
-      const ipAddress = req.ip || req.socket.remoteAddress;
-      const result = await this.oauthService.handleGitHubCallback(code, userAgent, ipAddress);
+      const ipAddress = req.ip || req.socket.remoteAddress
+      const result = await this.oauthService.handleGitHubCallback(code, userAgent, ipAddress)
 
       // Redirect to frontend with tokens in query params (will be stored in cookies by frontend)
       const params = new URLSearchParams({
         accessToken: result.accessToken,
         refreshToken: result.refreshToken,
-      });
+      })
 
-      return res.redirect(`${frontendUrl}/auth/callback/github?${params.toString()}`);
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Unknown error';
-      return res.redirect(`${frontendUrl}/auth/callback/github?error=${encodeURIComponent(message)}`);
+      return res.redirect(`${frontendUrl}/auth/callback/github?${params.toString()}`)
+    }
+    catch (err) {
+      const message = err instanceof Error ? err.message : 'Unknown error'
+      return res.redirect(`${frontendUrl}/auth/callback/github?error=${encodeURIComponent(message)}`)
     }
   }
 
@@ -71,9 +72,9 @@ export class OAuthController {
   @Get('dingtalk')
   @ApiOperation({ summary: '跳转到钉钉授权' })
   dingtalkAuth(@Res() res: Response) {
-    const state = this.oauthService.generateState();
-    const authUrl = this.oauthService.getDingTalkAuthUrl(state);
-    res.redirect(authUrl);
+    const state = this.oauthService.generateState()
+    const authUrl = this.oauthService.getDingTalkAuthUrl(state)
+    res.redirect(authUrl)
   }
 
   @Public()
@@ -87,25 +88,26 @@ export class OAuthController {
     @Req() req: Request,
     @Res() res: Response,
   ) {
-    const frontendUrl = this.configService.get('frontendUrl');
+    const frontendUrl = this.configService.get('frontendUrl')
 
     if (error) {
-      return res.redirect(`${frontendUrl}/auth/callback/dingtalk?error=${encodeURIComponent(error)}`);
+      return res.redirect(`${frontendUrl}/auth/callback/dingtalk?error=${encodeURIComponent(error)}`)
     }
 
     try {
-      const ipAddress = req.ip || req.socket.remoteAddress;
-      const result = await this.oauthService.handleDingTalkCallback(authCode, userAgent, ipAddress);
+      const ipAddress = req.ip || req.socket.remoteAddress
+      const result = await this.oauthService.handleDingTalkCallback(authCode, userAgent, ipAddress)
 
       const params = new URLSearchParams({
         accessToken: result.accessToken,
         refreshToken: result.refreshToken,
-      });
+      })
 
-      return res.redirect(`${frontendUrl}/auth/callback/dingtalk?${params.toString()}`);
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Unknown error';
-      return res.redirect(`${frontendUrl}/auth/callback/dingtalk?error=${encodeURIComponent(message)}`);
+      return res.redirect(`${frontendUrl}/auth/callback/dingtalk?${params.toString()}`)
+    }
+    catch (err) {
+      const message = err instanceof Error ? err.message : 'Unknown error'
+      return res.redirect(`${frontendUrl}/auth/callback/dingtalk?error=${encodeURIComponent(message)}`)
     }
   }
 }

@@ -1,43 +1,47 @@
-import {
-  ExceptionFilter,
-  Catch,
+import type {
   ArgumentsHost,
+  ExceptionFilter,
+} from '@nestjs/common'
+import type { Request, Response } from 'express'
+import {
+  Catch,
   HttpException,
   HttpStatus,
   Logger,
-} from '@nestjs/common';
-import { Request, Response } from 'express';
+} from '@nestjs/common'
 
 @Catch()
 export class HttpExceptionFilter implements ExceptionFilter {
-  private readonly logger = new Logger(HttpExceptionFilter.name);
+  private readonly logger = new Logger(HttpExceptionFilter.name)
 
   catch(exception: unknown, host: ArgumentsHost) {
-    const ctx = host.switchToHttp();
-    const response = ctx.getResponse<Response>();
-    const request = ctx.getRequest<Request>();
+    const ctx = host.switchToHttp()
+    const response = ctx.getResponse<Response>()
+    const request = ctx.getRequest<Request>()
 
-    let status = HttpStatus.INTERNAL_SERVER_ERROR;
-    let message = 'Internal server error';
-    let error = 'Internal Server Error';
+    let status = HttpStatus.INTERNAL_SERVER_ERROR
+    let message = 'Internal server error'
+    let error = 'Internal Server Error'
 
     if (exception instanceof HttpException) {
-      status = exception.getStatus();
-      const exceptionResponse = exception.getResponse();
+      status = exception.getStatus()
+      const exceptionResponse = exception.getResponse()
 
       if (typeof exceptionResponse === 'string') {
-        message = exceptionResponse;
-      } else if (typeof exceptionResponse === 'object') {
-        const responseObj = exceptionResponse as Record<string, unknown>;
-        message = (responseObj.message as string) || message;
-        error = (responseObj.error as string) || error;
+        message = exceptionResponse
       }
-    } else if (exception instanceof Error) {
-      message = exception.message;
+      else if (typeof exceptionResponse === 'object') {
+        const responseObj = exceptionResponse as Record<string, unknown>
+        message = (responseObj.message as string) || message
+        error = (responseObj.error as string) || error
+      }
+    }
+    else if (exception instanceof Error) {
+      message = exception.message
       this.logger.error(
         `Unhandled exception: ${exception.message}`,
         exception.stack,
-      );
+      )
     }
 
     const errorResponse = {
@@ -46,8 +50,8 @@ export class HttpExceptionFilter implements ExceptionFilter {
       error,
       timestamp: new Date().toISOString(),
       path: request.url,
-    };
+    }
 
-    response.status(status).json(errorResponse);
+    response.status(status).json(errorResponse)
   }
 }

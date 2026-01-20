@@ -1,3 +1,287 @@
+<script setup lang="ts">
+import { useDebounceFn } from '@vueuse/core'
+import { z } from 'zod'
+
+definePageMeta({
+  layout: 'dashboard',
+  middleware: 'admin',
+})
+
+const api = useApi()
+const toast = useToast()
+
+// State
+const loading = ref(true)
+const users = ref<any[]>([])
+const meta = ref({ total: 0, page: 1, limit: 20, totalPages: 0 })
+const page = ref(1)
+const pageSize = ref(20)
+const search = ref('')
+
+const showModal = ref(false)
+const showRolesModal = ref(false)
+const editingUser = ref<any>(null)
+const submitting = ref(false)
+
+const allRoles = ref<any[]>([])
+const selectedRoles = ref<string[]>([])
+
+// Constants
+const pageSizeOptions = [10, 20, 50, 100]
+
+const statusLabels: Record<string, string> = {
+  ACTIVE: '启用',
+  INACTIVE: '未激活',
+  SUSPENDED: '已禁用',
+}
+
+// Computed
+const startIndex = computed(() => {
+  if (meta.value.total === 0)
+    return 0
+  return (page.value - 1) * pageSize.value + 1
+})
+
+const endIndex = computed(() => {
+  return Math.min(page.value * pageSize.value, meta.value.total)
+})
+
+// Form
+const formSchema = computed(() => {
+  const base = {
+    name: z.string().min(1, '请输入姓名'),
+    email: z.string().email('请输入有效的邮箱'),
+  }
+
+  if (!editingUser.value) {
+    return z.object({
+      ...base,
+      password: z.string().min(8, '密码至少8个字符'),
+    })
+  }
+
+  return z.object(base)
+})
+
+const form = reactive({
+  name: '',
+  email: '',
+  password: '',
+})
+
+// Helper functions
+function getAvatarColor(email: string) {
+  const colors = [
+    '#6366f1',
+    '#8b5cf6',
+    '#d946ef',
+    '#ec4899',
+    '#f43f5e',
+    '#ef4444',
+    '#f97316',
+    '#eab308',
+    '#84cc16',
+    '#22c55e',
+    '#14b8a6',
+    '#06b6d4',
+    '#0ea5e9',
+    '#3b82f6',
+  ]
+  const hash = email.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)
+  return colors[hash % colors.length]
+}
+
+function getInitial(email: string) {
+  return email.charAt(0).toUpperCase()
+}
+
+function getRoleBadgeColor(roleName: string) {
+  if (roleName === 'SUPER_ADMIN' || roleName === 'ADMIN')
+    return 'primary'
+  return 'info'
+}
+
+function getStatusDotClass(status: string) {
+  switch (status) {
+    case 'ACTIVE': return 'active'
+    case 'INACTIVE': return 'inactive'
+    case 'SUSPENDED': return 'suspended'
+    default: return 'inactive'
+  }
+}
+
+function formatDate(dateString: string) {
+  if (!dateString)
+    return '-'
+  const date = new Date(dateString)
+  return date.toLocaleString('zh-CN', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+  })
+}
+
+// Methods
+async function fetchUsers() {
+  loading.value = true
+  try {
+    const params = new URLSearchParams({
+      page: page.value.toString(),
+      limit: pageSize.value.toString(),
+    })
+    if (search.value)
+      params.set('search', search.value)
+
+    const data = await api.get<any>(`/users?${params}`)
+    users.value = data.items
+    meta.value = data.meta
+  }
+  catch (error) {
+    console.error('Failed to fetch users', error)
+  }
+  finally {
+    loading.value = false
+  }
+}
+
+async function fetchRoles() {
+  try {
+    allRoles.value = await api.get('/roles')
+  }
+  catch (error) {
+    console.error('Failed to fetch roles', error)
+  }
+}
+
+function refreshData() {
+  fetchUsers()
+}
+
+const debouncedSearch = useDebounceFn(() => {
+  page.value = 1
+  fetchUsers()
+}, 300)
+
+function openCreateModal() {
+  editingUser.value = null
+  form.name = ''
+  form.email = ''
+  form.password = ''
+  showModal.value = true
+}
+
+function openEditModal(user: any) {
+  editingUser.value = user
+  form.name = user.name
+  form.email = user.email
+  form.password = ''
+  showModal.value = true
+}
+
+function openRolesModal(user: any) {
+  editingUser.value = user
+  selectedRoles.value = user.roles?.map((r: any) => r.id) || []
+  showRolesModal.value = true
+}
+
+function toggleRole(roleId: string) {
+  const index = selectedRoles.value.indexOf(roleId)
+  if (index > -1) {
+    selectedRoles.value.splice(index, 1)
+  }
+  else {
+    selectedRoles.value.push(roleId)
+  }
+}
+
+async function onSubmit() {
+  submitting.value = true
+  try {
+    if (editingUser.value) {
+      await api.patch(`/users/${editingUser.value.id}`, { name: form.name })
+    }
+    else {
+      await api.post('/users', form)
+    }
+    toast.add({ title: '保存成功', color: 'success' })
+    showModal.value = false
+    fetchUsers()
+  }
+  catch (error: any) {
+    toast.add({ title: '保存失败', description: error.message, color: 'error' })
+  }
+  finally {
+    submitting.value = false
+  }
+}
+
+async function saveRoles() {
+  submitting.value = true
+  try {
+    await api.patch(`/users/${editingUser.value.id}/roles`, { roleIds: selectedRoles.value })
+    toast.add({ title: '保存成功', color: 'success' })
+    showRolesModal.value = false
+    fetchUsers()
+  }
+  catch (error: any) {
+    toast.add({ title: '保存失败', description: error.message, color: 'error' })
+  }
+  finally {
+    submitting.value = false
+  }
+}
+
+async function toggleUserStatus(user: any) {
+  const newStatus = user.status === 'ACTIVE' ? 'SUSPENDED' : 'ACTIVE'
+  try {
+    await api.patch(`/users/${user.id}`, { status: newStatus })
+    toast.add({ title: newStatus === 'ACTIVE' ? '已启用' : '已禁用', color: 'success' })
+    fetchUsers()
+  }
+  catch (error: any) {
+    toast.add({ title: '操作失败', description: error.message, color: 'error' })
+  }
+}
+
+async function deleteUser(user: any) {
+  // eslint-disable-next-line no-alert
+  if (!confirm(`确定要删除用户 "${user.name || user.email}" 吗？`))
+    return
+
+  try {
+    await api.del(`/users/${user.id}`)
+    toast.add({ title: '删除成功', color: 'success' })
+    fetchUsers()
+  }
+  catch (error: any) {
+    toast.add({ title: '删除失败', description: error.message, color: 'error' })
+  }
+}
+
+function getMoreActions(user: any) {
+  return [
+    [
+      { label: '分配角色', icon: 'i-lucide-shield', click: () => openRolesModal(user) },
+    ],
+    [
+      { label: '删除', icon: 'i-lucide-trash', click: () => deleteUser(user) },
+    ],
+  ]
+}
+
+// Watchers
+watch([page, pageSize], () => fetchUsers())
+
+// Init
+onMounted(() => {
+  fetchUsers()
+  fetchRoles()
+})
+</script>
+
 <template>
   <div>
     <!-- Main card container -->
@@ -32,7 +316,7 @@
               <UIcon name="i-lucide-settings" class="w-4 h-4 mr-1" />
               属性配置
             </UButton>
-            <UButton @click="openCreateModal" size="sm">
+            <UButton size="sm" @click="openCreateModal">
               <UIcon name="i-lucide-plus" class="w-4 h-4 mr-1" />
               创建用户
             </UButton>
@@ -87,7 +371,9 @@
                   <UIcon name="i-lucide-chevrons-up-down" class="w-4 h-4" />
                 </div>
               </th>
-              <th class="text-right py-3 px-4 text-sm font-medium text-slate-600 dark:text-slate-300">操作</th>
+              <th class="text-right py-3 px-4 text-sm font-medium text-slate-600 dark:text-slate-300">
+                操作
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -95,7 +381,9 @@
             <tr v-if="loading">
               <td colspan="8" class="py-12 text-center">
                 <UIcon name="i-lucide-loader-2" class="w-6 h-6 animate-spin text-teal-500 mx-auto" />
-                <p class="mt-2 text-sm text-slate-500">加载中...</p>
+                <p class="mt-2 text-sm text-slate-500">
+                  加载中...
+                </p>
               </td>
             </tr>
 
@@ -103,14 +391,16 @@
             <tr v-else-if="users.length === 0">
               <td colspan="8" class="py-12 text-center">
                 <UIcon name="i-lucide-users" class="w-12 h-12 text-slate-300 mx-auto" />
-                <p class="mt-2 text-sm text-slate-500">暂无用户数据</p>
+                <p class="mt-2 text-sm text-slate-500">
+                  暂无用户数据
+                </p>
               </td>
             </tr>
 
             <!-- User rows -->
             <tr
-              v-else
               v-for="user in users"
+              v-else
               :key="user.id"
               class="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
             >
@@ -147,7 +437,9 @@
                 >
                   {{ user.roles[0]?.displayName || '用户' }}
                 </UBadge>
-                <UBadge v-else color="neutral" variant="subtle" size="xs">用户</UBadge>
+                <UBadge v-else color="neutral" variant="subtle" size="xs">
+                  用户
+                </UBadge>
               </td>
 
               <!-- Balance -->
@@ -158,7 +450,7 @@
               <!-- Status -->
               <td class="py-3 px-4">
                 <div class="flex items-center">
-                  <span :class="['status-dot', getStatusDotClass(user.status)]"></span>
+                  <span class="status-dot" :class="[getStatusDotClass(user.status)]" />
                   <span class="text-sm text-slate-600 dark:text-slate-300">{{ statusLabels[user.status] }}</span>
                 </div>
               </td>
@@ -238,7 +530,7 @@
             </div>
           </template>
 
-          <UForm :state="form" :schema="formSchema" @submit="onSubmit" class="space-y-4">
+          <UForm :state="form" :schema="formSchema" class="space-y-4" @submit="onSubmit">
             <UFormField name="name" label="姓名">
               <UInput v-model="form.name" placeholder="请输入姓名" />
             </UFormField>
@@ -252,7 +544,9 @@
             </UFormField>
 
             <div class="flex gap-2 justify-end pt-4 border-t border-slate-200 dark:border-slate-700">
-              <UButton variant="outline" color="neutral" @click="showModal = false">取消</UButton>
+              <UButton variant="outline" color="neutral" @click="showModal = false">
+                取消
+              </UButton>
               <UButton type="submit" :loading="submitting">
                 {{ editingUser ? '保存' : '创建' }}
               </UButton>
@@ -268,7 +562,9 @@
         <UCard>
           <template #header>
             <div class="flex items-center justify-between">
-              <h3 class="font-semibold text-slate-800 dark:text-white">分配角色 - {{ editingUser?.name }}</h3>
+              <h3 class="font-semibold text-slate-800 dark:text-white">
+                分配角色 - {{ editingUser?.name }}
+              </h3>
               <UButton variant="ghost" color="neutral" size="xs" @click="showRolesModal = false">
                 <UIcon name="i-lucide-x" class="w-4 h-4" />
               </UButton>
@@ -287,272 +583,26 @@
                 @update:model-value="toggleRole(role.id)"
               />
               <div class="flex-1">
-                <p class="font-medium text-slate-800 dark:text-white">{{ role.displayName }}</p>
-                <p class="text-sm text-slate-500">{{ role.description }}</p>
+                <p class="font-medium text-slate-800 dark:text-white">
+                  {{ role.displayName }}
+                </p>
+                <p class="text-sm text-slate-500">
+                  {{ role.description }}
+                </p>
               </div>
             </div>
           </div>
 
           <div class="flex gap-2 justify-end mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
-            <UButton variant="outline" color="neutral" @click="showRolesModal = false">取消</UButton>
-            <UButton @click="saveRoles" :loading="submitting">保存</UButton>
+            <UButton variant="outline" color="neutral" @click="showRolesModal = false">
+              取消
+            </UButton>
+            <UButton :loading="submitting" @click="saveRoles">
+              保存
+            </UButton>
           </div>
         </UCard>
       </template>
     </UModal>
   </div>
 </template>
-
-<script setup lang="ts">
-import { z } from 'zod';
-import { useDebounceFn } from '@vueuse/core';
-
-definePageMeta({
-  layout: 'dashboard',
-  middleware: 'admin',
-});
-
-const api = useApi();
-const toast = useToast();
-
-// State
-const loading = ref(true);
-const users = ref<any[]>([]);
-const meta = ref({ total: 0, page: 1, limit: 20, totalPages: 0 });
-const page = ref(1);
-const pageSize = ref(20);
-const search = ref('');
-
-const showModal = ref(false);
-const showRolesModal = ref(false);
-const editingUser = ref<any>(null);
-const submitting = ref(false);
-
-const allRoles = ref<any[]>([]);
-const selectedRoles = ref<string[]>([]);
-
-// Constants
-const pageSizeOptions = [10, 20, 50, 100];
-
-const statusLabels: Record<string, string> = {
-  ACTIVE: '启用',
-  INACTIVE: '未激活',
-  SUSPENDED: '已禁用',
-};
-
-// Computed
-const startIndex = computed(() => {
-  if (meta.value.total === 0) return 0;
-  return (page.value - 1) * pageSize.value + 1;
-});
-
-const endIndex = computed(() => {
-  return Math.min(page.value * pageSize.value, meta.value.total);
-});
-
-// Form
-const formSchema = computed(() => {
-  const base = {
-    name: z.string().min(1, '请输入姓名'),
-    email: z.string().email('请输入有效的邮箱'),
-  };
-
-  if (!editingUser.value) {
-    return z.object({
-      ...base,
-      password: z.string().min(8, '密码至少8个字符'),
-    });
-  }
-
-  return z.object(base);
-});
-
-const form = reactive({
-  name: '',
-  email: '',
-  password: '',
-});
-
-// Helper functions
-const getAvatarColor = (email: string) => {
-  const colors = [
-    '#6366f1', '#8b5cf6', '#d946ef', '#ec4899', '#f43f5e',
-    '#ef4444', '#f97316', '#eab308', '#84cc16', '#22c55e',
-    '#14b8a6', '#06b6d4', '#0ea5e9', '#3b82f6',
-  ];
-  const hash = email.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-  return colors[hash % colors.length];
-};
-
-const getInitial = (email: string) => {
-  return email.charAt(0).toUpperCase();
-};
-
-const getRoleBadgeColor = (roleName: string) => {
-  if (roleName === 'SUPER_ADMIN' || roleName === 'ADMIN') return 'primary';
-  return 'info';
-};
-
-const getStatusDotClass = (status: string) => {
-  switch (status) {
-    case 'ACTIVE': return 'active';
-    case 'INACTIVE': return 'inactive';
-    case 'SUSPENDED': return 'suspended';
-    default: return 'inactive';
-  }
-};
-
-const formatDate = (dateString: string) => {
-  if (!dateString) return '-';
-  const date = new Date(dateString);
-  return date.toLocaleString('zh-CN', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-  });
-};
-
-// Methods
-const fetchUsers = async () => {
-  loading.value = true;
-  try {
-    const params = new URLSearchParams({
-      page: page.value.toString(),
-      limit: pageSize.value.toString(),
-    });
-    if (search.value) params.set('search', search.value);
-
-    const data = await api.get<any>(`/users?${params}`);
-    users.value = data.items;
-    meta.value = data.meta;
-  } catch (error) {
-    console.error('Failed to fetch users', error);
-  } finally {
-    loading.value = false;
-  }
-};
-
-const fetchRoles = async () => {
-  try {
-    allRoles.value = await api.get('/roles');
-  } catch (error) {
-    console.error('Failed to fetch roles', error);
-  }
-};
-
-const refreshData = () => {
-  fetchUsers();
-};
-
-const debouncedSearch = useDebounceFn(() => {
-  page.value = 1;
-  fetchUsers();
-}, 300);
-
-const openCreateModal = () => {
-  editingUser.value = null;
-  form.name = '';
-  form.email = '';
-  form.password = '';
-  showModal.value = true;
-};
-
-const openEditModal = (user: any) => {
-  editingUser.value = user;
-  form.name = user.name;
-  form.email = user.email;
-  form.password = '';
-  showModal.value = true;
-};
-
-const openRolesModal = (user: any) => {
-  editingUser.value = user;
-  selectedRoles.value = user.roles?.map((r: any) => r.id) || [];
-  showRolesModal.value = true;
-};
-
-const toggleRole = (roleId: string) => {
-  const index = selectedRoles.value.indexOf(roleId);
-  if (index > -1) {
-    selectedRoles.value.splice(index, 1);
-  } else {
-    selectedRoles.value.push(roleId);
-  }
-};
-
-const onSubmit = async () => {
-  submitting.value = true;
-  try {
-    if (editingUser.value) {
-      await api.patch(`/users/${editingUser.value.id}`, { name: form.name });
-    } else {
-      await api.post('/users', form);
-    }
-    toast.add({ title: '保存成功', color: 'success' });
-    showModal.value = false;
-    fetchUsers();
-  } catch (error: any) {
-    toast.add({ title: '保存失败', description: error.message, color: 'error' });
-  } finally {
-    submitting.value = false;
-  }
-};
-
-const saveRoles = async () => {
-  submitting.value = true;
-  try {
-    await api.patch(`/users/${editingUser.value.id}/roles`, { roleIds: selectedRoles.value });
-    toast.add({ title: '保存成功', color: 'success' });
-    showRolesModal.value = false;
-    fetchUsers();
-  } catch (error: any) {
-    toast.add({ title: '保存失败', description: error.message, color: 'error' });
-  } finally {
-    submitting.value = false;
-  }
-};
-
-const toggleUserStatus = async (user: any) => {
-  const newStatus = user.status === 'ACTIVE' ? 'SUSPENDED' : 'ACTIVE';
-  try {
-    await api.patch(`/users/${user.id}`, { status: newStatus });
-    toast.add({ title: newStatus === 'ACTIVE' ? '已启用' : '已禁用', color: 'success' });
-    fetchUsers();
-  } catch (error: any) {
-    toast.add({ title: '操作失败', description: error.message, color: 'error' });
-  }
-};
-
-const deleteUser = async (user: any) => {
-  if (!confirm(`确定要删除用户 "${user.name || user.email}" 吗？`)) return;
-
-  try {
-    await api.del(`/users/${user.id}`);
-    toast.add({ title: '删除成功', color: 'success' });
-    fetchUsers();
-  } catch (error: any) {
-    toast.add({ title: '删除失败', description: error.message, color: 'error' });
-  }
-};
-
-const getMoreActions = (user: any) => [
-  [
-    { label: '分配角色', icon: 'i-lucide-shield', click: () => openRolesModal(user) },
-  ],
-  [
-    { label: '删除', icon: 'i-lucide-trash', click: () => deleteUser(user) },
-  ],
-];
-
-// Watchers
-watch([page, pageSize], () => fetchUsers());
-
-// Init
-onMounted(() => {
-  fetchUsers();
-  fetchRoles();
-});
-</script>

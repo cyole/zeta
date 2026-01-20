@@ -1,15 +1,15 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { PassportStrategy } from '@nestjs/passport';
-import { ExtractJwt, Strategy } from 'passport-jwt';
-import { ConfigService } from '@nestjs/config';
-import { PrismaService } from '@/modules/prisma/prisma.service';
-import { RedisService } from '@/modules/redis/redis.service';
+import type { ConfigService } from '@nestjs/config'
+import type { PrismaService } from '@/modules/prisma/prisma.service'
+import type { RedisService } from '@/modules/redis/redis.service'
+import { Injectable, UnauthorizedException } from '@nestjs/common'
+import { PassportStrategy } from '@nestjs/passport'
+import { ExtractJwt, Strategy } from 'passport-jwt'
 
 export interface JwtPayload {
-  sub: string;
-  email: string;
-  iat?: number;
-  exp?: number;
+  sub: string
+  email: string
+  iat?: number
+  exp?: number
 }
 
 @Injectable()
@@ -24,16 +24,16 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
       ignoreExpiration: false,
       secretOrKey: configService.get<string>('jwt.secret') || 'fallback-secret',
       passReqToCallback: true,
-    } as any);
+    } as any)
   }
 
   async validate(req: Request, payload: JwtPayload) {
     // Get token from header
-    const token = ExtractJwt.fromAuthHeaderAsBearerToken()(req as any);
+    const token = ExtractJwt.fromAuthHeaderAsBearerToken()(req as any)
 
     // Check if token is blacklisted
     if (token && (await this.redis.isTokenBlacklisted(token))) {
-      throw new UnauthorizedException('Token has been revoked');
+      throw new UnauthorizedException('Token has been revoked')
     }
 
     // Get user with roles and permissions
@@ -54,27 +54,27 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
           },
         },
       },
-    });
+    })
 
     if (!user) {
-      throw new UnauthorizedException('User not found');
+      throw new UnauthorizedException('User not found')
     }
 
     if (user.status !== 'ACTIVE') {
-      throw new UnauthorizedException('User account is not active');
+      throw new UnauthorizedException('User account is not active')
     }
 
     // Transform roles and permissions
-    const roles = user.roles.map((ur) => ({
+    const roles = user.roles.map(ur => ({
       id: ur.role.id,
       name: ur.role.name,
       displayName: ur.role.displayName,
-      permissions: ur.role.permissions.map((rp) => ({
+      permissions: ur.role.permissions.map(rp => ({
         id: rp.permission.id,
         name: rp.permission.name,
         displayName: rp.permission.displayName,
       })),
-    }));
+    }))
 
     return {
       id: user.id,
@@ -84,6 +84,6 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
       status: user.status,
       emailVerified: user.emailVerified,
       roles,
-    };
+    }
   }
 }

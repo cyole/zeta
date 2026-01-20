@@ -1,14 +1,14 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { PassportStrategy } from '@nestjs/passport';
-import { ExtractJwt, Strategy } from 'passport-jwt';
-import { ConfigService } from '@nestjs/config';
-import { PrismaService } from '@/modules/prisma/prisma.service';
+import type { ConfigService } from '@nestjs/config'
+import type { PrismaService } from '@/modules/prisma/prisma.service'
+import { Injectable, UnauthorizedException } from '@nestjs/common'
+import { PassportStrategy } from '@nestjs/passport'
+import { ExtractJwt, Strategy } from 'passport-jwt'
 
 export interface JwtRefreshPayload {
-  sub: string;
-  tokenId: string;
-  iat?: number;
-  exp?: number;
+  sub: string
+  tokenId: string
+  iat?: number
+  exp?: number
 }
 
 @Injectable()
@@ -24,7 +24,7 @@ export class JwtRefreshStrategy extends PassportStrategy(
       jwtFromRequest: ExtractJwt.fromBodyField('refreshToken'),
       ignoreExpiration: false,
       secretOrKey: configService.get<string>('jwt.refreshSecret') || 'fallback-refresh-secret',
-    });
+    })
   }
 
   async validate(payload: JwtRefreshPayload) {
@@ -32,28 +32,28 @@ export class JwtRefreshStrategy extends PassportStrategy(
     const refreshToken = await this.prisma.refreshToken.findUnique({
       where: { id: payload.tokenId },
       include: { user: true },
-    });
+    })
 
     if (!refreshToken) {
-      throw new UnauthorizedException('Invalid refresh token');
+      throw new UnauthorizedException('Invalid refresh token')
     }
 
     if (refreshToken.revoked) {
-      throw new UnauthorizedException('Refresh token has been revoked');
+      throw new UnauthorizedException('Refresh token has been revoked')
     }
 
     if (refreshToken.expiresAt < new Date()) {
-      throw new UnauthorizedException('Refresh token has expired');
+      throw new UnauthorizedException('Refresh token has expired')
     }
 
     if (refreshToken.user.status !== 'ACTIVE') {
-      throw new UnauthorizedException('User account is not active');
+      throw new UnauthorizedException('User account is not active')
     }
 
     return {
       id: refreshToken.user.id,
       email: refreshToken.user.email,
       tokenId: payload.tokenId,
-    };
+    }
   }
 }

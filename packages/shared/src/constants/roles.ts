@@ -5,9 +5,9 @@ export const ROLES = {
   FRONTEND: 'FRONTEND',
   BACKEND: 'BACKEND',
   TESTER: 'TESTER',
-} as const;
+} as const
 
-export type RoleName = (typeof ROLES)[keyof typeof ROLES];
+export type RoleName = (typeof ROLES)[keyof typeof ROLES]
 
 // Role display names (Chinese)
 export const ROLE_DISPLAY_NAMES: Record<RoleName, string> = {
@@ -16,7 +16,7 @@ export const ROLE_DISPLAY_NAMES: Record<RoleName, string> = {
   [ROLES.FRONTEND]: '前端开发',
   [ROLES.BACKEND]: '后端开发',
   [ROLES.TESTER]: '测试人员',
-};
+}
 
 // Role descriptions
 export const ROLE_DESCRIPTIONS: Record<RoleName, string> = {
@@ -25,4 +25,4 @@ export const ROLE_DESCRIPTIONS: Record<RoleName, string> = {
   [ROLES.FRONTEND]: '前端开发人员',
   [ROLES.BACKEND]: '后端开发人员',
   [ROLES.TESTER]: '测试人员',
-};
+}

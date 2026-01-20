@@ -5,7 +5,7 @@ services:
     container_name: zeta-postgres
     restart: unless-stopped
     ports:
-      - "5432:5432"
+      - '5432:5432'
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-zeta}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-zeta123}
@@ -13,7 +13,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-zeta}"]
+      test: [CMD-SHELL, 'pg_isready -U ${POSTGRES_USER:-zeta}']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -24,12 +24,12 @@ services:
     container_name: zeta-redis
     restart: unless-stopped
     ports:
-      - "6379:6379"
+      - '6379:6379'
     command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-zeta123}
     volumes:
       - redis_data:/data
     healthcheck:
-      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-zeta123}", "ping"]
+      test: [CMD, redis-cli, -a, '${REDIS_PASSWORD:-zeta123}', ping]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -42,7 +42,7 @@ services:
     container_name: zeta-server
     restart: unless-stopped
     ports:
-      - "3001:3001"
+      - '3001:3001'
     environment:
       NODE_ENV: production
       DATABASE_URL: postgresql://${POSTGRES_USER:-zeta}:${POSTGRES_PASSWORD:-zeta123}@postgres:5432/${POSTGRES_DB:-zeta}
@@ -67,7 +67,7 @@ services:
     container_name: zeta-web
     restart: unless-stopped
     ports:
-      - "3000:80"
+      - '3000:80'
     depends_on:
       - server
     profiles:

@@ -1,7 +1,12 @@
-import { PrismaClient } from '@prisma/client';
-import * as bcrypt from 'bcrypt';
+import { PrismaPg } from '@prisma/adapter-pg'
+import { PrismaClient } from '@prisma/client'
+import * as bcrypt from 'bcrypt'
+import { Pool } from 'pg'
 
-const prisma = new PrismaClient();
+const connectionString = process.env.DATABASE_URL
+const pool = new Pool({ connectionString })
+const adapter = new PrismaPg(pool)
+const prisma = new PrismaClient({ adapter })
 
 // Roles configuration
 const roles = [
@@ -35,7 +40,7 @@ const roles = [
     description: '测试人员',
     isSystem: true,
   },
-];
+]
 
 // Permissions configuration
 const permissions = [
@@ -55,11 +60,11 @@ const permissions = [
 
   // Permission permissions
   { name: 'permission:read', displayName: '查看权限', module: 'permission' },
-];
+]
 
 // Role-Permission mapping
 const rolePermissions: Record<string, string[]> = {
-  SUPER_ADMIN: permissions.map((p) => p.name),
+  SUPER_ADMIN: permissions.map(p => p.name),
   ADMIN: [
     'user:read',
     'user:create',
@@ -76,42 +81,44 @@ const rolePermissions: Record<string, string[]> = {
   FRONTEND: ['user:read', 'role:read', 'permission:read'],
   BACKEND: ['user:read', 'role:read', 'permission:read'],
   TESTER: ['user:read', 'role:read', 'permission:read'],
-};
+}
 
 async function main() {
-  console.log('🌱 Starting database seed...');
+  console.log('🌱 Starting database seed...')
 
   // Create permissions
-  console.log('Creating permissions...');
+  console.log('Creating permissions...')
   for (const permission of permissions) {
     await prisma.permission.upsert({
       where: { name: permission.name },
       update: {},
       create: permission,
-    });
+    })
   }
 
   // Create roles
-  console.log('Creating roles...');
+  console.log('Creating roles...')
   for (const role of roles) {
     await prisma.role.upsert({
       where: { name: role.name },
       update: {},
       create: role,
-    });
+    })
   }
 
   // Assign permissions to roles
-  console.log('Assigning permissions to roles...');
+  console.log('Assigning permissions to roles...')
   for (const [roleName, permissionNames] of Object.entries(rolePermissions)) {
-    const role = await prisma.role.findUnique({ where: { name: roleName } });
-    if (!role) continue;
+    const role = await prisma.role.findUnique({ where: { name: roleName } })
+    if (!role)
+      continue
 
     for (const permissionName of permissionNames) {
       const permission = await prisma.permission.findUnique({
         where: { name: permissionName },
-      });
-      if (!permission) continue;
+      })
+      if (!permission)
+        continue
 
       await prisma.rolePermission.upsert({
         where: {
@@ -125,23 +132,23 @@ async function main() {
           roleId: role.id,
           permissionId: permission.id,
         },
-      });
+      })
     }
   }
 
   // Create default super admin user
-  console.log('Creating default super admin user...');
+  console.log('Creating default super admin user...')
   const superAdminRole = await prisma.role.findUnique({
     where: { name: 'SUPER_ADMIN' },
-  });
+  })
 
   if (superAdminRole) {
     const existingAdmin = await prisma.user.findUnique({
       where: { email: 'admin@zeta.dev' },
-    });
+    })
 
     if (!existingAdmin) {
-      const hashedPassword = await bcrypt.hash('admin123', 12);
+      const hashedPassword = await bcrypt.hash('admin123', 12)
 
       const admin = await prisma.user.create({
         data: {
@@ -155,22 +162,23 @@ async function main() {
             },
           },
         },
-      });
+      })
 
-      console.log(`✅ Created super admin: ${admin.email}`);
-    } else {
-      console.log('Super admin already exists, skipping...');
+      console.log(`✅ Created super admin: ${admin.email}`)
+    }
+    else {
+      console.log('Super admin already exists, skipping...')
     }
   }
 
-  console.log('✅ Database seed completed!');
+  console.log('✅ Database seed completed!')
 }
 
 main()
   .catch((e) => {
-    console.error('❌ Seed error:', e);
-    process.exit(1);
+    console.error('❌ Seed error:', e)
+    process.exit(1)
   })
   .finally(async () => {
-    await prisma.$disconnect();
-  });
+    await prisma.$disconnect()
+  })

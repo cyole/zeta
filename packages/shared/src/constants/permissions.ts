@@ -3,7 +3,7 @@ export const PERMISSION_MODULES = {
   USER: 'user',
   ROLE: 'role',
   PERMISSION: 'permission',
-} as const;
+} as const
 
 // Permission actions
 export const PERMISSIONS = {
@@ -23,9 +23,9 @@ export const PERMISSIONS = {
 
   // Permission permissions
   PERMISSION_READ: 'permission:read',
-} as const;
+} as const
 
-export type PermissionName = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];
+export type PermissionName = (typeof PERMISSIONS)[keyof typeof PERMISSIONS]
 
 // Permission display names (Chinese)
 export const PERMISSION_DISPLAY_NAMES: Record<PermissionName, string> = {
@@ -40,7 +40,7 @@ export const PERMISSION_DISPLAY_NAMES: Record<PermissionName, string> = {
   [PERMISSIONS.ROLE_DELETE]: '删除角色',
   [PERMISSIONS.ROLE_ASSIGN_PERMISSION]: '分配权限',
   [PERMISSIONS.PERMISSION_READ]: '查看权限',
-};
+}
 
 // Default permissions for each role
 export const DEFAULT_ROLE_PERMISSIONS: Record<string, PermissionName[]> = {
@@ -73,4 +73,4 @@ export const DEFAULT_ROLE_PERMISSIONS: Record<string, PermissionName[]> = {
     PERMISSIONS.ROLE_READ,
     PERMISSIONS.PERMISSION_READ,
   ],
-};
+}
