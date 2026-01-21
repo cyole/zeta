@@ -33,12 +33,15 @@ export class OAuthService {
 
   // ==================== GitHub OAuth ====================
 
-  getGitHubAuthUrl(state: string) {
+  getGitHubConfig() {
     const clientId = this.configService.get('github.clientId')
-    const callbackUrl = this.configService.get('github.callbackUrl')
-    const scope = 'read:user user:email'
-
-    return `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(callbackUrl)}&scope=${encodeURIComponent(scope)}&state=${state}`
+    const redirectUri = this.configService.get('github.callbackUrl')
+    return {
+      clientId,
+      redirectUri,
+      scope: 'read:user user:email',
+      authUrl: 'https://github.com/login/oauth/authorize',
+    }
   }
 
   async handleGitHubCallback(code: string, userAgent?: string, ipAddress?: string) {
@@ -104,12 +107,15 @@ export class OAuthService {
 
   // ==================== DingTalk OAuth ====================
 
-  getDingTalkAuthUrl(state: string) {
-    const appKey = this.configService.get('dingtalk.appKey')
-    const callbackUrl = this.configService.get('dingtalk.callbackUrl')
-
-    // DingTalk uses non-standard OAuth2 parameters
-    return `https://login.dingtalk.com/oauth2/auth?response_type=code&client_id=${appKey}&redirect_uri=${encodeURIComponent(callbackUrl)}&scope=openid&state=${state}&prompt=consent`
+  getDingTalkConfig() {
+    const clientId = this.configService.get('dingtalk.appKey')
+    const redirectUri = this.configService.get('dingtalk.callbackUrl')
+    return {
+      clientId,
+      redirectUri,
+      scope: 'openid',
+      authUrl: 'https://login.dingtalk.com/oauth2/auth',
+    }
   }
 
   async handleDingTalkCallback(authCode: string, userAgent?: string, ipAddress?: string) {
@@ -342,10 +348,5 @@ export class OAuthService {
         roles,
       },
     }
-  }
-
-  // Generate state for OAuth
-  generateState(): string {
-    return crypto.randomBytes(16).toString('hex')
   }
 }

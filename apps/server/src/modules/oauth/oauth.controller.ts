@@ -1,113 +1,66 @@
-import type { Request, Response } from 'express'
+import type { Request } from 'express'
 import {
+  Body,
   Controller,
   Get,
   Headers,
-  Query,
+  Post,
   Req,
-  Res,
 } from '@nestjs/common'
-import { ConfigService } from '@nestjs/config'
-import { ApiOperation, ApiTags } from '@nestjs/swagger'
+import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { Public } from '@/common/decorators'
 import { OAuthService } from './oauth.service'
+
+class OAuthCodeDto {
+  code: string
+}
 
 @ApiTags('OAuth')
 @Controller('oauth')
 export class OAuthController {
-  constructor(
-    private oauthService: OAuthService,
-    private configService: ConfigService,
-  ) {}
+  constructor(private oauthService: OAuthService) {}
 
   // ==================== GitHub OAuth ====================
 
   @Public()
-  @Get('github')
-  @ApiOperation({ summary: '跳转到 GitHub 授权' })
-  githubAuth(@Res() res: Response) {
-    const state = this.oauthService.generateState()
-    const authUrl = this.oauthService.getGitHubAuthUrl(state)
-    res.redirect(authUrl)
+  @Get('github/config')
+  @ApiOperation({ summary: '获取 GitHub OAuth 配置' })
+  getGitHubConfig() {
+    return this.oauthService.getGitHubConfig()
   }
 
   @Public()
-  @Get('github/callback')
-  @ApiOperation({ summary: 'GitHub 授权回调' })
-  async githubCallback(
-    @Query('code') code: string,
-    @Query('state') state: string,
-    @Query('error') error: string,
+  @Post('github/login')
+  @ApiOperation({ summary: 'GitHub 授权登录' })
+  @ApiBody({ type: OAuthCodeDto })
+  async githubLogin(
+    @Body('code') code: string,
     @Headers('user-agent') userAgent: string,
     @Req() req: Request,
-    @Res() res: Response,
   ) {
-    const frontendUrl = this.configService.get('frontendUrl')
-
-    if (error) {
-      return res.redirect(`${frontendUrl}/auth/callback/github?error=${encodeURIComponent(error)}`)
-    }
-
-    try {
-      const ipAddress = req.ip || req.socket.remoteAddress
-      const result = await this.oauthService.handleGitHubCallback(code, userAgent, ipAddress)
-
-      // Redirect to frontend with tokens in query params (will be stored in cookies by frontend)
-      const params = new URLSearchParams({
-        accessToken: result.accessToken,
-        refreshToken: result.refreshToken,
-      })
-
-      return res.redirect(`${frontendUrl}/auth/callback/github?${params.toString()}`)
-    }
-    catch (err) {
-      const message = err instanceof Error ? err.message : 'Unknown error'
-      return res.redirect(`${frontendUrl}/auth/callback/github?error=${encodeURIComponent(message)}`)
-    }
+    const ipAddress = req.ip || req.socket.remoteAddress
+    return this.oauthService.handleGitHubCallback(code, userAgent, ipAddress)
   }
 
   // ==================== DingTalk OAuth ====================
 
   @Public()
-  @Get('dingtalk')
-  @ApiOperation({ summary: '跳转到钉钉授权' })
-  dingtalkAuth(@Res() res: Response) {
-    const state = this.oauthService.generateState()
-    const authUrl = this.oauthService.getDingTalkAuthUrl(state)
-    res.redirect(authUrl)
+  @Get('dingtalk/config')
+  @ApiOperation({ summary: '获取钉钉 OAuth 配置' })
+  getDingTalkConfig() {
+    return this.oauthService.getDingTalkConfig()
   }
 
   @Public()
-  @Get('dingtalk/callback')
-  @ApiOperation({ summary: '钉钉授权回调' })
-  async dingtalkCallback(
-    @Query('authCode') authCode: string,
-    @Query('state') state: string,
-    @Query('error') error: string,
+  @Post('dingtalk/login')
+  @ApiOperation({ summary: '钉钉授权登录' })
+  @ApiBody({ type: OAuthCodeDto })
+  async dingtalkLogin(
+    @Body('code') code: string,
     @Headers('user-agent') userAgent: string,
     @Req() req: Request,
-    @Res() res: Response,
   ) {
-    const frontendUrl = this.configService.get('frontendUrl')
-
-    if (error) {
-      return res.redirect(`${frontendUrl}/auth/callback/dingtalk?error=${encodeURIComponent(error)}`)
-    }
-
-    try {
-      const ipAddress = req.ip || req.socket.remoteAddress
-      const result = await this.oauthService.handleDingTalkCallback(authCode, userAgent, ipAddress)
-
-      const params = new URLSearchParams({
-        accessToken: result.accessToken,
-        refreshToken: result.refreshToken,
-      })
-
-      return res.redirect(`${frontendUrl}/auth/callback/dingtalk?${params.toString()}`)
-    }
-    catch (err) {
-      const message = err instanceof Error ? err.message : 'Unknown error'
-      return res.redirect(`${frontendUrl}/auth/callback/dingtalk?error=${encodeURIComponent(message)}`)
-    }
+    const ipAddress = req.ip || req.socket.remoteAddress
+    return this.oauthService.handleDingTalkCallback(code, userAgent, ipAddress)
   }
 }

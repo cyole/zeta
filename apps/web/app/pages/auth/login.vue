@@ -6,8 +6,8 @@ definePageMeta({
   middleware: 'guest',
 })
 
-const config = useRuntimeConfig()
 const { login } = useAuth()
+const { get } = useApi()
 const toast = useToast()
 const route = useRoute()
 
@@ -44,12 +44,30 @@ async function onSubmit() {
   }
 }
 
-function loginWithGitHub() {
-  window.location.href = `${config.public.apiBase}/oauth/github`
+async function loginWithGitHub() {
+  const oauthConfig = await get<{ clientId: string, redirectUri: string, scope: string, authUrl: string }>('/oauth/github/config')
+  const state = crypto.randomUUID()
+  const params = new URLSearchParams({
+    client_id: oauthConfig.clientId,
+    redirect_uri: oauthConfig.redirectUri,
+    scope: oauthConfig.scope,
+    state,
+  })
+  window.location.href = `${oauthConfig.authUrl}?${params.toString()}`
 }
 
-function loginWithDingTalk() {
-  window.location.href = `${config.public.apiBase}/oauth/dingtalk`
+async function loginWithDingTalk() {
+  const oauthConfig = await get<{ clientId: string, redirectUri: string, scope: string, authUrl: string }>('/oauth/dingtalk/config')
+  const state = crypto.randomUUID()
+  const params = new URLSearchParams({
+    response_type: 'code',
+    client_id: oauthConfig.clientId,
+    redirect_uri: oauthConfig.redirectUri,
+    scope: oauthConfig.scope,
+    state,
+    prompt: 'consent',
+  })
+  window.location.href = `${oauthConfig.authUrl}?${params.toString()}`
 }
 </script>
 

@@ -5,14 +5,14 @@ definePageMeta({
 
 const route = useRoute()
 const { setTokens, fetchUser } = useAuth()
+const { post } = useApi()
 const toast = useToast()
 
 const loading = ref(true)
 const error = ref<string | null>(null)
 
 onMounted(async () => {
-  const accessToken = route.query.accessToken as string
-  const refreshToken = route.query.refreshToken as string
+  const code = route.query.code as string
   const errorMsg = route.query.error as string
 
   if (errorMsg) {
@@ -21,24 +21,25 @@ onMounted(async () => {
     return
   }
 
-  if (accessToken && refreshToken) {
-    try {
-      setTokens({ accessToken, refreshToken })
-      await fetchUser()
-      toast.add({
-        title: '登录成功',
-        description: '欢迎回来！',
-        color: 'success',
-      })
-      navigateTo('/dashboard')
-    }
-    catch (e: any) {
-      error.value = e.message || 'GitHub 登录失败'
-      loading.value = false
-    }
+  if (!code) {
+    error.value = '未收到授权码'
+    loading.value = false
+    return
   }
-  else {
-    error.value = '未收到授权信息'
+
+  try {
+    const result = await post<{ accessToken: string, refreshToken: string }>('/oauth/github/login', { code })
+    setTokens({ accessToken: result.accessToken, refreshToken: result.refreshToken })
+    await fetchUser()
+    toast.add({
+      title: '登录成功',
+      description: '欢迎回来！',
+      color: 'success',
+    })
+    navigateTo('/dashboard')
+  }
+  catch (e: any) {
+    error.value = e.data?.message || e.message || 'GitHub 登录失败'
     loading.value = false
   }
 })
