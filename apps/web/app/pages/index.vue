@@ -3,14 +3,10 @@ definePageMeta({
   layout: false,
 })
 
-// Redirect to platform if authenticated
 const { isAuthenticated, fetchUser } = useAuth()
 
-onMounted(async () => {
-  await fetchUser()
-  if (isAuthenticated.value) {
-    navigateTo('/platform')
-  }
+onMounted(() => {
+  fetchUser()
 })
 
 const features = [
@@ -73,12 +69,20 @@ const quickLinks = [
           <!-- Actions -->
           <div class="flex items-center gap-3">
             <ColorModeToggle />
-            <UButton to="/auth/login" variant="ghost" class="hidden sm:inline-flex">
-              登录
-            </UButton>
-            <UButton to="/platform" color="primary">
-              进入工作台
-            </UButton>
+            <template v-if="isAuthenticated">
+              <UButton to="/platform" color="primary">
+                <UIcon name="i-lucide-layout-dashboard" class="w-4 h-4 mr-1.5" />
+                打开工作台
+              </UButton>
+            </template>
+            <template v-else>
+              <UButton to="/auth/login" variant="ghost" class="hidden sm:inline-flex">
+                登录
+              </UButton>
+              <UButton to="/platform" color="primary">
+                进入工作台
+              </UButton>
+            </template>
           </div>
         </div>
       </div>
