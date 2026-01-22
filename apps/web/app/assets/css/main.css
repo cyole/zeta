@@ -1,6 +1,11 @@
 @import 'tailwindcss';
 @import '@nuxt/ui';
 
+/* Theme radius variable */
+:root {
+  --ui-radius: 0.25rem;
+}
+
 /* Hero grid background */
 .hero-grid {
   background-size: 60px 60px;

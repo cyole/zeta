@@ -3,25 +3,12 @@ const { user, logout } = useAuth()
 const { isAdmin } = usePermissions()
 const router = useRouter()
 const route = useRoute()
-const colorMode = useColorMode()
 
 const sidebarCollapsed = ref(false)
 const sidebarHovered = ref(false)
 
 // Effective sidebar state (collapsed but expanded on hover)
 const isExpanded = computed(() => !sidebarCollapsed.value || sidebarHovered.value)
-
-// Color mode
-const isDark = computed(() => {
-  if (colorMode.preference === 'system') {
-    return window.matchMedia('(prefers-color-scheme: dark)').matches
-  }
-  return colorMode.preference === 'dark'
-})
-
-function setColorMode(mode: 'light' | 'dark' | 'system') {
-  colorMode.preference = mode
-}
 
 // Navigation items
 const generalNavItems = [
@@ -69,27 +56,6 @@ const userMenuItems = computed(() => [
     },
   ],
 ])
-
-// Color mode menu items
-const colorModeItems = [
-  [
-    {
-      label: '浅色',
-      icon: 'i-lucide-sun',
-      click: () => setColorMode('light'),
-    },
-    {
-      label: '深色',
-      icon: 'i-lucide-moon',
-      click: () => setColorMode('dark'),
-    },
-    {
-      label: '跟随系统',
-      icon: 'i-lucide-monitor',
-      click: () => setColorMode('system'),
-    },
-  ],
-]
 </script>
 
 <template>
@@ -257,15 +223,8 @@ const colorModeItems = [
 
           <div class="h-5 w-px bg-neutral-200 dark:bg-neutral-700" />
 
-          <!-- Theme color picker -->
-          <ThemeColorPicker />
-
-          <!-- Color mode toggle -->
-          <UDropdownMenu :items="colorModeItems" :content="{ align: 'end' }">
-            <button class="p-2 rounded-md hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors">
-              <UIcon :name="isDark ? 'i-lucide-moon' : 'i-lucide-sun'" class="w-5 h-5 text-neutral-600 dark:text-neutral-400" />
-            </button>
-          </UDropdownMenu>
+          <!-- Theme panel -->
+          <ThemePanel />
 
           <!-- Notifications -->
           <button class="relative p-2 rounded-md hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors">

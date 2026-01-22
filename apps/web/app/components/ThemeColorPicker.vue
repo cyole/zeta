@@ -1,5 +1,7 @@
 <script setup lang="ts">
-const { themeColors, primaryColor, setPrimaryColor, initTheme } = useTheme()
+import type { PrimaryColor } from '~/composables/useTheme'
+
+const { primaryColors, primaryColor, setPrimaryColor, initTheme } = useTheme()
 
 // Initialize theme on mount
 onMounted(() => {
@@ -7,10 +9,10 @@ onMounted(() => {
 })
 
 const items = computed(() => [
-  themeColors.map(color => ({
+  primaryColors.map(color => ({
     label: color.label,
     active: primaryColor.value === color.value,
-    onSelect: () => setPrimaryColor(color.value),
+    onSelect: () => setPrimaryColor(color.value as PrimaryColor),
     slots: {
       leading: () => h('span', {
         class: `w-3 h-3 rounded-full ${color.class}`,
@@ -22,6 +24,6 @@ const items = computed(() => [
 
 <template>
   <UDropdownMenu :items="items">
-    <UButton variant="ghost" color="neutral" icon="i-lucide-palette" />
+    <UButton variant="ghost" color="neutral" icon="i-lucide-paintbrush-2" />
   </UDropdownMenu>
 </template>

@@ -2,21 +2,6 @@
 const { user, logout } = useAuth()
 const router = useRouter()
 const route = useRoute()
-const colorMode = useColorMode()
-
-// Color mode
-const isDark = computed(() => {
-  if (colorMode.preference === 'system') {
-    if (import.meta.client) {
-      return window.matchMedia('(prefers-color-scheme: dark)').matches
-    }
-    return false
-  }
-  return colorMode.preference === 'dark'
-})
-function toggleColorMode() {
-  colorMode.preference = isDark.value ? 'light' : 'dark'
-}
 
 // Module navigation
 const moduleNavItems = [
@@ -179,17 +164,8 @@ provide('sidebarCollapsed', sidebarCollapsed)
           <span class="absolute -top-0.5 -right-0.5 w-2 h-2 bg-red-500 rounded-full" />
         </div>
 
-        <!-- Theme color picker -->
-        <ThemeColorPicker />
-
-        <!-- Dark mode toggle -->
-        <UButton
-          :icon="isDark ? 'i-lucide-moon' : 'i-lucide-sun'"
-          color="neutral"
-          variant="ghost"
-          size="sm"
-          @click="toggleColorMode"
-        />
+        <!-- Theme panel -->
+        <ThemePanel />
 
         <!-- User dropdown -->
         <UDropdownMenu :items="userMenuItems">
