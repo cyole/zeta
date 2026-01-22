@@ -11,9 +11,10 @@ import { OAuthModule } from './modules/oauth/oauth.module'
 import { PermissionModule } from './modules/permission/permission.module'
 import { PrismaModule } from './modules/prisma/prisma.module'
 import { ProfileModule } from './modules/profile/profile.module'
+import { QiniuModule } from './modules/qiniu/qiniu.module'
 import { RedisModule } from './modules/redis/redis.module'
-
 import { RoleModule } from './modules/role/role.module'
+import { UploadModule } from './modules/upload/upload.module'
 
 import { UserModule } from './modules/user/user.module'
 
@@ -48,6 +49,8 @@ import { UserModule } from './modules/user/user.module'
     ProfileModule,
     OAuthModule,
     MailModule,
+    QiniuModule,
+    UploadModule,
   ],
   providers: [
     // Global JWT guard

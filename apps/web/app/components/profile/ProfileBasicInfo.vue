@@ -4,7 +4,6 @@ import { z } from 'zod'
 const { user, fetchUser } = useAuth()
 const api = useApi()
 const toast = useToast()
-const config = useRuntimeConfig()
 
 const saving = ref(false)
 const uploading = ref(false)
@@ -94,7 +93,7 @@ async function handleFileChange(event: Event) {
     <UForm :state="form" :schema="schema" class="space-y-6" @submit="onSubmit">
       <!-- Avatar -->
       <div class="flex items-center gap-4">
-        <UAvatar :src="user?.avatar ? `${config.public.apiBase}${user.avatar}` : undefined" :alt="user?.name" size="xl" />
+        <UAvatar :src="user?.avatar || undefined" :alt="user?.name" size="xl" />
         <div>
           <input
             ref="fileInput"

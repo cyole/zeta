@@ -17,8 +17,7 @@ import {
 } from '@nestjs/common'
 import { FileInterceptor } from '@nestjs/platform-express'
 import { ApiBearerAuth, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger'
-import { diskStorage } from 'multer'
-import { extname } from 'node:path'
+import { memoryStorage } from 'multer'
 import { CurrentUser } from '@/common/decorators'
 import { ProfileService } from './profile.service'
 
@@ -42,14 +41,7 @@ export class ProfileController {
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(
     FileInterceptor('file', {
-      storage: diskStorage({
-        destination: './uploads/avatars',
-        filename: (_req: Request, file: Express.Multer.File, cb: (error: Error | null, filename: string) => void) => {
-          const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`
-          const ext = extname(file.originalname)
-          cb(null, `avatar-${uniqueSuffix}${ext}`)
-        },
-      }),
+      storage: memoryStorage(),
       fileFilter: (_req: Request, file: Express.Multer.File, cb: (error: Error | null, acceptFile: boolean) => void) => {
         if (!file.mimetype.match(/\/(jpg|jpeg|png|gif|webp)$/)) {
           cb(new Error('只支持图片文件'), false)
@@ -66,8 +58,7 @@ export class ProfileController {
     @CurrentUser('id') userId: string,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    const avatarUrl = `/uploads/avatars/${file.filename}`
-    return this.profileService.uploadAvatar(userId, avatarUrl)
+    return this.profileService.uploadAvatar(userId, file)
   }
 
   @Delete('oauth/:provider')

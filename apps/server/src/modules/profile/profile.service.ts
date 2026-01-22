@@ -10,10 +10,14 @@ import {
 } from '@nestjs/common'
 import * as bcrypt from 'bcrypt'
 import { PrismaService } from '@/modules/prisma/prisma.service'
+import { QiniuService } from '@/modules/qiniu/qiniu.service'
 
 @Injectable()
 export class ProfileService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private qiniuService: QiniuService,
+  ) {}
 
   async changePassword(userId: string, dto: ChangePasswordDto) {
     // Validate passwords match
@@ -50,7 +54,7 @@ export class ProfileService {
     return { message: '密码修改成功' }
   }
 
-  async uploadAvatar(userId: string, avatarUrl: string) {
+  async uploadAvatar(userId: string, file: Express.Multer.File) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
     })
@@ -59,12 +63,52 @@ export class ProfileService {
       throw new NotFoundException('用户不存在')
     }
 
+    // Upload to Qiniu
+    const uploadResult = await this.qiniuService.uploadFile(file, {
+      folder: 'avatars',
+    })
+
+    // Delete old avatar from Qiniu if exists
+    if (user.avatar) {
+      try {
+        const oldKey = this.extractKeyFromUrl(user.avatar)
+        if (oldKey) {
+          await this.qiniuService.deleteFile(oldKey)
+        }
+      }
+      catch {
+        // Ignore delete errors
+      }
+    }
+
+    // Update user avatar
     const updated = await this.prisma.user.update({
       where: { id: userId },
-      data: { avatar: avatarUrl },
+      data: { avatar: uploadResult.url },
     })
 
     return { ...updated, password: undefined }
+  }
+
+  private extractKeyFromUrl(url: string): string | null {
+    try {
+      // Extract key from URL like: https://domain.com/zeta/avatars/xxx.jpg
+      const urlObj = new URL(url)
+      const pathParts = urlObj.pathname.split('/')
+      // Remove first empty part, find 'zeta' or 'avatars' or 'images'
+      const keyIndex = pathParts.findIndex(p => p === 'zeta' || p === 'avatars' || p === 'images')
+      if (keyIndex !== -1) {
+        return pathParts.slice(keyIndex).join('/')
+      }
+      return urlObj.pathname.substring(1)
+    }
+    catch {
+      // If it's a relative path like /uploads/avatars/xxx.jpg
+      if (url.startsWith('/uploads/')) {
+        return url.substring('/uploads/'.length)
+      }
+      return null
+    }
   }
 
   async unlinkOAuth(userId: string, provider: OAuthProvider) {
