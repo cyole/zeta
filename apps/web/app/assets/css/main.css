@@ -6,6 +6,17 @@
   --ui-radius: 0.25rem;
 }
 
+/* Black as primary color support */
+/* When black is used as primary, use black in light mode and white in dark mode */
+.black-as-primary {
+  --ui-primary: var(--color-black);
+}
+
+.dark.black-as-primary,
+.dark .black-as-primary {
+  --ui-primary: var(--color-white);
+}
+
 /* Hero grid background */
 .hero-grid {
   background-size: 60px 60px;

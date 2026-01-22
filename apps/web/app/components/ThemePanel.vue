@@ -5,14 +5,19 @@ const {
   primaryColor,
   neutralColor,
   radius,
+  blackAsPrimary,
   primaryColors,
   neutralColors,
   radiusOptions,
   setPrimaryColor,
   setNeutralColor,
   setRadius,
+  setBlackAsPrimary,
   resetTheme,
-  generateExportConfig,
+  hasCSSChanges,
+  hasAppConfigChanges,
+  exportCSS,
+  exportAppConfig,
   initTheme,
 } = useTheme()
 
@@ -34,12 +39,23 @@ const colorModeOptions = [
   { label: 'System', value: 'system', icon: 'i-lucide-monitor' },
 ]
 
-// Copy config to clipboard
-async function copyConfig() {
-  const config = generateExportConfig()
+// Copy CSS to clipboard
+async function copyCSSConfig() {
+  const config = exportCSS()
   await navigator.clipboard.writeText(config)
   toast.add({
-    title: 'Copied to clipboard',
+    title: 'CSS copied to clipboard',
+    icon: 'i-lucide-check',
+    color: 'primary',
+  })
+}
+
+// Copy app.config.ts to clipboard
+async function copyAppConfig() {
+  const config = exportAppConfig()
+  await navigator.clipboard.writeText(config)
+  toast.add({
+    title: 'Config copied to clipboard',
     icon: 'i-lucide-check',
     color: 'primary',
   })
@@ -63,13 +79,28 @@ async function copyConfig() {
             <span class="text-sm font-medium text-neutral-900 dark:text-white">Primary</span>
           </div>
           <div class="grid grid-cols-3 gap-1.5">
+            <!-- Black option (special handling) -->
+            <button
+              type="button"
+              class="flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors"
+              :class="[
+                blackAsPrimary
+                  ? 'bg-neutral-100 dark:bg-neutral-800 ring-1 ring-neutral-300 dark:ring-neutral-600'
+                  : 'hover:bg-neutral-50 dark:hover:bg-neutral-800/50',
+              ]"
+              @click="setBlackAsPrimary(true)"
+            >
+              <span class="w-3 h-3 rounded-full shrink-0 bg-black dark:bg-white" />
+              <span class="text-neutral-700 dark:text-neutral-300 truncate">Black</span>
+            </button>
+            <!-- Other colors -->
             <button
               v-for="color in primaryColors"
               :key="color.value"
               type="button"
               class="flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors"
               :class="[
-                primaryColor === color.value
+                !blackAsPrimary && primaryColor === color.value
                   ? 'bg-neutral-100 dark:bg-neutral-800 ring-1 ring-neutral-300 dark:ring-neutral-600'
                   : 'hover:bg-neutral-50 dark:hover:bg-neutral-800/50',
               ]"
@@ -165,17 +196,41 @@ async function copyConfig() {
               <UIcon name="i-lucide-rotate-ccw" class="w-3.5 h-3.5 text-neutral-400" />
             </button>
           </div>
-          <button
-            type="button"
-            class="w-full flex items-center justify-between px-3 py-2 rounded-md bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors"
-            @click="copyConfig"
-          >
-            <div class="flex items-center gap-2">
-              <UIcon name="i-lucide-file-code" class="w-4 h-4 text-neutral-500" />
-              <span class="text-sm text-neutral-700 dark:text-neutral-300">app.config.ts</span>
+          <div class="space-y-2">
+            <!-- CSS Export (shown when CSS changes exist) -->
+            <button
+              v-if="hasCSSChanges"
+              type="button"
+              class="w-full flex items-center justify-between px-3 py-2 rounded-md bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors"
+              @click="copyCSSConfig"
+            >
+              <div class="flex items-center gap-2">
+                <UIcon name="i-lucide-file-code" class="w-4 h-4 text-neutral-500" />
+                <span class="text-sm text-neutral-700 dark:text-neutral-300">main.css</span>
+              </div>
+              <UIcon name="i-lucide-copy" class="w-4 h-4 text-neutral-400" />
+            </button>
+            <!-- App Config Export (shown when app config changes exist) -->
+            <button
+              v-if="hasAppConfigChanges"
+              type="button"
+              class="w-full flex items-center justify-between px-3 py-2 rounded-md bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors"
+              @click="copyAppConfig"
+            >
+              <div class="flex items-center gap-2">
+                <UIcon name="i-lucide-file-code" class="w-4 h-4 text-neutral-500" />
+                <span class="text-sm text-neutral-700 dark:text-neutral-300">app.config.ts</span>
+              </div>
+              <UIcon name="i-lucide-copy" class="w-4 h-4 text-neutral-400" />
+            </button>
+            <!-- No changes message -->
+            <div
+              v-if="!hasCSSChanges && !hasAppConfigChanges"
+              class="text-xs text-neutral-500 text-center py-2"
+            >
+              Using default theme settings
             </div>
-            <UIcon name="i-lucide-copy" class="w-4 h-4 text-neutral-400" />
-          </button>
+          </div>
         </div>
       </div>
     </template>
