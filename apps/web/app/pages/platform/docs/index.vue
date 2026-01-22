@@ -25,10 +25,10 @@ const recentDocs = [
     <!-- Page Header -->
     <div class="flex items-center justify-between mb-8">
       <div>
-        <h1 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">
+        <h1 class="text-2xl font-bold text-neutral-900 dark:text-white mb-2">
           文档智能管理
         </h1>
-        <p class="text-slate-500 dark:text-slate-400">
+        <p class="text-neutral-500 dark:text-neutral-400">
           自然语言检索、多轮问答、文档自动更新
         </p>
       </div>
@@ -59,15 +59,15 @@ const recentDocs = [
       <div
         v-for="category in categories"
         :key="category.name"
-        class="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 cursor-pointer hover:border-green-300 dark:hover:border-green-700 transition-colors"
+        class="p-4 bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 cursor-pointer hover:border-green-300 dark:hover:border-green-700 transition-colors"
       >
         <div class="flex items-center gap-3 mb-2">
           <div class="w-8 h-8 rounded-lg flex items-center justify-center" :class="[category.bgClass]">
             <UIcon :name="category.icon" class="w-4 h-4 text-white" />
           </div>
-          <span class="font-medium text-slate-900 dark:text-white">{{ category.name }}</span>
+          <span class="font-medium text-neutral-900 dark:text-white">{{ category.name }}</span>
         </div>
-        <p class="text-sm text-slate-500 dark:text-slate-400">
+        <p class="text-sm text-neutral-500 dark:text-neutral-400">
           {{ category.count }} 篇文档
         </p>
       </div>
@@ -75,29 +75,29 @@ const recentDocs = [
 
     <!-- Recent Documents -->
     <div>
-      <h2 class="text-lg font-semibold text-slate-900 dark:text-white mb-4">
+      <h2 class="text-lg font-semibold text-neutral-900 dark:text-white mb-4">
         最近浏览
       </h2>
-      <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800">
+      <div class="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800">
         <div
           v-for="(doc, index) in recentDocs"
           :key="doc.id"
-          class="flex items-center justify-between p-4 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors" :class="[
-            index !== recentDocs.length - 1 && 'border-b border-slate-100 dark:border-slate-800',
+          class="flex items-center justify-between p-4 cursor-pointer hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors" :class="[
+            index !== recentDocs.length - 1 && 'border-b border-neutral-100 dark:border-neutral-800',
           ]"
         >
           <div class="flex items-center gap-3">
-            <UIcon name="i-lucide-file-text" class="w-5 h-5 text-slate-400" />
+            <UIcon name="i-lucide-file-text" class="w-5 h-5 text-neutral-400" />
             <div>
-              <h4 class="font-medium text-slate-900 dark:text-white">
+              <h4 class="font-medium text-neutral-900 dark:text-white">
                 {{ doc.title }}
               </h4>
-              <p class="text-sm text-slate-500 dark:text-slate-400">
+              <p class="text-sm text-neutral-500 dark:text-neutral-400">
                 {{ doc.category }}
               </p>
             </div>
           </div>
-          <span class="text-xs text-slate-400">{{ doc.time }}</span>
+          <span class="text-xs text-neutral-400">{{ doc.time }}</span>
         </div>
       </div>
     </div>

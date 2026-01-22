@@ -75,7 +75,7 @@ onMounted(() => {
     </template>
 
     <div v-if="loading" class="flex items-center justify-center py-8">
-      <UIcon name="i-lucide-loader-2" class="w-6 h-6 animate-spin text-teal-500" />
+      <UIcon name="i-lucide-loader-2" class="w-6 h-6 animate-spin text-primary-500" />
     </div>
 
     <div v-else class="space-y-6">

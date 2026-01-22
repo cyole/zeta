@@ -35,14 +35,14 @@ onMounted(async () => {
     <!-- Loading -->
     <template v-if="status === 'loading'">
       <div class="flex justify-center mb-6">
-        <div class="w-16 h-16 rounded-full bg-teal-100 dark:bg-teal-900/30 flex items-center justify-center">
-          <UIcon name="i-lucide-loader-2" class="w-8 h-8 text-teal-500 animate-spin" />
+        <div class="w-16 h-16 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center">
+          <UIcon name="i-lucide-loader-2" class="w-8 h-8 text-primary-500 animate-spin" />
         </div>
       </div>
-      <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">
+      <h2 class="text-2xl font-bold text-neutral-900 dark:text-white mb-2">
         正在验证邮箱
       </h2>
-      <p class="text-slate-500 dark:text-slate-400">
+      <p class="text-neutral-500 dark:text-neutral-400">
         请稍候...
       </p>
     </template>
@@ -54,10 +54,10 @@ onMounted(async () => {
           <UIcon name="i-lucide-check-circle" class="w-8 h-8 text-green-500" />
         </div>
       </div>
-      <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">
+      <h2 class="text-2xl font-bold text-neutral-900 dark:text-white mb-2">
         邮箱验证成功
       </h2>
-      <p class="text-slate-500 dark:text-slate-400 mb-8">
+      <p class="text-neutral-500 dark:text-neutral-400 mb-8">
         您的邮箱已验证，现在可以登录账号了
       </p>
       <UButton to="/auth/login" size="lg">
@@ -73,10 +73,10 @@ onMounted(async () => {
           <UIcon name="i-lucide-x-circle" class="w-8 h-8 text-red-500" />
         </div>
       </div>
-      <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">
+      <h2 class="text-2xl font-bold text-neutral-900 dark:text-white mb-2">
         验证失败
       </h2>
-      <p class="text-slate-500 dark:text-slate-400 mb-8">
+      <p class="text-neutral-500 dark:text-neutral-400 mb-8">
         {{ errorMessage }}
       </p>
       <div class="space-y-3">
@@ -84,7 +84,7 @@ onMounted(async () => {
           <UIcon name="i-lucide-log-in" class="w-4 h-4 mr-2" />
           前往登录
         </UButton>
-        <p class="text-sm text-slate-500 dark:text-slate-400">
+        <p class="text-sm text-neutral-500 dark:text-neutral-400">
           如果链接已过期，请登录后重新发送验证邮件
         </p>
       </div>

@@ -47,7 +47,7 @@ const passwordStrength = computed(() => {
 })
 
 const strengthColors: Record<number, string> = {
-  0: 'bg-slate-300',
+  0: 'bg-neutral-300',
   1: 'bg-red-500',
   2: 'bg-orange-500',
   3: 'bg-yellow-500',
@@ -98,10 +98,10 @@ function registerWithDingTalk() {
   <div>
     <!-- Header -->
     <div class="text-center mb-8">
-      <h2 class="text-2xl font-bold text-slate-900 dark:text-white">
+      <h2 class="text-2xl font-bold text-neutral-900 dark:text-white">
         创建账号
       </h2>
-      <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">
+      <p class="mt-2 text-sm text-neutral-500 dark:text-neutral-400">
         加入 Zeta，开启高效开发之旅
       </p>
     </div>
@@ -160,11 +160,11 @@ function registerWithDingTalk() {
             v-for="i in 4"
             :key="i"
             class="h-1 flex-1 rounded-full transition-colors" :class="[
-              i <= passwordStrength ? strengthColors[passwordStrength] : 'bg-slate-200 dark:bg-slate-700',
+              i <= passwordStrength ? strengthColors[passwordStrength] : 'bg-neutral-200 dark:bg-neutral-700',
             ]"
           />
         </div>
-        <p class="text-xs" :class="(strengthColors[passwordStrength] || 'bg-slate-300').replace('bg-', 'text-')">
+        <p class="text-xs" :class="(strengthColors[passwordStrength] || 'bg-neutral-300').replace('bg-', 'text-')">
           密码强度：{{ strengthLabels[passwordStrength] }}
         </p>
       </div>
@@ -178,10 +178,10 @@ function registerWithDingTalk() {
     <!-- Divider -->
     <div class="relative my-8">
       <div class="absolute inset-0 flex items-center">
-        <div class="w-full border-t border-slate-200 dark:border-slate-800" />
+        <div class="w-full border-t border-neutral-200 dark:border-neutral-800" />
       </div>
       <div class="relative flex justify-center text-sm">
-        <span class="px-4 bg-slate-50 dark:bg-slate-950 text-slate-400">或使用以下方式</span>
+        <span class="px-4 bg-neutral-50 dark:bg-neutral-950 text-neutral-400">或使用以下方式</span>
       </div>
     </div>
 
@@ -191,7 +191,7 @@ function registerWithDingTalk() {
         color="neutral"
         variant="outline"
         size="lg"
-        class="hover:bg-slate-100 dark:hover:bg-slate-900"
+        class="hover:bg-neutral-100 dark:hover:bg-neutral-900"
         @click="registerWithGitHub"
       >
         <UIcon name="i-simple-icons-github" class="w-5 h-5 mr-2" />
@@ -201,7 +201,7 @@ function registerWithDingTalk() {
         color="neutral"
         variant="outline"
         size="lg"
-        class="hover:bg-slate-100 dark:hover:bg-slate-900"
+        class="hover:bg-neutral-100 dark:hover:bg-neutral-900"
         @click="registerWithDingTalk"
       >
         <UIcon name="i-simple-icons-dingtalk" class="w-5 h-5 mr-2" />
@@ -210,9 +210,9 @@ function registerWithDingTalk() {
     </div>
 
     <!-- Login link -->
-    <p class="text-center text-sm text-slate-500 dark:text-slate-400 mt-8">
+    <p class="text-center text-sm text-neutral-500 dark:text-neutral-400 mt-8">
       已有账号？
-      <NuxtLink to="/auth/login" class="text-teal-500 hover:text-teal-600 font-medium">
+      <NuxtLink to="/auth/login" class="text-primary-500 hover:text-primary-600 font-medium">
         立即登录
       </NuxtLink>
     </p>

@@ -75,10 +75,10 @@ async function loginWithDingTalk() {
   <div>
     <!-- Header -->
     <div class="text-center mb-8">
-      <h2 class="text-2xl font-bold text-slate-900 dark:text-white">
+      <h2 class="text-2xl font-bold text-neutral-900 dark:text-white">
         欢迎回来
       </h2>
-      <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">
+      <p class="mt-2 text-sm text-neutral-500 dark:text-neutral-400">
         登录您的账号，继续高效开发
       </p>
     </div>
@@ -98,7 +98,7 @@ async function loginWithDingTalk() {
 
       <UFormField name="password" label="密码">
         <template #hint>
-          <a href="#" class="text-xs text-teal-500 hover:text-teal-600">忘记密码？</a>
+          <a href="#" class="text-xs text-primary-500 hover:text-primary-600">忘记密码？</a>
         </template>
         <UInput
           v-model="form.password"
@@ -113,7 +113,7 @@ async function loginWithDingTalk() {
       <!-- Remember me -->
       <div class="flex items-center gap-2">
         <UCheckbox id="remember" v-model="rememberMe" />
-        <label for="remember" class="text-sm text-slate-600 dark:text-slate-400 cursor-pointer">
+        <label for="remember" class="text-sm text-neutral-600 dark:text-neutral-400 cursor-pointer">
           记住登录状态
         </label>
       </div>
@@ -127,10 +127,10 @@ async function loginWithDingTalk() {
     <!-- Divider -->
     <div class="relative my-8">
       <div class="absolute inset-0 flex items-center">
-        <div class="w-full border-t border-slate-200 dark:border-slate-800" />
+        <div class="w-full border-t border-neutral-200 dark:border-neutral-800" />
       </div>
       <div class="relative flex justify-center text-sm">
-        <span class="px-4 bg-slate-50 dark:bg-slate-950 text-slate-400">或使用以下方式</span>
+        <span class="px-4 bg-neutral-50 dark:bg-neutral-950 text-neutral-400">或使用以下方式</span>
       </div>
     </div>
 
@@ -140,7 +140,7 @@ async function loginWithDingTalk() {
         color="neutral"
         variant="outline"
         size="lg"
-        class="hover:bg-slate-100 dark:hover:bg-slate-900"
+        class="hover:bg-neutral-100 dark:hover:bg-neutral-900"
         @click="loginWithGitHub"
       >
         <UIcon name="i-simple-icons-github" class="w-5 h-5 mr-2" />
@@ -150,7 +150,7 @@ async function loginWithDingTalk() {
         color="neutral"
         variant="outline"
         size="lg"
-        class="hover:bg-slate-100 dark:hover:bg-slate-900"
+        class="hover:bg-neutral-100 dark:hover:bg-neutral-900"
         @click="loginWithDingTalk"
       >
         <UIcon name="i-simple-icons-dingtalk" class="w-5 h-5 mr-2" />
@@ -159,9 +159,9 @@ async function loginWithDingTalk() {
     </div>
 
     <!-- Register link -->
-    <p class="text-center text-sm text-slate-500 dark:text-slate-400 mt-8">
+    <p class="text-center text-sm text-neutral-500 dark:text-neutral-400 mt-8">
       还没有账号？
-      <NuxtLink to="/auth/register" class="text-teal-500 hover:text-teal-600 font-medium">
+      <NuxtLink to="/auth/register" class="text-primary-500 hover:text-primary-600 font-medium">
         立即注册
       </NuxtLink>
     </p>
