@@ -101,16 +101,14 @@ export function useTheme() {
   // Black as primary flag - special handling like Nuxt UI
   const blackAsPrimary = ref(false)
 
-  // Apply black as primary CSS
+  // Apply black as primary CSS (only use class, let CSS handle light/dark)
   function applyBlackAsPrimary(enabled: boolean) {
     if (!import.meta.client) return
 
     if (enabled) {
-      document.documentElement.style.setProperty('--ui-primary', 'var(--color-black)')
       document.documentElement.classList.add('black-as-primary')
     }
     else {
-      document.documentElement.style.removeProperty('--ui-primary')
       document.documentElement.classList.remove('black-as-primary')
     }
   }

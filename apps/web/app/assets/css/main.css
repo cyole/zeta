@@ -8,13 +8,12 @@
 
 /* Black as primary color support */
 /* When black is used as primary, use black in light mode and white in dark mode */
-.black-as-primary {
-  --ui-primary: var(--color-black);
+:root.black-as-primary {
+  --ui-primary: black;
 }
 
-.dark.black-as-primary,
-.dark .black-as-primary {
-  --ui-primary: var(--color-white);
+:root.dark.black-as-primary {
+  --ui-primary: white;
 }
 
 /* Hero grid background */
