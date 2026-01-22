@@ -3,7 +3,7 @@ export default defineAppConfig({
     colors: {
       primary: 'teal',
       secondary: 'cyan',
-      neutral: 'slate',
+      neutral: 'neutral',
     },
     icons: {
       light: 'i-lucide-sun',

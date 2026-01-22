@@ -117,7 +117,7 @@ const colorModeItems = [
         <!-- Back to Platform Button -->
         <NuxtLink
           to="/platform"
-          class="flex items-center gap-3 mx-3 mb-3 px-3 py-2.5 rounded-lg bg-teal-50 dark:bg-teal-950/50 text-teal-600 dark:text-teal-400 hover:bg-teal-100 dark:hover:bg-teal-950 transition-colors"
+          class="flex items-center gap-3 mx-3 mb-3 px-3 py-2.5 rounded-lg bg-primary-50 dark:bg-primary-950/50 text-primary-600 dark:text-primary-400 hover:bg-primary-100 dark:hover:bg-primary-950 transition-colors"
         >
           <UIcon name="i-lucide-arrow-left" class="w-4 h-4 shrink-0" />
           <Transition name="fade">
@@ -249,13 +249,16 @@ const colorModeItems = [
           <!-- Back to Platform -->
           <NuxtLink
             to="/platform"
-            class="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium bg-teal-500 text-white hover:bg-teal-600 rounded-md transition-colors"
+            class="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium bg-primary-500 text-white hover:bg-primary-600 rounded-md transition-colors"
           >
             <UIcon name="i-lucide-arrow-left" class="w-4 h-4" />
             <span class="hidden sm:inline">返回平台</span>
           </NuxtLink>
 
           <div class="h-5 w-px bg-neutral-200 dark:bg-neutral-700" />
+
+          <!-- Theme color picker -->
+          <ThemeColorPicker />
 
           <!-- Color mode toggle -->
           <UDropdownMenu :items="colorModeItems" :content="{ align: 'end' }">

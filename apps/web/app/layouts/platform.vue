@@ -125,15 +125,15 @@ provide('sidebarCollapsed', sidebarCollapsed)
 </script>
 
 <template>
-  <div class="flex flex-col h-screen bg-slate-50 dark:bg-slate-950">
+  <div class="flex flex-col h-screen bg-neutral-50 dark:bg-neutral-950">
     <!-- Top Navigation -->
-    <header class="h-14 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center px-4 shrink-0 z-50">
+    <header class="h-14 bg-white dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-800 flex items-center px-4 shrink-0 z-50">
       <!-- Logo -->
       <NuxtLink to="/platform" class="flex items-center gap-2.5 mr-8">
-        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-teal-500 to-cyan-500 flex items-center justify-center shadow-lg shadow-teal-500/20">
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-primary-500 to-secondary-500 flex items-center justify-center shadow-lg shadow-primary-500/20">
           <UIcon name="i-lucide-zap" class="w-4 h-4 text-white" />
         </div>
-        <span class="font-bold text-slate-900 dark:text-white">Zeta</span>
+        <span class="font-bold text-neutral-900 dark:text-white">Zeta</span>
       </NuxtLink>
 
       <!-- Module Navigation -->
@@ -144,8 +144,8 @@ provide('sidebarCollapsed', sidebarCollapsed)
           :to="item.to"
           class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all" :class="[
             isActiveModule(item.to)
-              ? 'bg-teal-50 dark:bg-teal-950/50 text-teal-600 dark:text-teal-400'
-              : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800',
+              ? 'bg-primary-50 dark:bg-primary-950/50 text-primary-600 dark:text-primary-400'
+              : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800',
           ]"
         >
           <UIcon :name="item.icon" class="w-4 h-4" />
@@ -158,7 +158,7 @@ provide('sidebarCollapsed', sidebarCollapsed)
         <!-- Dashboard Link -->
         <NuxtLink
           to="/dashboard"
-          class="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100 rounded-lg transition-colors"
+          class="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 hover:bg-neutral-800 dark:hover:bg-neutral-100 rounded-lg transition-colors"
         >
           <UIcon name="i-lucide-layout-dashboard" class="w-4 h-4" />
           <span class="hidden sm:inline">管理后台</span>
@@ -179,6 +179,9 @@ provide('sidebarCollapsed', sidebarCollapsed)
           <span class="absolute -top-0.5 -right-0.5 w-2 h-2 bg-red-500 rounded-full" />
         </div>
 
+        <!-- Theme color picker -->
+        <ThemeColorPicker />
+
         <!-- Dark mode toggle -->
         <UButton
           :icon="isDark ? 'i-lucide-moon' : 'i-lucide-sun'"
@@ -190,10 +193,10 @@ provide('sidebarCollapsed', sidebarCollapsed)
 
         <!-- User dropdown -->
         <UDropdownMenu :items="userMenuItems">
-          <button class="flex items-center gap-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg px-2 py-1.5 transition-colors">
+          <button class="flex items-center gap-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg px-2 py-1.5 transition-colors">
             <UAvatar :src="user?.avatar || undefined" :alt="user?.name" size="sm" />
-            <span class="hidden sm:block text-sm font-medium text-slate-700 dark:text-slate-200">{{ user?.name }}</span>
-            <UIcon name="i-lucide-chevron-down" class="w-4 h-4 text-slate-400" />
+            <span class="hidden sm:block text-sm font-medium text-neutral-700 dark:text-neutral-200">{{ user?.name }}</span>
+            <UIcon name="i-lucide-chevron-down" class="w-4 h-4 text-neutral-400" />
           </button>
         </UDropdownMenu>
       </div>
@@ -204,14 +207,14 @@ provide('sidebarCollapsed', sidebarCollapsed)
       <!-- Sidebar (optional, controlled by page) -->
       <aside
         v-if="showSidebar"
-        class="shrink-0 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 transition-all duration-300 overflow-y-auto" :class="[
+        class="shrink-0 bg-white dark:bg-neutral-900 border-r border-neutral-200 dark:border-neutral-800 transition-all duration-300 overflow-y-auto" :class="[
           sidebarCollapsed ? 'w-16' : 'w-60',
         ]"
       >
         <!-- Sidebar Header -->
-        <div class="sticky top-0 bg-white dark:bg-slate-900 z-10 px-4 py-3 border-b border-slate-100 dark:border-slate-800">
+        <div class="sticky top-0 bg-white dark:bg-neutral-900 z-10 px-4 py-3 border-b border-neutral-100 dark:border-neutral-800">
           <div class="flex items-center justify-between">
-            <span v-if="!sidebarCollapsed" class="text-sm font-semibold text-slate-900 dark:text-white">
+            <span v-if="!sidebarCollapsed" class="text-sm font-semibold text-neutral-900 dark:text-white">
               {{ currentModuleTitle }}
             </span>
             <UButton
@@ -233,8 +236,8 @@ provide('sidebarCollapsed', sidebarCollapsed)
               :to="item.to"
               class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors" :class="[
                 isActiveSidebarItem(item.to)
-                  ? 'bg-teal-50 dark:bg-teal-950/50 text-teal-600 dark:text-teal-400 font-medium'
-                  : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800',
+                  ? 'bg-primary-50 dark:bg-primary-950/50 text-primary-600 dark:text-primary-400 font-medium'
+                  : 'text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800',
               ]"
             >
               <UIcon :name="item.icon" class="w-4 h-4" />
