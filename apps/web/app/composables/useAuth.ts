@@ -1,27 +1,38 @@
 import type { LoginRequest, RegisterRequest, User } from '@zeta/shared'
+import type { ApiErrorResponse } from './useErrorHandler'
 
 interface AuthApiOptions extends RequestInit {
+  /** 是否显示错误提示，默认为 true */
   showError?: boolean
+  /** 自定义错误标题 */
+  customTitle?: string
+  /** 自定义错误描述 */
+  customDescription?: string
+  /** 错误发生时的回调 */
+  onError?: (error: ApiErrorResponse) => void
 }
 
-function getErrorTitle(status: number): string {
-  const titles: Record<number, string> = {
-    400: '请求参数错误',
-    401: '账号或密码错误',
-    403: '权限不足',
-    404: '资源不存在',
-    409: '该邮箱已被注册',
-    422: '数据验证失败',
-    429: '请求过于频繁，请稍后重试',
-    500: '服务器错误',
-  }
-  return titles[status] || '请求失败'
+/**
+ * 判断是否为错误响应
+ */
+function isApiErrorResponse(data: unknown): data is ApiErrorResponse {
+  return (
+    typeof data === 'object'
+    && data !== null
+    && 'statusCode' in data
+    && 'message' in data
+    && 'error' in data
+  )
 }
 
+/**
+ * 认证相关的 Composable
+ * 处理登录、注册、登出等认证操作
+ */
 export function useAuth() {
   const config = useRuntimeConfig()
   const router = useRouter()
-  const toast = useToast()
+  const { handleApiError } = useErrorHandler()
 
   // State
   const user = useState<User | null>('auth:user', () => null)
@@ -43,12 +54,21 @@ export function useAuth() {
   // Computed
   const isAuthenticated = computed(() => !!user.value)
 
-  // API helper
+  /**
+   * API helper
+   */
   const api = async <T>(
     path: string,
     options: AuthApiOptions = {},
   ): Promise<T> => {
-    const { showError = true, ...fetchOptions } = options
+    const {
+      showError = true,
+      customTitle,
+      customDescription,
+      onError,
+      ...fetchOptions
+    } = options
+
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
       ...(fetchOptions.headers as Record<string, string>),
@@ -63,25 +83,47 @@ export function useAuth() {
       headers,
     })
 
-    const data = await response.json()
-
-    if (!response.ok) {
-      const message = Array.isArray(data.message)
-        ? data.message.join('\n')
-        : data.message || '请求失败'
-
-      if (showError) {
-        toast.add({
-          title: getErrorTitle(response.status),
-          description: message,
-          color: 'error',
-        })
+    // 解析响应数据
+    let data: unknown
+    try {
+      data = await response.json()
+    }
+    catch {
+      if (!response.ok && showError) {
+        handleApiError(response, {
+          statusCode: response.status,
+          message: '响应解析失败',
+          error: 'Parse Error',
+          timestamp: new Date().toISOString(),
+          path,
+        }, { showError, customTitle, customDescription, onError })
       }
-
-      throw new Error(message)
+      throw new Error('响应解析失败')
     }
 
-    return data.data
+    // 处理错误响应
+    if (!response.ok) {
+      const errorResponse = isApiErrorResponse(data)
+        ? data
+        : {
+            statusCode: response.status,
+            message: '请求失败',
+            error: 'Error',
+            timestamp: new Date().toISOString(),
+            path,
+          }
+
+      handleApiError(response, errorResponse, {
+        showError,
+        customTitle,
+        customDescription,
+        onError,
+      })
+
+      throw new Error(errorResponse.message)
+    }
+
+    return (data as { data: T }).data
   }
 
   // Actions
