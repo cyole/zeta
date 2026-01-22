@@ -5,6 +5,7 @@ const route = useRoute()
 
 // Module navigation
 const moduleNavItems = [
+  { label: '工作台', icon: 'i-lucide-layout-dashboard', to: '/platform', exact: true },
   { label: '设计转代码', icon: 'i-lucide-figma', to: '/platform/d2c' },
   { label: '编码助手', icon: 'i-lucide-code-2', to: '/platform/coding' },
   { label: '文档管理', icon: 'i-lucide-book-open', to: '/platform/docs' },
@@ -27,7 +28,10 @@ const currentModuleTitle = computed(() => {
 })
 
 // Check active module
-function isActiveModule(path: string) {
+function isActiveModule(path: string, exact?: boolean) {
+  if (exact) {
+    return route.path === path
+  }
   return route.path.startsWith(path)
 }
 
@@ -128,7 +132,7 @@ provide('sidebarCollapsed', sidebarCollapsed)
           :key="item.to"
           :to="item.to"
           class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all" :class="[
-            isActiveModule(item.to)
+            isActiveModule(item.to, item.exact)
               ? 'bg-primary-50 dark:bg-primary-950/50 text-primary-600 dark:text-primary-400'
               : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800',
           ]"
