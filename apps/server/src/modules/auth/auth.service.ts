@@ -348,6 +348,7 @@ export class AuthService {
       lastLoginAt: user.lastLoginAt,
       roles,
       oauthAccounts: user.oauthAccounts,
+      hasPassword: !!user.password,
     }
   }
 

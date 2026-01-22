@@ -1,9 +1,3 @@
-import type {
-  CreateUserDto,
-  UpdateUserDto,
-  UpdateUserRolesDto,
-  UserQueryDto,
-} from './dto'
 import {
   Body,
   Controller,
@@ -18,6 +12,14 @@ import {
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { Permissions } from '@/common/decorators'
 import { PermissionsGuard } from '@/common/guards'
+import {
+  BatchAssignRolesDto,
+  BatchDeleteUsersDto,
+  CreateUserDto,
+  UpdateUserDto,
+  UpdateUserRolesDto,
+  UserQueryDto,
+} from './dto'
 import { UserService } from './user.service'
 
 @ApiTags('用户管理')
@@ -67,5 +69,19 @@ export class UserController {
   @ApiOperation({ summary: '删除用户' })
   async delete(@Param('id') id: string) {
     return this.userService.delete(id)
+  }
+
+  @Delete('batch')
+  @Permissions('user:delete')
+  @ApiOperation({ summary: '批量删除用户' })
+  async batchDelete(@Body() dto: BatchDeleteUsersDto) {
+    return this.userService.batchDelete(dto)
+  }
+
+  @Patch('batch/roles')
+  @Permissions('user:assign-role')
+  @ApiOperation({ summary: '批量分配角色' })
+  async batchAssignRoles(@Body() dto: BatchAssignRolesDto) {
+    return this.userService.batchAssignRoles(dto)
   }
 }

@@ -10,6 +10,8 @@ export interface User {
   updatedAt: string
   lastLoginAt: string | null
   roles: Role[]
+  oauthAccounts?: OAuthAccount[]
+  hasPassword?: boolean
 }
 
 export enum UserStatus {

@@ -10,6 +10,7 @@ import { MailModule } from './modules/mail/mail.module'
 import { OAuthModule } from './modules/oauth/oauth.module'
 import { PermissionModule } from './modules/permission/permission.module'
 import { PrismaModule } from './modules/prisma/prisma.module'
+import { ProfileModule } from './modules/profile/profile.module'
 import { RedisModule } from './modules/redis/redis.module'
 
 import { RoleModule } from './modules/role/role.module'
@@ -44,6 +45,7 @@ import { UserModule } from './modules/user/user.module'
     UserModule,
     RoleModule,
     PermissionModule,
+    ProfileModule,
     OAuthModule,
     MailModule,
   ],

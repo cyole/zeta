@@ -23,10 +23,11 @@ model User {
   updatedAt   DateTime  @updatedAt
   lastLoginAt DateTime?
 
-  roles              UserRole[]
-  oauthAccounts      OAuthAccount[]
-  refreshTokens      RefreshToken[]
-  verificationTokens VerificationToken[]
+  roles                   UserRole[]
+  oauthAccounts           OAuthAccount[]
+  refreshTokens           RefreshToken[]
+  verificationTokens      VerificationToken[]
+  notificationPreferences UserNotificationPreferences?
 
   @@map("users")
 }
@@ -178,4 +179,37 @@ model AuditLog {
   @@index([userId])
   @@index([createdAt])
   @@map("audit_logs")
+}
+
+// ============================================
+// User Notification Preferences
+// ============================================
+
+model UserNotificationPreferences {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Email notifications
+  emailEnabled          Boolean              @default(true)
+  emailOnLogin          Boolean              @default(false)
+  emailOnPasswordChange Boolean              @default(true)
+  emailOnSecurityAlert  Boolean              @default(true)
+  emailDigest           EmailDigestFrequency @default(NONE)
+
+  // Push notifications
+  pushEnabled        Boolean @default(true)
+  pushOnMention      Boolean @default(true)
+  pushOnSystemUpdate Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("user_notification_preferences")
+}
+
+enum EmailDigestFrequency {
+  NONE
+  DAILY
+  WEEKLY
 }

@@ -110,5 +110,66 @@ export function useApi() {
       method: 'DELETE',
     })
 
-  return { request, get, post, patch, del }
+  const upload = async <T>(path: string, formData: FormData, options?: Omit<RequestOptions, 'body'>): Promise<T> => {
+    const { showError = true, ...fetchOptions } = options || {}
+    const headers: Record<string, string> = {}
+
+    if (accessToken.value) {
+      headers.Authorization = `Bearer ${accessToken.value}`
+    }
+
+    let response = await fetch(`${config.public.apiBase}${path}`, {
+      ...fetchOptions,
+      method: 'POST',
+      headers,
+      body: formData,
+    })
+
+    // Try to refresh token if unauthorized
+    if (response.status === 401 && accessToken.value) {
+      try {
+        await refreshTokens()
+        headers.Authorization = `Bearer ${accessToken.value}`
+        response = await fetch(`${config.public.apiBase}${path}`, {
+          ...fetchOptions,
+          method: 'POST',
+          headers,
+          body: formData,
+        })
+      }
+      catch {
+        await logout()
+        if (showError) {
+          toast.add({
+            title: '登录已过期',
+            description: '请重新登录',
+            color: 'error',
+          })
+        }
+        throw new Error('登录已过期')
+      }
+    }
+
+    const data = await response.json()
+
+    if (!response.ok) {
+      const message = Array.isArray(data.message)
+        ? data.message.join('\n')
+        : data.message || '上传失败'
+
+      if (showError) {
+        toast.add({
+          title: getErrorTitle(response.status),
+          description: message,
+          color: 'error',
+        })
+      }
+
+      throw new Error(message)
+    }
+
+    return data.data
+  }
+
+  return { request, get, post, patch, del, upload }
 }

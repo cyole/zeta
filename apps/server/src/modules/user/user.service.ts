@@ -1,4 +1,6 @@
 import type {
+  BatchAssignRolesDto,
+  BatchDeleteUsersDto,
   CreateUserDto,
   UpdateUserDto,
   UpdateUserRolesDto,
@@ -17,7 +19,17 @@ export class UserService {
   constructor(private prisma: PrismaService) {}
 
   async findAll(query: UserQueryDto) {
-    const { search, status, page = 1, limit = 20 } = query
+    const {
+      search,
+      status,
+      roleIds,
+      createdFrom,
+      createdTo,
+      sortBy = 'createdAt',
+      sortOrder = 'desc',
+      page = 1,
+      limit = 20,
+    } = query
     const skip = (page - 1) * limit
 
     const where: any = {}
@@ -33,12 +45,42 @@ export class UserService {
       where.status = status
     }
 
+    // Filter by role IDs
+    if (roleIds && roleIds.length > 0) {
+      where.roles = {
+        some: {
+          roleId: { in: roleIds },
+        },
+      }
+    }
+
+    // Filter by date range
+    if (createdFrom || createdTo) {
+      where.createdAt = {}
+      if (createdFrom) {
+        where.createdAt.gte = new Date(createdFrom)
+      }
+      if (createdTo) {
+        where.createdAt.lte = new Date(createdTo)
+      }
+    }
+
+    // Build orderBy
+    const orderBy: any = {}
+    const allowedSortFields = ['createdAt', 'email', 'name', 'status', 'lastLoginAt']
+    if (allowedSortFields.includes(sortBy)) {
+      orderBy[sortBy] = sortOrder
+    }
+    else {
+      orderBy.createdAt = 'desc'
+    }
+
     const [items, total] = await Promise.all([
       this.prisma.user.findMany({
         where,
         skip,
         take: limit,
-        orderBy: { createdAt: 'desc' },
+        orderBy,
         include: {
           roles: {
             include: {
@@ -177,5 +219,46 @@ export class UserService {
     await this.prisma.user.delete({ where: { id } })
 
     return { message: '用户已删除' }
+  }
+
+  async batchDelete(dto: BatchDeleteUsersDto) {
+    const { userIds } = dto
+
+    const result = await this.prisma.user.deleteMany({
+      where: { id: { in: userIds } },
+    })
+
+    return {
+      message: `成功删除 ${result.count} 个用户`,
+      count: result.count,
+    }
+  }
+
+  async batchAssignRoles(dto: BatchAssignRolesDto) {
+    const { userIds, roleIds } = dto
+
+    // Use transaction to ensure atomicity
+    await this.prisma.$transaction(async (tx) => {
+      // Delete existing roles for all users
+      await tx.userRole.deleteMany({
+        where: { userId: { in: userIds } },
+      })
+
+      // Create new role assignments
+      const assignments = userIds.flatMap(userId =>
+        roleIds.map(roleId => ({ userId, roleId })),
+      )
+
+      await tx.userRole.createMany({
+        data: assignments,
+        skipDuplicates: true,
+      })
+    })
+
+    return {
+      message: `成功为 ${userIds.length} 个用户分配 ${roleIds.length} 个角色`,
+      userCount: userIds.length,
+      roleCount: roleIds.length,
+    }
   }
 }

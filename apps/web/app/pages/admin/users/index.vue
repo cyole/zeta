@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { useDebounceFn } from '@vueuse/core'
+import { h, resolveComponent } from 'vue'
+import type { TableColumn } from '@nuxt/ui'
 import { z } from 'zod'
 
 definePageMeta({
@@ -7,44 +8,56 @@ definePageMeta({
   middleware: 'admin',
 })
 
+const UAvatar = resolveComponent('UAvatar')
+const UBadge = resolveComponent('UBadge')
+const UButton = resolveComponent('UButton')
+const UCheckbox = resolveComponent('UCheckbox')
+const UDropdownMenu = resolveComponent('UDropdownMenu')
+
 const api = useApi()
 const toast = useToast()
 
-// State
-const loading = ref(true)
-const users = ref<any[]>([])
-const meta = ref({ total: 0, page: 1, limit: 20, totalPages: 0 })
-const page = ref(1)
-const pageSize = ref(20)
-const search = ref('')
-
-const showModal = ref(false)
-const showRolesModal = ref(false)
-const editingUser = ref<any>(null)
-const submitting = ref(false)
-
-const allRoles = ref<any[]>([])
-const selectedRoles = ref<string[]>([])
-
-// Constants
-const pageSizeOptions = [10, 20, 50, 100]
-
-const statusLabels: Record<string, string> = {
-  ACTIVE: '启用',
-  INACTIVE: '未激活',
-  SUSPENDED: '已禁用',
+interface User {
+  id: string
+  email: string
+  name: string
+  avatar?: string
+  status: 'ACTIVE' | 'INACTIVE' | 'SUSPENDED'
+  emailVerified: boolean
+  createdAt: string
+  roles: Array<{ id: string, name: string, displayName: string }>
 }
 
-// Computed
-const startIndex = computed(() => {
-  if (meta.value.total === 0)
-    return 0
-  return (page.value - 1) * pageSize.value + 1
+// CRUD Table composable
+const {
+  loading,
+  items: users,
+  selectedItems,
+  filters,
+  pagination,
+  fetchItems,
+  deleteItem,
+  batchDelete,
+  toggleSelection,
+  toggleSelectAll,
+  isSelected,
+  isAllSelected,
+  isSomeSelected,
+  debouncedSearch,
+} = useCrudTable<User>({
+  endpoint: '/users',
+  initialFilters: { search: '' },
 })
 
-const endIndex = computed(() => {
-  return Math.min(page.value * pageSize.value, meta.value.total)
-})
+// Modals
+const showModal = ref(false)
+const showRolesModal = ref(false)
+const editingUser = ref<User | null>(null)
+const submitting = ref(false)
+
+// Roles
+const allRoles = ref<any[]>([])
+const selectedRoles = ref<string[]>([])
 
 // Form
 const formSchema = computed(() => {
@@ -52,14 +65,12 @@ const formSchema = computed(() => {
     name: z.string().min(1, '请输入姓名'),
     email: z.string().email('请输入有效的邮箱'),
   }
-
   if (!editingUser.value) {
     return z.object({
       ...base,
       password: z.string().min(8, '密码至少8个字符'),
     })
   }
-
   return z.object(base)
 })
 
@@ -69,24 +80,22 @@ const form = reactive({
   password: '',
 })
 
+// Constants
+const statusLabels: Record<string, string> = {
+  ACTIVE: '启用',
+  INACTIVE: '未激活',
+  SUSPENDED: '已禁用',
+}
+
+const statusColors: Record<string, 'success' | 'warning' | 'error'> = {
+  ACTIVE: 'success',
+  INACTIVE: 'warning',
+  SUSPENDED: 'error',
+}
+
 // Helper functions
 function getAvatarColor(email: string) {
-  const colors = [
-    '#6366f1',
-    '#8b5cf6',
-    '#d946ef',
-    '#ec4899',
-    '#f43f5e',
-    '#ef4444',
-    '#f97316',
-    '#eab308',
-    '#84cc16',
-    '#22c55e',
-    '#14b8a6',
-    '#06b6d4',
-    '#0ea5e9',
-    '#3b82f6',
-  ]
+  const colors = ['#6366f1', '#8b5cf6', '#d946ef', '#ec4899', '#f43f5e', '#ef4444', '#f97316', '#eab308', '#84cc16', '#22c55e', '#14b8a6', '#06b6d4', '#0ea5e9', '#3b82f6']
   const hash = email.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)
   return colors[hash % colors.length]
 }
@@ -95,58 +104,95 @@ function getInitial(email: string) {
   return email.charAt(0).toUpperCase()
 }
 
-function getRoleBadgeColor(roleName: string) {
-  if (roleName === 'SUPER_ADMIN' || roleName === 'ADMIN')
-    return 'primary'
-  return 'info'
-}
-
-function getStatusDotClass(status: string) {
-  switch (status) {
-    case 'ACTIVE': return 'active'
-    case 'INACTIVE': return 'inactive'
-    case 'SUSPENDED': return 'suspended'
-    default: return 'inactive'
-  }
-}
-
 function formatDate(dateString: string) {
   if (!dateString)
     return '-'
-  const date = new Date(dateString)
-  return date.toLocaleString('zh-CN', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-  })
+  return new Date(dateString).toLocaleString('zh-CN')
 }
+
+// Table columns
+const columns: TableColumn<User>[] = [
+  {
+    id: 'select',
+    header: () => h(UCheckbox, {
+      'modelValue': isAllSelected.value ? true : isSomeSelected.value ? 'indeterminate' : false,
+      'onUpdate:modelValue': () => toggleSelectAll(),
+    }),
+    cell: ({ row }) => h(UCheckbox, {
+      'modelValue': isSelected(row.original),
+      'onUpdate:modelValue': () => toggleSelection(row.original),
+    }),
+    enableSorting: false,
+  },
+  {
+    accessorKey: 'email',
+    header: '用户',
+    cell: ({ row }) => h('div', { class: 'flex items-center gap-3' }, [
+      row.original.avatar
+        ? h(UAvatar, { src: row.original.avatar, alt: row.original.name, size: 'sm' })
+        : h('div', {
+            class: 'w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium text-white',
+            style: { backgroundColor: getAvatarColor(row.original.email) },
+          }, getInitial(row.original.email)),
+      h('span', { class: 'text-sm' }, row.original.email),
+    ]),
+  },
+  {
+    accessorKey: 'name',
+    header: '用户名',
+    cell: ({ row }) => row.original.name || '-',
+  },
+  {
+    accessorKey: 'roles',
+    header: '角色',
+    cell: ({ row }) => {
+      const roles = row.original.roles
+      if (!roles || roles.length === 0) {
+        return h(UBadge, { color: 'neutral', variant: 'subtle', size: 'xs' }, () => '用户')
+      }
+      return h(UBadge, { color: 'primary', variant: 'subtle', size: 'xs' }, () => roles[0]?.displayName || roles[0]?.name)
+    },
+  },
+  {
+    accessorKey: 'status',
+    header: '状态',
+    cell: ({ row }) => h(UBadge, {
+      color: statusColors[row.original.status],
+      variant: 'subtle',
+      size: 'xs',
+    }, () => statusLabels[row.original.status]),
+  },
+  {
+    accessorKey: 'createdAt',
+    header: '创建时间',
+    cell: ({ row }) => h('span', { class: 'text-sm text-neutral-500' }, formatDate(row.original.createdAt)),
+  },
+  {
+    id: 'actions',
+    header: '操作',
+    meta: { class: { td: 'text-right' } },
+    cell: ({ row }) => {
+      const items = [
+        [{ label: '分配角色', icon: 'i-lucide-shield', onSelect: () => openRolesModal(row.original) }],
+        [{ label: row.original.status === 'ACTIVE' ? '禁用' : '启用', icon: row.original.status === 'ACTIVE' ? 'i-lucide-ban' : 'i-lucide-check', onSelect: () => toggleUserStatus(row.original) }],
+        [{ label: '删除', icon: 'i-lucide-trash', onSelect: () => deleteItem(row.original.id) }],
+      ]
+      return h('div', { class: 'flex items-center justify-end gap-1' }, [
+        h(UButton, { variant: 'ghost', color: 'neutral', size: 'xs', onClick: () => openEditModal(row.original) }, () => [
+          h('span', { class: 'i-lucide-edit w-4 h-4 mr-1' }),
+          '编辑',
+        ]),
+        h(UDropdownMenu, { items, content: { align: 'end' } }, () =>
+          h(UButton, { variant: 'ghost', color: 'neutral', size: 'xs' }, () => [
+            h('span', { class: 'i-lucide-more-horizontal w-4 h-4' }),
+          ]),
+        ),
+      ])
+    },
+  },
+]
 
 // Methods
-async function fetchUsers() {
-  loading.value = true
-  try {
-    const params = new URLSearchParams({
-      page: page.value.toString(),
-      limit: pageSize.value.toString(),
-    })
-    if (search.value)
-      params.set('search', search.value)
-
-    const data = await api.get<any>(`/users?${params}`)
-    users.value = data.items
-    meta.value = data.meta
-  }
-  catch (error) {
-    console.error('Failed to fetch users', error)
-  }
-  finally {
-    loading.value = false
-  }
-}
-
 async function fetchRoles() {
   try {
     allRoles.value = await api.get('/roles')
@@ -156,15 +202,6 @@ async function fetchRoles() {
   }
 }
 
-function refreshData() {
-  fetchUsers()
-}
-
-const debouncedSearch = useDebounceFn(() => {
-  page.value = 1
-  fetchUsers()
-}, 300)
-
 function openCreateModal() {
   editingUser.value = null
   form.name = ''
@@ -173,7 +210,7 @@ function openCreateModal() {
   showModal.value = true
 }
 
-function openEditModal(user: any) {
+function openEditModal(user: User) {
   editingUser.value = user
   form.name = user.name
   form.email = user.email
@@ -181,9 +218,9 @@ function openEditModal(user: any) {
   showModal.value = true
 }
 
-function openRolesModal(user: any) {
+function openRolesModal(user: User) {
   editingUser.value = user
-  selectedRoles.value = user.roles?.map((r: any) => r.id) || []
+  selectedRoles.value = user.roles?.map(r => r.id) || []
   showRolesModal.value = true
 }
 
@@ -208,7 +245,7 @@ async function onSubmit() {
     }
     toast.add({ title: '保存成功', color: 'success' })
     showModal.value = false
-    fetchUsers()
+    fetchItems()
   }
   catch (error: any) {
     toast.add({ title: '保存失败', description: error.message, color: 'error' })
@@ -219,12 +256,14 @@ async function onSubmit() {
 }
 
 async function saveRoles() {
+  if (!editingUser.value)
+    return
   submitting.value = true
   try {
     await api.patch(`/users/${editingUser.value.id}/roles`, { roleIds: selectedRoles.value })
     toast.add({ title: '保存成功', color: 'success' })
     showRolesModal.value = false
-    fetchUsers()
+    fetchItems()
   }
   catch (error: any) {
     toast.add({ title: '保存失败', description: error.message, color: 'error' })
@@ -234,87 +273,102 @@ async function saveRoles() {
   }
 }
 
-async function toggleUserStatus(user: any) {
+async function toggleUserStatus(user: User) {
   const newStatus = user.status === 'ACTIVE' ? 'SUSPENDED' : 'ACTIVE'
   try {
     await api.patch(`/users/${user.id}`, { status: newStatus })
     toast.add({ title: newStatus === 'ACTIVE' ? '已启用' : '已禁用', color: 'success' })
-    fetchUsers()
+    fetchItems()
   }
   catch (error: any) {
     toast.add({ title: '操作失败', description: error.message, color: 'error' })
   }
 }
 
-async function deleteUser(user: any) {
-  // eslint-disable-next-line no-alert
-  if (!confirm(`确定要删除用户 "${user.name || user.email}" 吗？`))
+async function handleBatchAssignRoles() {
+  if (selectedItems.value.length === 0) {
+    toast.add({ title: '请先选择用户', color: 'warning' })
     return
+  }
+  // Open a modal for batch role assignment
+  showRolesModal.value = true
+  editingUser.value = null
+  selectedRoles.value = []
+}
 
+async function saveBatchRoles() {
+  if (selectedItems.value.length === 0)
+    return
+  submitting.value = true
   try {
-    await api.del(`/users/${user.id}`)
-    toast.add({ title: '删除成功', color: 'success' })
-    fetchUsers()
+    await api.patch('/users/batch/roles', {
+      userIds: selectedItems.value.map(u => u.id),
+      roleIds: selectedRoles.value,
+    })
+    toast.add({ title: '批量分配成功', color: 'success' })
+    showRolesModal.value = false
+    selectedItems.value = []
+    fetchItems()
   }
   catch (error: any) {
-    toast.add({ title: '删除失败', description: error.message, color: 'error' })
+    toast.add({ title: '批量分配失败', description: error.message, color: 'error' })
+  }
+  finally {
+    submitting.value = false
   }
 }
 
-function getMoreActions(user: any) {
-  return [
-    [
-      { label: '分配角色', icon: 'i-lucide-shield', click: () => openRolesModal(user) },
-    ],
-    [
-      { label: '删除', icon: 'i-lucide-trash', click: () => deleteUser(user) },
-    ],
-  ]
+function handlePageSizeChange(value: unknown) {
+  if (typeof value === 'number') {
+    pagination.setPageSize(value)
+  }
 }
-
-// Watchers
-watch([page, pageSize], () => fetchUsers())
 
 // Init
 onMounted(() => {
-  fetchUsers()
+  fetchItems()
   fetchRoles()
 })
 </script>
 
 <template>
   <div>
-    <!-- Main card container -->
     <UCard class="overflow-hidden">
-      <!-- Card header with search and actions -->
+      <!-- Header -->
       <template #header>
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <!-- Search -->
           <div class="w-full sm:w-80">
             <UInput
-              v-model="search"
+              v-model="filters.search"
               placeholder="搜索用户..."
               icon="i-lucide-search"
               @input="debouncedSearch"
             />
           </div>
 
-          <!-- Action buttons -->
           <div class="flex items-center gap-2 flex-wrap">
-            <UButton variant="outline" color="neutral" size="sm" @click="refreshData">
+            <UButton variant="outline" color="neutral" size="sm" @click="fetchItems">
               <UIcon name="i-lucide-refresh-cw" class="w-4 h-4" />
             </UButton>
-            <UButton variant="outline" color="neutral" size="sm">
-              <UIcon name="i-lucide-filter" class="w-4 h-4 mr-1" />
-              筛选设置
+            <UButton
+              v-if="selectedItems.length > 0"
+              variant="outline"
+              color="error"
+              size="sm"
+              @click="batchDelete"
+            >
+              <UIcon name="i-lucide-trash" class="w-4 h-4 mr-1" />
+              删除 ({{ selectedItems.length }})
             </UButton>
-            <UButton variant="outline" color="neutral" size="sm">
-              <UIcon name="i-lucide-columns" class="w-4 h-4 mr-1" />
-              列设置
-            </UButton>
-            <UButton variant="outline" color="neutral" size="sm">
-              <UIcon name="i-lucide-settings" class="w-4 h-4 mr-1" />
-              属性配置
+            <UButton
+              v-if="selectedItems.length > 0"
+              variant="outline"
+              color="neutral"
+              size="sm"
+              @click="handleBatchAssignRoles"
+            >
+              <UIcon name="i-lucide-shield" class="w-4 h-4 mr-1" />
+              分配角色
             </UButton>
             <UButton size="sm" @click="openCreateModal">
               <UIcon name="i-lucide-plus" class="w-4 h-4 mr-1" />
@@ -324,204 +378,58 @@ onMounted(() => {
         </div>
       </template>
 
-      <!-- Users table -->
-      <div class="overflow-x-auto">
-        <table class="w-full">
-          <thead>
-            <tr class="border-b border-slate-200 dark:border-slate-700">
-              <th class="text-left py-3 px-4 text-sm font-medium text-slate-600 dark:text-slate-300">
-                <div class="flex items-center gap-1 cursor-pointer hover:text-slate-900 dark:hover:text-white">
-                  用户
-                  <UIcon name="i-lucide-chevrons-up-down" class="w-4 h-4" />
-                </div>
-              </th>
-              <th class="text-left py-3 px-4 text-sm font-medium text-slate-600 dark:text-slate-300">
-                <div class="flex items-center gap-1 cursor-pointer hover:text-slate-900 dark:hover:text-white">
-                  ID
-                  <UIcon name="i-lucide-chevrons-up-down" class="w-4 h-4" />
-                </div>
-              </th>
-              <th class="text-left py-3 px-4 text-sm font-medium text-slate-600 dark:text-slate-300">
-                <div class="flex items-center gap-1 cursor-pointer hover:text-slate-900 dark:hover:text-white">
-                  用户名
-                  <UIcon name="i-lucide-chevrons-up-down" class="w-4 h-4" />
-                </div>
-              </th>
-              <th class="text-left py-3 px-4 text-sm font-medium text-slate-600 dark:text-slate-300">
-                <div class="flex items-center gap-1 cursor-pointer hover:text-slate-900 dark:hover:text-white">
-                  角色
-                  <UIcon name="i-lucide-chevrons-up-down" class="w-4 h-4" />
-                </div>
-              </th>
-              <th class="text-left py-3 px-4 text-sm font-medium text-slate-600 dark:text-slate-300">
-                <div class="flex items-center gap-1 cursor-pointer hover:text-slate-900 dark:hover:text-white">
-                  余额
-                  <UIcon name="i-lucide-chevrons-up-down" class="w-4 h-4" />
-                </div>
-              </th>
-              <th class="text-left py-3 px-4 text-sm font-medium text-slate-600 dark:text-slate-300">
-                <div class="flex items-center gap-1 cursor-pointer hover:text-slate-900 dark:hover:text-white">
-                  状态
-                  <UIcon name="i-lucide-chevrons-up-down" class="w-4 h-4" />
-                </div>
-              </th>
-              <th class="text-left py-3 px-4 text-sm font-medium text-slate-600 dark:text-slate-300">
-                <div class="flex items-center gap-1 cursor-pointer hover:text-slate-900 dark:hover:text-white">
-                  创建时间
-                  <UIcon name="i-lucide-chevrons-up-down" class="w-4 h-4" />
-                </div>
-              </th>
-              <th class="text-right py-3 px-4 text-sm font-medium text-slate-600 dark:text-slate-300">
-                操作
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <!-- Loading state -->
-            <tr v-if="loading">
-              <td colspan="8" class="py-12 text-center">
-                <UIcon name="i-lucide-loader-2" class="w-6 h-6 animate-spin text-teal-500 mx-auto" />
-                <p class="mt-2 text-sm text-slate-500">
-                  加载中...
-                </p>
-              </td>
-            </tr>
+      <!-- Table -->
+      <UTable
+        :data="users"
+        :columns="columns"
+        :loading="loading"
+        class="min-h-[400px]"
+      >
+        <template #empty>
+          <div class="flex flex-col items-center justify-center py-12">
+            <UIcon name="i-lucide-users" class="w-12 h-12 text-neutral-300" />
+            <p class="mt-2 text-sm text-neutral-500">
+              暂无用户数据
+            </p>
+          </div>
+        </template>
+      </UTable>
 
-            <!-- Empty state -->
-            <tr v-else-if="users.length === 0">
-              <td colspan="8" class="py-12 text-center">
-                <UIcon name="i-lucide-users" class="w-12 h-12 text-slate-300 mx-auto" />
-                <p class="mt-2 text-sm text-slate-500">
-                  暂无用户数据
-                </p>
-              </td>
-            </tr>
-
-            <!-- User rows -->
-            <tr
-              v-for="user in users"
-              v-else
-              :key="user.id"
-              class="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
-            >
-              <!-- User (avatar + email) -->
-              <td class="py-3 px-4">
-                <div class="flex items-center gap-3">
-                  <div
-                    class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium text-white"
-                    :style="{ backgroundColor: getAvatarColor(user.email) }"
-                  >
-                    {{ getInitial(user.email) }}
-                  </div>
-                  <span class="text-sm text-slate-700 dark:text-slate-200">{{ user.email }}</span>
-                </div>
-              </td>
-
-              <!-- ID -->
-              <td class="py-3 px-4 text-sm text-slate-600 dark:text-slate-300">
-                {{ user.id?.slice(0, 8) || '-' }}
-              </td>
-
-              <!-- Username -->
-              <td class="py-3 px-4 text-sm text-slate-600 dark:text-slate-300">
-                {{ user.name || '-' }}
-              </td>
-
-              <!-- Role -->
-              <td class="py-3 px-4">
-                <UBadge
-                  v-if="user.roles && user.roles.length > 0"
-                  :color="getRoleBadgeColor(user.roles[0]?.name)"
-                  variant="subtle"
-                  size="xs"
-                >
-                  {{ user.roles[0]?.displayName || '用户' }}
-                </UBadge>
-                <UBadge v-else color="neutral" variant="subtle" size="xs">
-                  用户
-                </UBadge>
-              </td>
-
-              <!-- Balance -->
-              <td class="py-3 px-4 text-sm text-slate-600 dark:text-slate-300">
-                ${{ (user.balance || 0).toFixed(2) }}
-              </td>
-
-              <!-- Status -->
-              <td class="py-3 px-4">
-                <div class="flex items-center">
-                  <span class="status-dot" :class="[getStatusDotClass(user.status)]" />
-                  <span class="text-sm text-slate-600 dark:text-slate-300">{{ statusLabels[user.status] }}</span>
-                </div>
-              </td>
-
-              <!-- Created at -->
-              <td class="py-3 px-4 text-sm text-slate-500 dark:text-slate-400">
-                {{ formatDate(user.createdAt) }}
-              </td>
-
-              <!-- Actions -->
-              <td class="py-3 px-4">
-                <div class="flex items-center justify-end gap-1">
-                  <UButton variant="ghost" color="neutral" size="xs" @click="openEditModal(user)">
-                    <UIcon name="i-lucide-edit" class="w-4 h-4 mr-1" />
-                    编辑
-                  </UButton>
-                  <UButton
-                    variant="ghost"
-                    :color="user.status === 'ACTIVE' ? 'warning' : 'success'"
-                    size="xs"
-                    @click="toggleUserStatus(user)"
-                  >
-                    <UIcon :name="user.status === 'ACTIVE' ? 'i-lucide-ban' : 'i-lucide-check'" class="w-4 h-4 mr-1" />
-                    {{ user.status === 'ACTIVE' ? '禁用' : '启用' }}
-                  </UButton>
-                  <UDropdownMenu :items="getMoreActions(user)">
-                    <UButton variant="ghost" color="neutral" size="xs">
-                      <UIcon name="i-lucide-more-horizontal" class="w-4 h-4" />
-                      更多
-                    </UButton>
-                  </UDropdownMenu>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Pagination footer -->
+      <!-- Footer -->
       <template #footer>
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-4">
-            <span class="text-sm text-slate-500 dark:text-slate-400">
-              显示 {{ startIndex }} 至 {{ endIndex }} 共 {{ meta.total }} 条结果
+            <span class="text-sm text-neutral-500">
+              显示 {{ pagination.startIndex.value }} 至 {{ pagination.endIndex.value }} 共 {{ pagination.total.value }} 条
             </span>
             <div class="flex items-center gap-2">
-              <span class="text-sm text-slate-500">每页:</span>
+              <span class="text-sm text-neutral-500">每页:</span>
               <USelectMenu
-                v-model="pageSize"
-                :options="pageSizeOptions"
+                :model-value="pagination.pageSize.value"
+                :options="pagination.pageSizeOptions"
                 size="xs"
                 class="w-20"
+                @update:model-value="handlePageSizeChange"
               />
             </div>
           </div>
           <UPagination
-            v-model:page="page"
-            :total="meta.total"
-            :page-count="pageSize"
+            :model-value="pagination.page.value"
+            :total="pagination.total.value"
+            :page-count="pagination.pageSize.value"
+            @update:model-value="pagination.setPage"
           />
         </div>
       </template>
     </UCard>
 
-    <!-- Create/Edit modal -->
+    <!-- Create/Edit Modal -->
     <UModal v-model:open="showModal">
       <template #content>
         <UCard>
           <template #header>
             <div class="flex items-center justify-between">
-              <h3 class="font-semibold text-slate-800 dark:text-white">
+              <h3 class="font-semibold">
                 {{ editingUser ? '编辑用户' : '创建用户' }}
               </h3>
               <UButton variant="ghost" color="neutral" size="xs" @click="showModal = false">
@@ -543,7 +451,7 @@ onMounted(() => {
               <UInput v-model="form.password" type="password" placeholder="请输入密码" />
             </UFormField>
 
-            <div class="flex gap-2 justify-end pt-4 border-t border-slate-200 dark:border-slate-700">
+            <div class="flex gap-2 justify-end pt-4 border-t">
               <UButton variant="outline" color="neutral" @click="showModal = false">
                 取消
               </UButton>
@@ -556,14 +464,14 @@ onMounted(() => {
       </template>
     </UModal>
 
-    <!-- Assign roles modal -->
+    <!-- Roles Modal -->
     <UModal v-model:open="showRolesModal">
       <template #content>
         <UCard>
           <template #header>
             <div class="flex items-center justify-between">
-              <h3 class="font-semibold text-slate-800 dark:text-white">
-                分配角色 - {{ editingUser?.name }}
+              <h3 class="font-semibold">
+                {{ editingUser ? `分配角色 - ${editingUser.name}` : `批量分配角色 (${selectedItems.length}个用户)` }}
               </h3>
               <UButton variant="ghost" color="neutral" size="xs" @click="showRolesModal = false">
                 <UIcon name="i-lucide-x" class="w-4 h-4" />
@@ -575,7 +483,7 @@ onMounted(() => {
             <div
               v-for="role in allRoles"
               :key="role.id"
-              class="flex items-center gap-3 p-3 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer"
+              class="flex items-center gap-3 p-3 rounded-lg border hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors cursor-pointer"
               @click="toggleRole(role.id)"
             >
               <UCheckbox
@@ -583,21 +491,21 @@ onMounted(() => {
                 @update:model-value="toggleRole(role.id)"
               />
               <div class="flex-1">
-                <p class="font-medium text-slate-800 dark:text-white">
+                <p class="font-medium">
                   {{ role.displayName }}
                 </p>
-                <p class="text-sm text-slate-500">
+                <p class="text-sm text-neutral-500">
                   {{ role.description }}
                 </p>
               </div>
             </div>
           </div>
 
-          <div class="flex gap-2 justify-end mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
+          <div class="flex gap-2 justify-end mt-4 pt-4 border-t">
             <UButton variant="outline" color="neutral" @click="showRolesModal = false">
               取消
             </UButton>
-            <UButton :loading="submitting" @click="saveRoles">
+            <UButton :loading="submitting" @click="editingUser ? saveRoles() : saveBatchRoles()">
               保存
             </UButton>
           </div>

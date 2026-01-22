@@ -164,7 +164,7 @@ function registerWithDingTalk() {
             ]"
           />
         </div>
-        <p class="text-xs" :class="strengthColors[passwordStrength].replace('bg-', 'text-')">
+        <p class="text-xs" :class="(strengthColors[passwordStrength] || 'bg-slate-300').replace('bg-', 'text-')">
           密码强度：{{ strengthLabels[passwordStrength] }}
         </p>
       </div>
