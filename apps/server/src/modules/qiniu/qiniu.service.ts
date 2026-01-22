@@ -1,14 +1,14 @@
+import type { QiniuModuleOptions } from './qiniu.interface'
+import { randomBytes } from 'node:crypto'
 import {
-  Injectable,
   BadRequestException,
+  Inject,
+  Injectable,
   Logger,
   OnModuleInit,
 } from '@nestjs/common'
-import { Inject } from '@nestjs/common'
 import * as qiniu from 'qiniu'
-import { randomBytes } from 'node:crypto'
 import { QINIU_CONFIG_PROVIDER } from './qiniu.constants'
-import type { QiniuModuleOptions } from './qiniu.interface'
 
 interface UploadResult {
   url: string

@@ -51,6 +51,7 @@ const permissions = [
   { name: 'user:update', displayName: '更新用户', module: 'user' },
   { name: 'user:delete', displayName: '删除用户', module: 'user' },
   { name: 'user:assign-role', displayName: '分配角色', module: 'user' },
+  { name: 'user:assign-permission', displayName: '分配权限', module: 'user' },
 
   // Role permissions
   { name: 'role:read', displayName: '查看角色', module: 'role' },
@@ -72,6 +73,7 @@ const rolePermissions: Record<string, string[]> = {
     'user:update',
     'user:delete',
     'user:assign-role',
+    'user:assign-permission',
     'role:read',
     'role:create',
     'role:update',

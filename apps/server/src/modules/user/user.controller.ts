@@ -13,10 +13,12 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { Permissions } from '@/common/decorators'
 import { PermissionsGuard } from '@/common/guards'
 import {
+  BatchAssignPermissionsDto,
   BatchAssignRolesDto,
   BatchDeleteUsersDto,
   CreateUserDto,
   UpdateUserDto,
+  UpdateUserPermissionsDto,
   UpdateUserRolesDto,
   UserQueryDto,
 } from './dto'
@@ -83,5 +85,19 @@ export class UserController {
   @ApiOperation({ summary: '批量分配角色' })
   async batchAssignRoles(@Body() dto: BatchAssignRolesDto) {
     return this.userService.batchAssignRoles(dto)
+  }
+
+  @Patch(':id/permissions')
+  @Permissions('user:assign-permission')
+  @ApiOperation({ summary: '分配权限' })
+  async updatePermissions(@Param('id') id: string, @Body() dto: UpdateUserPermissionsDto) {
+    return this.userService.updatePermissions(id, dto)
+  }
+
+  @Patch('batch/permissions')
+  @Permissions('user:assign-permission')
+  @ApiOperation({ summary: '批量分配权限' })
+  async batchAssignPermissions(@Body() dto: BatchAssignPermissionsDto) {
+    return this.userService.batchAssignPermissions(dto)
   }
 }

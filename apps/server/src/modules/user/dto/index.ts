@@ -136,3 +136,23 @@ export class BatchAssignRolesDto {
   @IsString({ each: true })
   roleIds: string[]
 }
+
+export class UpdateUserPermissionsDto {
+  @ApiProperty({ type: [String], description: '要分配的权限ID列表' })
+  @IsArray()
+  @IsString({ each: true })
+  permissionIds: string[]
+}
+
+export class BatchAssignPermissionsDto {
+  @ApiProperty({ type: [String], description: '要分配权限的用户ID列表' })
+  @IsArray()
+  @IsString({ each: true })
+  @ArrayMinSize(1)
+  userIds: string[]
+
+  @ApiProperty({ type: [String], description: '要分配的权限ID列表' })
+  @IsArray()
+  @IsString({ each: true })
+  permissionIds: string[]
+}

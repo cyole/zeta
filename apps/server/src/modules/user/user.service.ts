@@ -1,8 +1,10 @@
 import type {
+  BatchAssignPermissionsDto,
   BatchAssignRolesDto,
   BatchDeleteUsersDto,
   CreateUserDto,
   UpdateUserDto,
+  UpdateUserPermissionsDto,
   UpdateUserRolesDto,
   UserQueryDto,
 } from './dto'
@@ -124,6 +126,11 @@ export class UserService {
             },
           },
         },
+        permissions: {
+          include: {
+            permission: true,
+          },
+        },
         oauthAccounts: {
           select: {
             provider: true,
@@ -144,6 +151,7 @@ export class UserService {
         ...ur.role,
         permissions: ur.role.permissions.map(rp => rp.permission),
       })),
+      permissions: user.permissions.map(up => up.permission),
     }
   }
 
@@ -259,6 +267,56 @@ export class UserService {
       message: `成功为 ${userIds.length} 个用户分配 ${roleIds.length} 个角色`,
       userCount: userIds.length,
       roleCount: roleIds.length,
+    }
+  }
+
+  async updatePermissions(id: string, dto: UpdateUserPermissionsDto) {
+    const user = await this.prisma.user.findUnique({ where: { id } })
+
+    if (!user) {
+      throw new NotFoundException('用户不存在')
+    }
+
+    // Delete existing permissions
+    await this.prisma.userPermission.deleteMany({
+      where: { userId: id },
+    })
+
+    // Add new permissions
+    await this.prisma.userPermission.createMany({
+      data: dto.permissionIds.map(permissionId => ({
+        userId: id,
+        permissionId,
+      })),
+    })
+
+    return this.findOne(id)
+  }
+
+  async batchAssignPermissions(dto: BatchAssignPermissionsDto) {
+    const { userIds, permissionIds } = dto
+
+    await this.prisma.$transaction(async (tx) => {
+      // Delete existing permissions for all users
+      await tx.userPermission.deleteMany({
+        where: { userId: { in: userIds } },
+      })
+
+      // Create new permission assignments
+      const assignments = userIds.flatMap(userId =>
+        permissionIds.map(permissionId => ({ userId, permissionId })),
+      )
+
+      await tx.userPermission.createMany({
+        data: assignments,
+        skipDuplicates: true,
+      })
+    })
+
+    return {
+      message: `成功为 ${userIds.length} 个用户分配 ${permissionIds.length} 个权限`,
+      userCount: userIds.length,
+      permissionCount: permissionIds.length,
     }
   }
 }
