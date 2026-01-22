@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { PrimaryColor, NeutralColor, RadiusValue } from '~/composables/useTheme'
+import type { NeutralColor, PrimaryColor, RadiusValue } from '~/composables/useTheme'
 
 const {
   primaryColor,
@@ -67,7 +67,7 @@ async function copyAppConfig() {
     <UButton
       variant="ghost"
       color="neutral"
-      icon="i-lucide-paintbrush-2"
+      icon="i-lucide-palette"
       aria-label="Theme settings"
     />
 

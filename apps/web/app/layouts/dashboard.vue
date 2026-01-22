@@ -36,23 +36,16 @@ function isActiveRoute(path: string) {
 const userMenuItems = computed(() => [
   [
     {
-      label: '返回平台',
-      icon: 'i-lucide-layout-grid',
-      click: () => router.push('/platform'),
-    },
-  ],
-  [
-    {
       label: '个人设置',
       icon: 'i-lucide-user',
-      click: () => router.push('/dashboard/profile'),
+      onSelect: () => router.push('/dashboard/profile'),
     },
   ],
   [
     {
       label: '退出登录',
       icon: 'i-lucide-log-out',
-      click: () => logout(),
+      onSelect: () => logout(),
     },
   ],
 ])
@@ -212,17 +205,6 @@ const userMenuItems = computed(() => [
         </div>
 
         <div class="flex items-center gap-2">
-          <!-- Back to Platform -->
-          <NuxtLink
-            to="/platform"
-            class="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium bg-primary-500 text-white hover:bg-primary-600 rounded-md transition-colors"
-          >
-            <UIcon name="i-lucide-arrow-left" class="w-4 h-4" />
-            <span class="hidden sm:inline">返回平台</span>
-          </NuxtLink>
-
-          <div class="h-5 w-px bg-neutral-200 dark:bg-neutral-700" />
-
           <!-- Theme panel -->
           <ThemePanel />
 

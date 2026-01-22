@@ -92,19 +92,19 @@ const userMenuItems = computed(() => [
     {
       label: '个人设置',
       icon: 'i-lucide-user',
-      click: () => router.push('/dashboard/profile'),
+      onSelect: () => router.push('/dashboard/profile'),
     },
     {
       label: '系统管理',
       icon: 'i-lucide-settings',
-      click: () => router.push('/dashboard'),
+      onSelect: () => router.push('/dashboard'),
     },
   ],
   [
     {
       label: '退出登录',
       icon: 'i-lucide-log-out',
-      click: () => logout(),
+      onSelect: () => logout(),
     },
   ],
 ])

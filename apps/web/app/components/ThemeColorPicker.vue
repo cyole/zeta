@@ -24,6 +24,6 @@ const items = computed(() => [
 
 <template>
   <UDropdownMenu :items="items">
-    <UButton variant="ghost" color="neutral" icon="i-lucide-paintbrush-2" />
+    <UButton variant="ghost" color="neutral" icon="i-lucide-palette" />
   </UDropdownMenu>
 </template>
