@@ -182,56 +182,6 @@ async function copyAppConfig() {
             </button>
           </div>
         </div>
-
-        <!-- Export -->
-        <div>
-          <div class="flex items-center justify-between mb-2.5">
-            <span class="text-sm font-medium text-neutral-900 dark:text-white">Export</span>
-            <button
-              type="button"
-              class="p-1 rounded hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
-              title="Reset to defaults"
-              @click="resetTheme"
-            >
-              <UIcon name="i-lucide-rotate-ccw" class="w-3.5 h-3.5 text-neutral-400" />
-            </button>
-          </div>
-          <div class="space-y-2">
-            <!-- CSS Export (shown when CSS changes exist) -->
-            <button
-              v-if="hasCSSChanges"
-              type="button"
-              class="w-full flex items-center justify-between px-3 py-2 rounded-md bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors"
-              @click="copyCSSConfig"
-            >
-              <div class="flex items-center gap-2">
-                <UIcon name="i-lucide-file-code" class="w-4 h-4 text-neutral-500" />
-                <span class="text-sm text-neutral-700 dark:text-neutral-300">main.css</span>
-              </div>
-              <UIcon name="i-lucide-copy" class="w-4 h-4 text-neutral-400" />
-            </button>
-            <!-- App Config Export (shown when app config changes exist) -->
-            <button
-              v-if="hasAppConfigChanges"
-              type="button"
-              class="w-full flex items-center justify-between px-3 py-2 rounded-md bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors"
-              @click="copyAppConfig"
-            >
-              <div class="flex items-center gap-2">
-                <UIcon name="i-lucide-file-code" class="w-4 h-4 text-neutral-500" />
-                <span class="text-sm text-neutral-700 dark:text-neutral-300">app.config.ts</span>
-              </div>
-              <UIcon name="i-lucide-copy" class="w-4 h-4 text-neutral-400" />
-            </button>
-            <!-- No changes message -->
-            <div
-              v-if="!hasCSSChanges && !hasAppConfigChanges"
-              class="text-xs text-neutral-500 text-center py-2"
-            >
-              Using default theme settings
-            </div>
-          </div>
-        </div>
       </div>
     </template>
   </UPopover>

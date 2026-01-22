@@ -162,7 +162,7 @@ const userMenuItems = computed(() => [
           <button
             class="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors text-left"
           >
-            <UAvatar :src="user?.avatar || undefined" :alt="user?.name" size="sm" class="shrink-0" />
+            <UAvatar :src="user?.avatar || undefined" :alt="user?.name" class="shrink-0" />
             <Transition name="fade">
               <div v-if="isExpanded" class="flex-1 overflow-hidden">
                 <p class="text-sm font-medium text-neutral-900 dark:text-white truncate">
@@ -204,15 +204,15 @@ const userMenuItems = computed(() => [
           </div>
         </div>
 
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-3">
           <!-- Theme panel -->
           <ThemePanel />
 
           <!-- Notifications -->
-          <button class="relative p-2 rounded-md hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors">
-            <UIcon name="i-lucide-bell" class="w-5 h-5 text-neutral-600 dark:text-neutral-400" />
-            <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full" />
-          </button>
+          <div class="relative">
+            <UButton icon="i-lucide-bell" color="neutral" variant="ghost" />
+            <span class="absolute -top-0.5 -right-0.5 w-2 h-2 bg-red-500 rounded-full" />
+          </div>
 
           <div class="h-5 w-px bg-neutral-200 dark:bg-neutral-700" />
 
