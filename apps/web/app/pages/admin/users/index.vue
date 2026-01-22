@@ -332,12 +332,27 @@ onMounted(() => {
 </script>
 
 <template>
-  <div>
-    <UCard class="overflow-hidden">
-      <!-- Header -->
+  <div class="space-y-6">
+    <!-- Page header -->
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="text-2xl font-bold tracking-tight text-neutral-900 dark:text-white">
+          用户管理
+        </h1>
+        <p class="text-neutral-500">
+          管理系统用户账户和权限
+        </p>
+      </div>
+      <UButton icon="i-lucide-plus" @click="openCreateModal">
+        创建用户
+      </UButton>
+    </div>
+
+    <UCard>
+      <!-- Toolbar -->
       <template #header>
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div class="w-full sm:w-80">
+          <div class="relative w-full sm:w-80">
             <UInput
               v-model="filters.search"
               placeholder="搜索用户..."
@@ -370,10 +385,6 @@ onMounted(() => {
               <UIcon name="i-lucide-shield" class="w-4 h-4 mr-1" />
               分配角色
             </UButton>
-            <UButton size="sm" @click="openCreateModal">
-              <UIcon name="i-lucide-plus" class="w-4 h-4 mr-1" />
-              创建用户
-            </UButton>
           </div>
         </div>
       </template>
@@ -387,7 +398,7 @@ onMounted(() => {
       >
         <template #empty>
           <div class="flex flex-col items-center justify-center py-12">
-            <UIcon name="i-lucide-users" class="w-12 h-12 text-neutral-300" />
+            <UIcon name="i-lucide-users" class="w-12 h-12 text-neutral-300 dark:text-neutral-600" />
             <p class="mt-2 text-sm text-neutral-500">
               暂无用户数据
             </p>

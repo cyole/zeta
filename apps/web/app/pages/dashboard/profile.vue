@@ -6,13 +6,13 @@ definePageMeta({
 </script>
 
 <template>
-  <div>
+  <div class="space-y-6">
     <!-- Page header -->
-    <div class="mb-8">
-      <h1 class="text-2xl font-bold text-neutral-900 dark:text-white">
+    <div>
+      <h1 class="text-2xl font-bold tracking-tight text-neutral-900 dark:text-white">
         个人设置
       </h1>
-      <p class="mt-1 text-neutral-500 dark:text-neutral-400">
+      <p class="text-neutral-500">
         管理您的账号信息和偏好设置
       </p>
     </div>

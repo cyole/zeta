@@ -16,45 +16,49 @@
     linear-gradient(to bottom, var(--color-neutral-800) 1px, transparent 1px);
 }
 
-/* Custom sidebar theme - light teal/mint */
+/* Custom sidebar theme - shadcn-admin style */
 .sidebar-wrapper {
-  background: linear-gradient(180deg, #e8fffe 0%, #d5f7f5 100%);
+  @apply bg-white border-r border-neutral-200;
 }
 
 .dark .sidebar-wrapper {
-  background: linear-gradient(180deg, #0f2a2a 0%, #0d2424 100%);
+  @apply bg-neutral-950 border-neutral-800;
 }
 
 /* Sidebar navigation item styles */
 .sidebar-nav-item {
-  @apply flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors;
-  @apply text-slate-600 hover:bg-teal-100/60 hover:text-teal-700;
+  @apply flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors;
+  @apply text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900;
 }
 
 .dark .sidebar-nav-item {
-  @apply text-slate-300 hover:bg-teal-900/40 hover:text-teal-300;
+  @apply text-neutral-400 hover:bg-neutral-800 hover:text-neutral-100;
 }
 
 .sidebar-nav-item.active {
-  @apply bg-teal-500 text-white hover:bg-teal-500 hover:text-white;
+  @apply bg-neutral-100 text-neutral-900;
 }
 
 .dark .sidebar-nav-item.active {
-  @apply bg-teal-600 text-white hover:bg-teal-600 hover:text-white;
+  @apply bg-neutral-800 text-neutral-100;
 }
 
 /* Sidebar section label */
 .sidebar-section-label {
-  @apply text-xs font-medium text-slate-400 uppercase tracking-wider px-3 py-2;
+  @apply text-xs font-semibold text-neutral-500 uppercase tracking-wider px-3 py-2 mb-1;
 }
 
-/* Card with teal accent */
-.card-header-teal {
-  @apply bg-gradient-to-r from-teal-50 to-cyan-50 border-b border-teal-100;
+.dark .sidebar-section-label {
+  @apply text-neutral-500;
 }
 
-.dark .card-header-teal {
-  @apply bg-gradient-to-r from-teal-950/50 to-cyan-950/50 border-teal-800;
+/* Card header accent */
+.card-header-accent {
+  @apply bg-neutral-50 border-b border-neutral-100;
+}
+
+.dark .card-header-accent {
+  @apply bg-neutral-900 border-neutral-800;
 }
 
 /* Status indicator dot */
@@ -229,11 +233,11 @@
 
 /* Platform module active indicator */
 .module-nav-active {
-  @apply bg-teal-50 text-teal-600;
+  @apply bg-neutral-100 text-neutral-900;
 }
 
 .dark .module-nav-active {
-  @apply bg-teal-950/50 text-teal-400;
+  @apply bg-neutral-800 text-neutral-100;
 }
 
 /* Code block styling */
@@ -247,7 +251,7 @@
 }
 
 .chat-message.user {
-  @apply bg-teal-500 text-white ml-auto;
+  @apply bg-neutral-900 text-white ml-auto;
 }
 
 .chat-message.assistant {
@@ -273,28 +277,32 @@
 
 /* Gradient text */
 .gradient-text {
-  @apply bg-gradient-to-r from-teal-500 to-cyan-500 bg-clip-text text-transparent;
+  @apply bg-gradient-to-r from-neutral-600 to-neutral-800 bg-clip-text text-transparent;
+}
+
+.dark .gradient-text {
+  @apply from-neutral-300 to-neutral-100;
 }
 
 /* Platform card hover effect */
 .platform-card {
-  @apply bg-white rounded-xl border border-slate-200 transition-all duration-200;
-  @apply hover:border-teal-300 hover:shadow-lg hover:shadow-teal-500/10;
+  @apply bg-white rounded-xl border border-neutral-200 transition-all duration-200;
+  @apply hover:border-neutral-300 hover:shadow-md;
 }
 
 .dark .platform-card {
-  @apply bg-slate-900 border-slate-800;
-  @apply hover:border-teal-700;
+  @apply bg-neutral-900 border-neutral-800;
+  @apply hover:border-neutral-700;
 }
 
 /* Upload area */
 .upload-area {
-  @apply border-2 border-dashed border-slate-300 rounded-xl p-12 text-center cursor-pointer transition-colors;
-  @apply hover:border-teal-400 hover:bg-teal-50/50;
+  @apply border-2 border-dashed border-neutral-300 rounded-xl p-12 text-center cursor-pointer transition-colors;
+  @apply hover:border-neutral-400 hover:bg-neutral-50;
 }
 
 .dark .upload-area {
-  @apply border-slate-700 hover:border-teal-600 hover:bg-teal-950/30;
+  @apply border-neutral-700 hover:border-neutral-600 hover:bg-neutral-900;
 }
 
 /* AI typing indicator */
@@ -303,7 +311,7 @@
 }
 
 .ai-typing span {
-  @apply w-2 h-2 rounded-full bg-teal-500 animate-bounce;
+  @apply w-2 h-2 rounded-full bg-neutral-500 animate-bounce;
 }
 
 .ai-typing span:nth-child(2) {

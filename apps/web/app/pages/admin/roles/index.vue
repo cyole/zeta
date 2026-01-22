@@ -153,14 +153,14 @@ onMounted(() => {
 </script>
 
 <template>
-  <div>
+  <div class="space-y-6">
     <!-- Page header -->
-    <div class="flex items-center justify-between mb-8">
+    <div class="flex items-center justify-between">
       <div>
-        <h1 class="text-2xl font-bold text-neutral-900 dark:text-white">
+        <h1 class="text-2xl font-bold tracking-tight text-neutral-900 dark:text-white">
           角色管理
         </h1>
-        <p class="mt-1 text-neutral-500 dark:text-neutral-400">
+        <p class="text-neutral-500">
           管理系统角色和分配权限
         </p>
       </div>
@@ -169,7 +169,7 @@ onMounted(() => {
       </UButton>
     </div>
 
-    <!-- Roles list -->
+    <!-- Roles grid -->
     <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
       <UCard v-for="role in roles" :key="role.id" class="relative">
         <!-- System badge -->
@@ -178,6 +178,7 @@ onMounted(() => {
           color="neutral"
           variant="subtle"
           class="absolute top-4 right-4"
+          size="xs"
         >
           系统
         </UBadge>
@@ -185,7 +186,7 @@ onMounted(() => {
         <div class="space-y-4">
           <!-- Role info -->
           <div>
-            <h3 class="text-lg font-semibold">
+            <h3 class="text-lg font-semibold text-neutral-900 dark:text-white">
               {{ role.displayName }}
             </h3>
             <p class="text-sm text-neutral-500">
@@ -198,11 +199,11 @@ onMounted(() => {
 
           <!-- Stats -->
           <div class="flex gap-4 text-sm">
-            <div class="flex items-center gap-1 text-neutral-500">
+            <div class="flex items-center gap-1.5 text-neutral-500">
               <UIcon name="i-lucide-users" class="w-4 h-4" />
               <span>{{ role.userCount || 0 }} 用户</span>
             </div>
-            <div class="flex items-center gap-1 text-neutral-500">
+            <div class="flex items-center gap-1.5 text-neutral-500">
               <UIcon name="i-lucide-key" class="w-4 h-4" />
               <span>{{ role.permissions?.length || 0 }} 权限</span>
             </div>
@@ -230,32 +231,32 @@ onMounted(() => {
           </div>
 
           <!-- Actions -->
-          <div class="flex gap-2 pt-2 border-t border-neutral-200 dark:border-neutral-800">
+          <div class="flex gap-2 pt-4 border-t border-neutral-200 dark:border-neutral-800">
             <UButton
               variant="outline"
-              size="sm"
-              icon="i-lucide-key"
+              size="xs"
               @click="openPermissionsModal(role)"
             >
+              <UIcon name="i-lucide-key" class="w-3.5 h-3.5 mr-1" />
               权限
             </UButton>
             <UButton
               v-if="!role.isSystem"
               variant="outline"
-              size="sm"
-              icon="i-lucide-edit"
+              size="xs"
               @click="openEditModal(role)"
             >
+              <UIcon name="i-lucide-edit" class="w-3.5 h-3.5 mr-1" />
               编辑
             </UButton>
             <UButton
               v-if="!role.isSystem && !role.userCount"
               variant="outline"
-              size="sm"
-              icon="i-lucide-trash"
+              size="xs"
               color="error"
               @click="deleteRole(role)"
             >
+              <UIcon name="i-lucide-trash" class="w-3.5 h-3.5 mr-1" />
               删除
             </UButton>
           </div>
