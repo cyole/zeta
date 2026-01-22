@@ -49,6 +49,13 @@ function isActiveRoute(path: string) {
 const userMenuItems = computed(() => [
   [
     {
+      label: '返回平台',
+      icon: 'i-lucide-layout-grid',
+      click: () => router.push('/platform'),
+    },
+  ],
+  [
+    {
       label: '个人设置',
       icon: 'i-lucide-user',
       click: () => router.push('/dashboard/profile'),
@@ -94,17 +101,29 @@ const colorModeItems = [
       @mouseenter="sidebarHovered = true"
       @mouseleave="sidebarHovered = false"
     >
-      <!-- Logo -->
-      <div class="flex items-center gap-3 h-14 px-4 border-b border-neutral-200 dark:border-neutral-800">
-        <div class="w-8 h-8 rounded-lg bg-neutral-900 dark:bg-white flex items-center justify-center shrink-0">
-          <UIcon name="i-lucide-zap" class="w-4 h-4 text-white dark:text-neutral-900" />
-        </div>
-        <Transition name="fade">
-          <div v-if="isExpanded" class="flex flex-col overflow-hidden">
-            <span class="font-semibold text-neutral-900 dark:text-white truncate">Zeta</span>
-            <span class="text-xs text-neutral-500 truncate">v0.1.0</span>
+      <!-- Logo & Back to Platform -->
+      <div class="flex flex-col border-b border-neutral-200 dark:border-neutral-800">
+        <div class="flex items-center gap-3 h-14 px-4">
+          <div class="w-8 h-8 rounded-lg bg-neutral-900 dark:bg-white flex items-center justify-center shrink-0">
+            <UIcon name="i-lucide-zap" class="w-4 h-4 text-white dark:text-neutral-900" />
           </div>
-        </Transition>
+          <Transition name="fade">
+            <div v-if="isExpanded" class="flex flex-col overflow-hidden">
+              <span class="font-semibold text-neutral-900 dark:text-white truncate">Zeta</span>
+              <span class="text-xs text-neutral-500 truncate">管理后台</span>
+            </div>
+          </Transition>
+        </div>
+        <!-- Back to Platform Button -->
+        <NuxtLink
+          to="/platform"
+          class="flex items-center gap-3 mx-3 mb-3 px-3 py-2.5 rounded-lg bg-teal-50 dark:bg-teal-950/50 text-teal-600 dark:text-teal-400 hover:bg-teal-100 dark:hover:bg-teal-950 transition-colors"
+        >
+          <UIcon name="i-lucide-arrow-left" class="w-4 h-4 shrink-0" />
+          <Transition name="fade">
+            <span v-if="isExpanded" class="text-sm font-medium truncate">返回功能平台</span>
+          </Transition>
+        </NuxtLink>
       </div>
 
       <!-- Navigation -->
@@ -227,6 +246,17 @@ const colorModeItems = [
         </div>
 
         <div class="flex items-center gap-2">
+          <!-- Back to Platform -->
+          <NuxtLink
+            to="/platform"
+            class="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium bg-teal-500 text-white hover:bg-teal-600 rounded-md transition-colors"
+          >
+            <UIcon name="i-lucide-arrow-left" class="w-4 h-4" />
+            <span class="hidden sm:inline">返回平台</span>
+          </NuxtLink>
+
+          <div class="h-5 w-px bg-neutral-200 dark:bg-neutral-700" />
+
           <!-- Color mode toggle -->
           <UDropdownMenu :items="colorModeItems" :content="{ align: 'end' }">
             <button class="p-2 rounded-md hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors">
