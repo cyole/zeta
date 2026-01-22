@@ -144,15 +144,6 @@ provide('sidebarCollapsed', sidebarCollapsed)
 
       <!-- Right Actions -->
       <div class="flex items-center gap-3">
-        <!-- Dashboard Link -->
-        <NuxtLink
-          to="/dashboard"
-          class="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 hover:bg-neutral-800 dark:hover:bg-neutral-100 rounded-lg transition-colors"
-        >
-          <UIcon name="i-lucide-layout-dashboard" class="w-4 h-4" />
-          <span class="hidden sm:inline">管理后台</span>
-        </NuxtLink>
-
         <!-- Search -->
         <UButton
           icon="i-lucide-search"

@@ -80,7 +80,7 @@ const userMenuItems = computed(() => [
         >
           <UIcon name="i-lucide-arrow-left" class="w-4 h-4 shrink-0" />
           <Transition name="fade">
-            <span v-if="isExpanded" class="text-sm font-medium truncate">返回功能平台</span>
+            <span v-if="isExpanded" class="text-sm font-medium truncate">返回工作台</span>
           </Transition>
         </NuxtLink>
       </div>
