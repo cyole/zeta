@@ -69,32 +69,32 @@ const features = [
 <template>
   <div class="min-h-full">
     <!-- Welcome Section -->
-    <div class="bg-gradient-to-br from-primary-500 via-primary-600 to-secondary-500 dark:from-primary-600 dark:via-primary-700 dark:to-secondary-600">
+    <div class="bg-neutral-100 dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-800">
       <div class="max-w-7xl mx-auto px-6 py-12">
         <div class="flex items-center justify-between">
           <div>
-            <h1 class="text-2xl font-bold text-white mb-2">
+            <h1 class="text-2xl font-bold text-neutral-900 dark:text-white mb-2">
               {{ greeting }}，{{ user?.name || '开发者' }}
             </h1>
-            <p class="text-primary-100">
+            <p class="text-neutral-500 dark:text-neutral-400">
               欢迎使用 Zeta 前端提效平台，开始高效开发吧
             </p>
           </div>
           <div class="hidden md:flex items-center gap-4">
             <div class="text-right">
-              <div class="text-sm text-primary-200">
+              <div class="text-sm text-neutral-500 dark:text-neutral-400">
                 今日使用
               </div>
-              <div class="text-2xl font-bold text-white">
+              <div class="text-2xl font-bold text-neutral-900 dark:text-white">
                 12 次
               </div>
             </div>
-            <div class="w-px h-12 bg-white/20" />
+            <div class="w-px h-12 bg-neutral-300 dark:bg-neutral-700" />
             <div class="text-right">
-              <div class="text-sm text-primary-200">
+              <div class="text-sm text-neutral-500 dark:text-neutral-400">
                 本月节省
               </div>
-              <div class="text-2xl font-bold text-white">
+              <div class="text-2xl font-bold text-neutral-900 dark:text-white">
                 48 小时
               </div>
             </div>
