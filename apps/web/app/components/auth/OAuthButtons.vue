@@ -30,7 +30,7 @@ const { loginWithGitHub, loginWithDingTalk } = useOAuth()
       class="hover:bg-neutral-100 dark:hover:bg-neutral-900"
       @click="loginWithDingTalk"
     >
-      <UIcon name="i-simple-icons-dingtalk" class="w-5 h-5 mr-2" />
+      <UIcon name="i-ant-design:dingtalk-circle-filled" class="w-5 h-5 mr-2" />
       钉钉
     </UButton>
   </div>
