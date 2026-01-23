@@ -235,18 +235,18 @@ onMounted(() => {
             <UButton
               variant="outline"
               size="xs"
+              icon="i-lucide-key"
               @click="openPermissionsModal(role)"
             >
-              <UIcon name="i-lucide-key" class="w-3.5 h-3.5 mr-1" />
               权限
             </UButton>
             <UButton
               v-if="!role.isSystem"
               variant="outline"
               size="xs"
+              icon="i-lucide-edit"
               @click="openEditModal(role)"
             >
-              <UIcon name="i-lucide-edit" class="w-3.5 h-3.5 mr-1" />
               编辑
             </UButton>
             <UButton
@@ -254,9 +254,9 @@ onMounted(() => {
               variant="outline"
               size="xs"
               color="error"
+              icon="i-lucide-trash"
               @click="deleteRole(role)"
             >
-              <UIcon name="i-lucide-trash" class="w-3.5 h-3.5 mr-1" />
               删除
             </UButton>
           </div>

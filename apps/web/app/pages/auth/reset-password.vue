@@ -170,8 +170,7 @@ function goToForgotPassword() {
         />
       </UFormField>
 
-      <UButton type="submit" block size="lg" :loading="loading" class="mt-6">
-        <UIcon name="i-lucide-check" class="w-4 h-4 mr-2" />
+      <UButton type="submit" block size="lg" :loading="loading" class="mt-6" icon="i-lucide-check">
         重置密码
       </UButton>
     </UForm>

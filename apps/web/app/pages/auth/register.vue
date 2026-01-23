@@ -160,8 +160,7 @@ async function onSubmit() {
         </p>
       </div>
 
-      <UButton type="submit" block size="lg" :loading="loading" class="mt-6">
-        <UIcon name="i-lucide-user-plus" class="w-4 h-4 mr-2" />
+      <UButton type="submit" block size="lg" :loading="loading" class="mt-6" icon="i-lucide-user-plus">
         创建账号
       </UButton>
     </UForm>

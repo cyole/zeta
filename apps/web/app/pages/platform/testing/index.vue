@@ -87,8 +87,7 @@ definePageMeta({
           :rows="4"
           class="w-full mb-3"
         />
-        <UButton class="w-full">
-          <UIcon name="i-lucide-sparkles" class="w-4 h-4 mr-2" />
+        <UButton class="w-full" icon="i-lucide-sparkles">
           生成测试用例
         </UButton>
       </div>
@@ -113,8 +112,7 @@ definePageMeta({
           :rows="4"
           class="w-full mb-3"
         />
-        <UButton class="w-full">
-          <UIcon name="i-lucide-shield-check" class="w-4 h-4 mr-2" />
+        <UButton class="w-full" icon="i-lucide-shield-check">
           开始评审
         </UButton>
       </div>

@@ -107,8 +107,7 @@ async function onSubmit() {
         </NuxtLink>
       </div>
 
-      <UButton type="submit" block size="lg" :loading="loading" class="mt-6">
-        <UIcon name="i-lucide-log-in" class="w-4 h-4 mr-2" />
+      <UButton type="submit" block size="lg" :loading="loading" class="mt-6" icon="i-lucide-log-in">
         登录
       </UButton>
     </UForm>

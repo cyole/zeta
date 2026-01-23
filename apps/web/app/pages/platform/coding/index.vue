@@ -67,9 +67,7 @@ const quickPrompts = [
               class="w-full"
             />
           </div>
-          <UButton size="lg" :disabled="!inputMessage.trim()">
-            <UIcon name="i-lucide-send" class="w-4 h-4" />
-          </UButton>
+          <UButton size="lg" :disabled="!inputMessage.trim()" icon="i-lucide-send" />
         </div>
         <div class="flex items-center gap-4 mt-3 text-xs text-neutral-400">
           <span>按 Ctrl + Enter 发送</span>

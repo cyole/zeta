@@ -17,8 +17,7 @@ definePageMeta({
           接口文档解析、Mock 数据生成、参数校验代码自动生成
         </p>
       </div>
-      <UButton>
-        <UIcon name="i-lucide-plus" class="w-4 h-4 mr-2" />
+      <UButton icon="i-lucide-plus">
         导入接口
       </UButton>
     </div>
@@ -89,8 +88,7 @@ definePageMeta({
         <p class="mb-4">
           暂无接口数据
         </p>
-        <UButton variant="outline">
-          <UIcon name="i-lucide-upload" class="w-4 h-4 mr-2" />
+        <UButton variant="outline" icon="i-lucide-upload">
           导入 Swagger 文档
         </UButton>
       </div>

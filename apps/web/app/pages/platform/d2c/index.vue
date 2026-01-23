@@ -67,8 +67,7 @@ definePageMeta({
       <p class="text-sm text-neutral-500 dark:text-neutral-400 mb-4">
         或点击上传，支持 .fig、.sketch、.png、.jpg 格式
       </p>
-      <UButton>
-        <UIcon name="i-lucide-upload" class="w-4 h-4 mr-2" />
+      <UButton icon="i-lucide-upload">
         选择文件
       </UButton>
     </div>

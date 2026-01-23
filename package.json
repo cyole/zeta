@@ -19,6 +19,7 @@
     "test": "pnpm -r test",
     "db:generate": "pnpm --filter @zeta/server prisma:generate",
     "db:migrate": "pnpm --filter @zeta/server prisma:migrate",
+    "db:migrate:reset": "pnpm --filter @zeta/server prisma:migrate:reset",
     "db:seed": "pnpm --filter @zeta/server prisma:seed",
     "db:studio": "pnpm --filter @zeta/server prisma:studio",
     "docker:up": "docker-compose up -d",

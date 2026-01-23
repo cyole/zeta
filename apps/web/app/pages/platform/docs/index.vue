@@ -32,8 +32,7 @@ const recentDocs = [
           自然语言检索、多轮问答、文档自动更新
         </p>
       </div>
-      <UButton>
-        <UIcon name="i-lucide-plus" class="w-4 h-4 mr-2" />
+      <UButton icon="i-lucide-plus">
         导入文档
       </UButton>
     </div>

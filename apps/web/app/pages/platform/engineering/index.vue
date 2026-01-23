@@ -111,8 +111,7 @@ const templates = [
             <span class="text-sm text-neutral-600 dark:text-neutral-400">Husky</span>
           </label>
         </div>
-        <UButton>
-          <UIcon name="i-lucide-sparkles" class="w-4 h-4 mr-2" />
+        <UButton icon="i-lucide-sparkles">
           生成初始化命令
         </UButton>
       </div>

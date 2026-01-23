@@ -60,8 +60,7 @@ onMounted(async () => {
       <p class="text-neutral-500 dark:text-neutral-400 mb-8">
         您的邮箱已验证，现在可以登录账号了
       </p>
-      <UButton to="/auth/login" size="lg">
-        <UIcon name="i-lucide-log-in" class="w-4 h-4 mr-2" />
+      <UButton to="/auth/login" size="lg" icon="i-lucide-log-in">
         前往登录
       </UButton>
     </template>
@@ -80,8 +79,7 @@ onMounted(async () => {
         {{ errorMessage }}
       </p>
       <div class="space-y-3">
-        <UButton to="/auth/login" size="lg" block>
-          <UIcon name="i-lucide-log-in" class="w-4 h-4 mr-2" />
+        <UButton to="/auth/login" size="lg" block icon="i-lucide-log-in">
           前往登录
         </UButton>
         <p class="text-sm text-neutral-500 dark:text-neutral-400">

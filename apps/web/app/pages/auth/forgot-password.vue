@@ -72,8 +72,7 @@ function goToLogin() {
         请查收邮箱并按照邮件中的说明重置密码
       </p>
       <div class="flex flex-col gap-3">
-        <UButton variant="outline" size="lg" block @click="onSubmit">
-          <UIcon name="i-lucide-rotate-cw" class="w-4 h-4 mr-2" />
+        <UButton variant="outline" size="lg" block icon="i-lucide-rotate-cw" @click="onSubmit">
           重新发送
         </UButton>
         <UButton color="neutral" variant="ghost" size="lg" block @click="goToLogin">
@@ -95,8 +94,7 @@ function goToLogin() {
         />
       </UFormField>
 
-      <UButton type="submit" block size="lg" :loading="loading" class="mt-6">
-        <UIcon name="i-lucide-send" class="w-4 h-4 mr-2" />
+      <UButton type="submit" block size="lg" :loading="loading" class="mt-6" icon="i-lucide-send">
         发送重置邮件
       </UButton>
     </UForm>

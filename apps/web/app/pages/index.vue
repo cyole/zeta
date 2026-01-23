@@ -70,8 +70,7 @@ const quickLinks = [
           <div class="flex items-center gap-3">
             <ColorModeToggle />
             <template v-if="isAuthenticated">
-              <UButton to="/platform" color="primary">
-                <UIcon name="i-lucide-layout-dashboard" class="w-4 h-4 mr-1.5" />
+              <UButton to="/platform" color="primary" icon="i-lucide-layout-dashboard">
                 打开工作台
               </UButton>
             </template>
@@ -116,8 +115,7 @@ const quickLinks = [
           </p>
 
           <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <UButton to="/platform" size="xl" class="w-full sm:w-auto">
-              <UIcon name="i-lucide-layout-dashboard" class="w-5 h-5 mr-2" />
+            <UButton to="/platform" size="xl" class="w-full sm:w-auto" icon="i-lucide-layout-dashboard">
               进入工作台
             </UButton>
             <UButton to="/auth/login" size="xl" variant="outline" color="neutral" class="w-full sm:w-auto">

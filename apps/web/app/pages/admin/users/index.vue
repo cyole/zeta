@@ -213,10 +213,7 @@ const columns: TableColumn<User>[] = [
         [{ label: '删除', icon: 'i-lucide-trash', onSelect: () => deleteItem(row.original.id) }],
       ]
       return h('div', { class: 'flex items-center justify-end gap-2' }, [
-        h(UButton, { variant: 'soft', color: 'neutral', size: 'sm', onClick: () => openEditModal(row.original) }, () => [
-          h(UIcon, { name: 'i-lucide-edit', class: 'w-4 h-4 mr-1' }),
-          '编辑',
-        ]),
+        h(UButton, { variant: 'soft', color: 'neutral', size: 'sm', icon: 'i-lucide-edit', onClick: () => openEditModal(row.original) }, () => '编辑'),
         h(UDropdownMenu, { items, content: { align: 'end' } }, () =>
           h(UButton, { icon: 'i-lucide-more-horizontal', variant: 'ghost', color: 'neutral', size: 'sm' })),
       ])
@@ -494,27 +491,25 @@ onMounted(() => {
           </div>
 
           <div class="flex items-center gap-2 flex-wrap">
-            <UButton variant="outline" color="neutral" size="lg" @click="fetchItems">
-              <UIcon name="i-lucide-refresh-cw" class="w-4 h-4" />
-            </UButton>
+            <UButton variant="outline" color="neutral" size="lg" icon="i-lucide-refresh-cw" @click="fetchItems" />
             <UButton
               v-if="selectedItems.length > 0"
               variant="outline"
               color="error"
               size="lg"
+              icon="i-lucide-trash"
               @click="batchDelete"
             >
-              <UIcon name="i-lucide-trash" class="w-4 h-4 mr-1" />
-              删除 ({{ selectedItems.length }})
+              删除
             </UButton>
             <UButton
               v-if="selectedItems.length > 0"
               variant="outline"
               color="neutral"
               size="lg"
+              icon="i-lucide-shield"
               @click="handleBatchAssignRoles"
             >
-              <UIcon name="i-lucide-shield" class="w-4 h-4 mr-1" />
               分配角色
             </UButton>
             <UButton
@@ -522,9 +517,9 @@ onMounted(() => {
               variant="outline"
               color="primary"
               size="lg"
+              icon="i-lucide-key"
               @click="handleBatchAssignPermissions"
             >
-              <UIcon name="i-lucide-key" class="w-4 h-4 mr-1" />
               分配权限
             </UButton>
           </div>
@@ -589,9 +584,7 @@ onMounted(() => {
               <h3 class="text-lg font-semibold">
                 {{ editingUser ? '编辑用户' : '创建用户' }}
               </h3>
-              <UButton variant="ghost" color="neutral" size="sm" @click="showModal = false">
-                <UIcon name="i-lucide-x" class="w-5 h-5" />
-              </UButton>
+              <UButton icon="i-lucide-x" variant="ghost" color="neutral" size="sm" @click="showModal = false" />
             </div>
           </template>
 
@@ -630,9 +623,7 @@ onMounted(() => {
               <h3 class="text-lg font-semibold">
                 {{ editingUser ? `分配角色 - ${editingUser.name}` : `批量分配角色 (${selectedItems.length}个用户)` }}
               </h3>
-              <UButton variant="ghost" color="neutral" size="sm" @click="showRolesModal = false">
-                <UIcon name="i-lucide-x" class="w-5 h-5" />
-              </UButton>
+              <UButton icon="i-lucide-x" variant="ghost" color="neutral" size="sm" @click="showRolesModal = false" />
             </div>
           </template>
 
@@ -685,9 +676,7 @@ onMounted(() => {
                   已选择 {{ selectedPermissions.length }} 个权限
                 </p>
               </div>
-              <UButton variant="ghost" color="neutral" size="sm" @click="showPermissionsModal = false">
-                <UIcon name="i-lucide-x" class="w-5 h-5" />
-              </UButton>
+              <UButton icon="i-lucide-x" variant="ghost" color="neutral" size="sm" @click="showPermissionsModal = false" />
             </div>
           </template>
 
