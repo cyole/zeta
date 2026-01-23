@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common'
 import { ConfigModule } from '@nestjs/config'
 import { APP_GUARD } from '@nestjs/core'
-import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler'
 
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard'
+import { ThrottlerGuard } from './common/guards/throttler.guard'
 import configuration from './config/configuration'
 import { AuthModule } from './modules/auth/auth.module'
 import { MailModule } from './modules/mail/mail.module'
@@ -15,7 +15,6 @@ import { QiniuModule } from './modules/qiniu/qiniu.module'
 import { RedisModule } from './modules/redis/redis.module'
 import { RoleModule } from './modules/role/role.module'
 import { UploadModule } from './modules/upload/upload.module'
-
 import { UserModule } from './modules/user/user.module'
 
 @Module({
@@ -27,18 +26,8 @@ import { UserModule } from './modules/user/user.module'
       envFilePath: ['.env.local', '.env'],
     }),
 
-    // Rate limiting
-    ThrottlerModule.forRoot([
-      {
-        ttl: 60000, // 1 minute
-        limit: 100, // 100 requests per minute
-      },
-    ]),
-
-    // Database
+    // Database & Cache
     PrismaModule,
-
-    // Cache
     RedisModule,
 
     // Feature modules
@@ -58,7 +47,7 @@ import { UserModule } from './modules/user/user.module'
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
     },
-    // Global rate limit guard
+    // Global rate limit guard (custom implementation using Redis)
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,

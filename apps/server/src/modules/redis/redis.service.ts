@@ -71,4 +71,59 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
   async isTokenBlacklisted(token: string): Promise<boolean> {
     return this.exists(`blacklist:${token}`)
   }
+
+  // Cache helper methods
+  async getJSON<T>(key: string): Promise<T | null> {
+    const value = await this.get(key)
+    if (!value) return null
+    try {
+      return JSON.parse(value) as T
+    }
+    catch {
+      return null
+    }
+  }
+
+  async setJSON(key: string, value: unknown, ttl?: number): Promise<void> {
+    await this.set(key, JSON.stringify(value), ttl)
+  }
+
+  async deletePattern(pattern: string): Promise<number> {
+    const keys = await this.client.keys(pattern)
+    if (keys.length === 0) return 0
+    return this.client.del(...keys)
+  }
+
+  async mget(keys: string[]): Promise<Array<string | null>> {
+    return this.client.mget(...keys)
+  }
+
+  async mset(keyValues: Record<string, string>): Promise<void> {
+    const args = Object.entries(keyValues).flat()
+    await this.client.mset(...args)
+  }
+
+  async incr(key: string): Promise<number> {
+    return this.client.incr(key)
+  }
+
+  async incrby(key: string, increment: number): Promise<number> {
+    return this.client.incrby(key, increment)
+  }
+
+  async expire(key: string, seconds: number): Promise<void> {
+    await this.client.expire(key, seconds)
+  }
+
+  async ttl(key: string): Promise<number> {
+    return this.client.ttl(key)
+  }
+
+  async keys(pattern: string): Promise<string[]> {
+    return this.client.keys(pattern)
+  }
+
+  async flushdb(): Promise<void> {
+    await this.client.flushdb()
+  }
 }

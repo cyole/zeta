@@ -31,7 +31,9 @@ export class QiniuService implements OnModuleInit {
   private formUploader: qiniu.form_up.FormUploader
   private bucketManager: qiniu.rs.BucketManager
 
-  constructor(@Inject(QINIU_CONFIG_PROVIDER) private options: QiniuModuleOptions) {}
+  constructor(
+    @Inject(QINIU_CONFIG_PROVIDER) private options: QiniuModuleOptions,
+  ) {}
 
   onModuleInit() {
     if (!this.options.accessKey || !this.options.secretKey || !this.options.bucket) {
