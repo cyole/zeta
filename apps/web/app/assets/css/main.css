@@ -360,3 +360,11 @@
 .ai-typing span:nth-child(3) {
   animation-delay: 0.2s;
 }
+
+/* Button cursor pointer */
+button,
+[type='button'],
+[type='submit'],
+[type='reset'] {
+  cursor: pointer;
+}
