@@ -76,11 +76,8 @@ const quickLinks = [
               </UButton>
             </template>
             <template v-else>
-              <UButton to="/auth/login" variant="ghost" class="hidden sm:inline-flex">
+              <UButton to="/auth/login" variant="outline" class="hidden sm:inline-flex">
                 登录
-              </UButton>
-              <UButton to="/platform" color="primary">
-                进入工作台
               </UButton>
             </template>
           </div>
