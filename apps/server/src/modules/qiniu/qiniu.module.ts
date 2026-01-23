@@ -18,13 +18,18 @@ export const QiniuConfigProvider: Provider = {
 
 @Module({})
 export class QiniuModule {
+  private static moduleDefinition: DynamicModule
+
   static register(): DynamicModule {
-    return {
-      module: QiniuModule,
-      imports: [ConfigModule],
-      providers: [QiniuConfigProvider, QiniuService],
-      exports: [QiniuService],
-      global: true,
+    if (!this.moduleDefinition) {
+      this.moduleDefinition = {
+        module: QiniuModule,
+        imports: [ConfigModule],
+        providers: [QiniuConfigProvider, QiniuService],
+        exports: [QiniuService],
+        global: true,
+      }
     }
+    return this.moduleDefinition
   }
 }
