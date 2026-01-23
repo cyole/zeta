@@ -39,17 +39,21 @@ export function useAuth() {
   const isLoading = useState<boolean>('auth:loading', () => true)
 
   // Cookies
-  const accessToken = useCookie('zeta_access_token', {
+  const getAccessTokenCookie = () => useCookie('zeta_access_token', {
     maxAge: 60 * 15, // 15 minutes
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
   })
 
-  const refreshToken = useCookie('zeta_refresh_token', {
-    maxAge: 60 * 60 * 24 * 7, // 7 days
+  const getRefreshTokenCookie = (rememberMe = true) => useCookie('zeta_refresh_token', {
+    maxAge: rememberMe ? 60 * 60 * 24 * 7 : undefined, // 7 days if remember me, session cookie otherwise
+    expires: rememberMe ? undefined : new Date(0), // Session cookie if not remember me
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
   })
+
+  let accessToken = getAccessTokenCookie()
+  let refreshToken = getRefreshTokenCookie()
 
   // Computed
   const isAuthenticated = computed(() => !!user.value)
@@ -127,7 +131,7 @@ export function useAuth() {
   }
 
   // Actions
-  const login = async (credentials: LoginRequest) => {
+  const login = async (credentials: LoginRequest, rememberMe = true) => {
     const result = await api<{
       accessToken: string
       refreshToken: string
@@ -136,6 +140,10 @@ export function useAuth() {
       method: 'POST',
       body: JSON.stringify(credentials),
     })
+
+    // Re-initialize cookies with correct rememberMe setting
+    accessToken = getAccessTokenCookie()
+    refreshToken = getRefreshTokenCookie(rememberMe)
 
     accessToken.value = result.accessToken
     refreshToken.value = result.refreshToken

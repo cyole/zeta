@@ -11,7 +11,7 @@ const toast = useToast()
 const route = useRoute()
 
 const loading = ref(false)
-const rememberMe = ref(false)
+const rememberMe = ref(true)
 
 const schema = z.object({
   email: z.string().email('请输入有效的邮箱地址'),
@@ -23,10 +23,25 @@ const form = reactive({
   password: '',
 })
 
+// 页面加载时恢复保存的邮箱和记住登录状态选项
+onMounted(() => {
+  const savedEmail = localStorage.getItem('login_email')
+  if (savedEmail) {
+    form.email = savedEmail
+  }
+  const savedRememberMe = localStorage.getItem('login_remember_me')
+  rememberMe.value = savedRememberMe !== 'false'
+})
+
 async function onSubmit() {
   loading.value = true
   try {
-    await login(form)
+    await login(form, rememberMe.value)
+
+    // 保存邮箱以便下次自动填充
+    localStorage.setItem('login_email', form.email)
+    localStorage.setItem('login_remember_me', String(rememberMe.value))
+
     toast.add({
       title: '登录成功',
       description: '欢迎回来！',
