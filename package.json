@@ -20,6 +20,7 @@
     "db:generate": "pnpm --filter @zeta/server prisma:generate",
     "db:migrate": "pnpm --filter @zeta/server prisma:migrate",
     "db:seed": "pnpm --filter @zeta/server prisma:seed",
+    "db:studio": "pnpm --filter @zeta/server prisma:studio",
     "docker:up": "docker-compose up -d",
     "docker:down": "docker-compose down",
     "clean": "pnpm -r exec rm -rf node_modules dist .nuxt .output && rm -rf node_modules"

@@ -1,0 +1,301 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="zh-CN">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  </head>
+  <body
+    style="
+      background-color: rgb(255, 255, 255);
+      margin: 40px auto;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+        Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif,
+        Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+      padding: 0.5rem;
+    "
+  >
+    <table
+      align="center"
+      width="100%"
+      role="presentation"
+      cellspacing="0"
+      cellpadding="0"
+      border="0"
+      style="
+        max-width: 100%;
+        border-width: 1px;
+        border-style: solid;
+        box-shadow: 0 0 #0000, 0 0 #0000, 0 4px 6px -1px rgb(0, 0, 0, 0.1),
+          0 2px 4px -2px rgb(0, 0, 0, 0.1);
+        border-radius: 0.25rem;
+        margin: 40px auto;
+        padding: 20px;
+        width: 550px;
+        border-color: rgb(102, 126, 234);
+        position: relative;
+        overflow: hidden;
+      "
+    >
+      <tbody>
+        <tr style="width: 100%">
+          <td>
+            <!-- Background Gradient Effect -->
+            <table
+              align="center"
+              width="100%"
+              border="0"
+              cellpadding="0"
+              cellspacing="0"
+              role="presentation"
+              style="
+                position: absolute;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                left: 0;
+                pointer-events: none;
+              "
+            >
+              <tbody>
+                <tr>
+                  <td
+                    style="
+                      background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+                      filter: blur(40px);
+                    "
+                  ></td>
+                </tr>
+              </tbody>
+            </table>
+
+            <!-- Logo Section -->
+            <table
+              align="center"
+              width="100%"
+              border="0"
+              cellpadding="0"
+              cellspacing="0"
+              role="presentation"
+              style="margin-top: 32px"
+            >
+              <tbody>
+                <tr>
+                  <td style="text-align: center">
+                    <div
+                      style="
+                        display: inline-block;
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        width: 4rem;
+                        height: 4rem;
+                        border-radius: 1rem;
+                        line-height: 4rem;
+                        margin: 0 auto;
+                      "
+                    >
+                      <span
+                        style="
+                          color: white;
+                          font-size: 24px;
+                          font-weight: 700;
+                          letter-spacing: 2px;
+                        "
+                        >Z</span
+                      >
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <!-- Title -->
+            <h1
+              style="
+                color: rgb(0, 0, 0);
+                font-size: 18px;
+                font-weight: 400;
+                text-align: center;
+                padding: 0;
+                margin: 30px 0;
+              "
+            >
+              欢迎加入 <strong>Zeta</strong>！
+            </h1>
+
+            <!-- Greeting -->
+            <p
+              style="
+                font-size: 14px;
+                line-height: 24px;
+                margin: 16px 0;
+                color: rgb(0, 0, 0);
+              "
+            >
+              您好，<strong><%= name %></strong>！
+            </p>
+
+            <p
+              style="
+                font-size: 14px;
+                line-height: 24px;
+                margin: 16px 0;
+                color: rgb(51, 51, 51);
+              "
+            >
+              感谢您注册 Zeta 平台。请点击下方按钮验证您的邮箱地址：
+            </p>
+
+            <!-- Verification Link Box -->
+            <table
+              align="center"
+              width="100%"
+              border="0"
+              cellpadding="0"
+              cellspacing="0"
+              role="presentation"
+              style="
+                background-color: rgb(243, 244, 246);
+                border-radius: 0.75rem;
+                padding: 1rem;
+                margin: 16px 0;
+              "
+            >
+              <tbody>
+                <tr>
+                  <td>
+                    <p
+                      style="
+                        font-size: 12px;
+                        line-height: 20px;
+                        margin: 0;
+                        color: rgb(107, 114, 128);
+                      "
+                    >
+                      验证链接：
+                    </p>
+                    <p
+                      style="
+                        font-size: 13px;
+                        line-height: 20px;
+                        margin: 8px 0 0 0;
+                        color: rgb(51, 51, 51);
+                        word-break: break-all;
+                      "
+                    >
+                      <%= verificationUrl %>
+                    </p>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <!-- CTA Button -->
+            <table
+              align="center"
+              width="100%"
+              border="0"
+              cellpadding="0"
+              cellspacing="0"
+              role="presentation"
+              style="text-align: center; margin: 32px 0"
+            >
+              <tbody>
+                <tr>
+                  <td>
+                    <a
+                      href="<%= verificationUrl %>"
+                      target="_blank"
+                      style="
+                        line-height: 100%;
+                        text-decoration: none;
+                        display: inline-block;
+                        max-width: 100%;
+                        padding: 12px 32px;
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        border-radius: 0.25rem;
+                        color: rgb(255, 255, 255);
+                        font-size: 14px;
+                        font-weight: 600;
+                        text-align: center;
+                      "
+                      >验证邮箱</a
+                    >
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <hr
+              style="
+                width: 100%;
+                border: none;
+                border-top: 1px solid #eaeaea;
+                margin: 26px 0;
+              "
+            />
+
+            <!-- Quote -->
+            <table
+              align="center"
+              width="100%"
+              border="0"
+              cellpadding="0"
+              cellspacing="0"
+              role="presentation"
+            >
+              <tbody>
+                <tr>
+                  <td>
+                    <p
+                      style="
+                        font-size: 12px;
+                        line-height: 24px;
+                        margin: 16px 0;
+                        color: rgb(107, 114, 128);
+                        text-align: center;
+                      "
+                    >
+                      "The only way to do great work is to love what you do."
+                      <br />— Steve Jobs
+                    </p>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <!-- Footer -->
+            <table
+              align="center"
+              width="100%"
+              border="0"
+              cellpadding="0"
+              cellspacing="0"
+              role="presentation"
+              style="margin-top: 1rem"
+            >
+              <tbody>
+                <tr>
+                  <td>
+                    <p
+                      style="
+                        font-size: 11px;
+                        line-height: 20px;
+                        margin: 16px 0;
+                        text-align: center;
+                        color: rgb(156, 163, 175);
+                      "
+                    >
+                      此链接将在24小时后失效。<br />
+                      如果您没有注册 Zeta 账号，请忽略此邮件。<br />
+                      本邮件为系统自动发送，请勿直接回复。<br />
+                      © <%= year %> Zeta. All rights reserved.
+                    </p>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </body>
+</html>
