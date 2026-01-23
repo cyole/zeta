@@ -1,13 +1,22 @@
-shellEmulator: true
-
-trustPolicy: no-downgrade
-
 packages:
   - apps/*
   - packages/*
 
 onlyBuiltDependencies:
   - '@nestjs/core'
+  - '@parcel/watcher'
   - '@prisma/engines'
+  - '@scarf/scarf'
   - bcrypt
+  - esbuild
   - prisma
+  - unrs-resolver
+  - vue-demi
+
+shellEmulator: true
+
+trustPolicy: no-downgrade
+
+trustPolicyExclude:
+  - chokidar@4.0.3
+  - semver
