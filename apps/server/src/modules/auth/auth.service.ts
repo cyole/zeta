@@ -1,4 +1,4 @@
-import type { LoginDto, RegisterDto } from './dto'
+import type { ForgotPasswordDto, LoginDto, RegisterDto, ResetPasswordDto } from './dto'
 import * as crypto from 'node:crypto'
 import {
   BadRequestException,
@@ -350,6 +350,86 @@ export class AuthService {
       oauthAccounts: user.oauthAccounts,
       hasPassword: !!user.password,
     }
+  }
+
+  async forgotPassword(dto: ForgotPasswordDto) {
+    const user = await this.prisma.user.findUnique({
+      where: { email: dto.email },
+    })
+
+    if (!user) {
+      throw new BadRequestException('该邮箱尚未注册')
+    }
+
+    // 删除现有的密码重置令牌
+    await this.prisma.verificationToken.deleteMany({
+      where: { userId: user.id, type: 'PASSWORD_RESET' },
+    })
+
+    // 创建新的重置令牌
+    const resetToken = crypto.randomBytes(32).toString('hex')
+    await this.prisma.verificationToken.create({
+      data: {
+        token: resetToken,
+        type: 'PASSWORD_RESET',
+        userId: user.id,
+        expiresAt: new Date(Date.now() + 60 * 60 * 1000), // 1 hour
+      },
+    })
+
+    // 发送密码重置邮件
+    await this.mailService.sendPasswordResetEmail(
+      user.email,
+      user.name,
+      resetToken,
+    )
+
+    return { message: '密码重置邮件已发送' }
+  }
+
+  async resetPassword(dto: ResetPasswordDto) {
+    console.log('[resetPassword] Received request with token:', dto.token?.substring(0, 10) + '...')
+
+    const verificationToken = await this.prisma.verificationToken.findUnique({
+      where: { token: dto.token },
+      include: { user: true },
+    })
+
+    if (!verificationToken) {
+      console.log('[resetPassword] Token not found')
+      throw new BadRequestException('无效的重置令牌')
+    }
+
+    if (verificationToken.expiresAt < new Date()) {
+      console.log('[resetPassword] Token expired')
+      throw new BadRequestException('重置令牌已过期')
+    }
+
+    if (verificationToken.type !== 'PASSWORD_RESET') {
+      console.log('[resetPassword] Invalid token type:', verificationToken.type)
+      throw new BadRequestException('无效的重置令牌类型')
+    }
+
+    console.log('[resetPassword] Token valid for user:', verificationToken.user.email)
+
+    // Hash新密码
+    const hashedPassword = await bcrypt.hash(dto.password, 12)
+    console.log('[resetPassword] Password hashed')
+
+    // 更新用户密码
+    await this.prisma.user.update({
+      where: { id: verificationToken.userId },
+      data: { password: hashedPassword },
+    })
+    console.log('[resetPassword] Password updated in database for user:', verificationToken.userId)
+
+    // 删除重置令牌
+    await this.prisma.verificationToken.delete({
+      where: { id: verificationToken.id },
+    })
+    console.log('[resetPassword] Token deleted')
+
+    return { message: '密码重置成功，请使用新密码登录' }
   }
 
   private async generateTokens(

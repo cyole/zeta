@@ -229,6 +229,22 @@ export function useAuth() {
     refreshToken.value = tokens.refreshToken
   }
 
+  const forgotPassword = async (email: string) => {
+    const result = await api<{ message: string }>('/auth/forgot-password', {
+      method: 'POST',
+      body: JSON.stringify({ email }),
+    })
+    return result
+  }
+
+  const resetPassword = async (token: string, password: string) => {
+    const result = await api<{ message: string }>('/auth/reset-password', {
+      method: 'POST',
+      body: JSON.stringify({ token, password }),
+    })
+    return result
+  }
+
   return {
     user: readonly(user),
     isAuthenticated,
@@ -240,5 +256,7 @@ export function useAuth() {
     refreshTokens,
     fetchUser,
     setTokens,
+    forgotPassword,
+    resetPassword,
   }
 }

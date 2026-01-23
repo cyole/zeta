@@ -70,9 +70,6 @@ async function onSubmit() {
       </UFormField>
 
       <UFormField name="password" label="密码">
-        <template #hint>
-          <a href="#" class="text-xs text-primary-500 hover:text-primary-600">忘记密码？</a>
-        </template>
         <UInput
           v-model="form.password"
           type="password"
@@ -83,12 +80,16 @@ async function onSubmit() {
         />
       </UFormField>
 
-      <!-- Remember me -->
-      <div class="flex items-center gap-2">
-        <UCheckbox id="remember" v-model="rememberMe" />
-        <label for="remember" class="text-sm text-neutral-600 dark:text-neutral-400 cursor-pointer">
-          记住登录状态
-        </label>
+      <div class="flex items-center justify-between gap-2">
+        <div class="flex items-center gap-2">
+          <UCheckbox id="remember" v-model="rememberMe" />
+          <label for="remember" class="text-sm text-neutral-600 dark:text-neutral-400 cursor-pointer">
+            记住登录状态
+          </label>
+        </div>
+        <NuxtLink to="/auth/forgot-password" class="text-sm text-primary-500 hover:text-primary-600">
+          忘记密码？
+        </NuxtLink>
       </div>
 
       <UButton type="submit" block size="lg" :loading="loading" class="mt-6">
