@@ -140,7 +140,7 @@ const quickLinks = [
     </section>
 
     <!-- Features Section -->
-    <section id="features" class="py-20 lg:py-32 bg-neutral-50 dark:bg-neutral-900">
+    <section class="py-20 lg:py-32">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-16">
           <h2 class="text-3xl sm:text-4xl font-bold text-neutral-900 dark:text-white mb-4">
@@ -151,15 +151,15 @@ const quickLinks = [
           </p>
         </div>
 
-        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <div v-for="feature in features" :key="feature.title" class="group p-6 bg-white dark:bg-neutral-800 rounded-2xl border border-neutral-200 dark:border-neutral-700 hover:border-primary-300 dark:hover:border-primary-700 hover:shadow-lg hover:shadow-primary-500/10 transition-all duration-300">
-            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-primary-500 to-secondary-500 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-              <UIcon :name="feature.icon" class="w-6 h-6 text-white" />
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div v-for="feature in features" :key="feature.title" class="group p-5 bg-neutral-50 dark:bg-neutral-900/50 rounded-xl border border-neutral-200 dark:border-neutral-800 hover:bg-white dark:hover:bg-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-700 hover:shadow-md transition-all duration-300">
+            <div class="w-11 h-11 rounded-lg bg-neutral-100 dark:bg-neutral-800 group-hover:bg-primary-50 dark:group-hover:bg-primary-950/30 flex items-center justify-center mb-3.5 transition-colors">
+              <UIcon :name="feature.icon" class="w-5 h-5 text-neutral-600 dark:text-neutral-400 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors" />
             </div>
-            <h3 class="text-xl font-semibold text-neutral-900 dark:text-white mb-2">
+            <h3 class="text-lg font-semibold text-neutral-900 dark:text-white mb-1.5">
               {{ feature.title }}
             </h3>
-            <p class="text-neutral-600 dark:text-neutral-400">
+            <p class="text-sm text-neutral-500 dark:text-neutral-400 leading-relaxed">
               {{ feature.description }}
             </p>
           </div>
@@ -168,7 +168,7 @@ const quickLinks = [
     </section>
 
     <!-- Quick Start Section -->
-    <section id="workflow" class="py-20 lg:py-32">
+    <section class="py-20 lg:py-32 bg-neutral-50 dark:bg-neutral-900/50">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-16">
           <h2 class="text-3xl sm:text-4xl font-bold text-neutral-900 dark:text-white mb-4">
@@ -179,52 +179,66 @@ const quickLinks = [
           </p>
         </div>
 
-        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
           <NuxtLink
             v-for="link in quickLinks"
             :key="link.to"
             :to="link.to"
-            class="group flex items-center gap-4 p-5 bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-700 hover:border-primary-300 dark:hover:border-primary-700 hover:shadow-lg transition-all"
+            class="group relative p-6 bg-white dark:bg-neutral-800 rounded-2xl border border-neutral-200 dark:border-neutral-700 overflow-hidden hover:-translate-y-1 hover:shadow-xl hover:shadow-primary-500/10 transition-all duration-300"
           >
-            <div class="w-12 h-12 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform" :class="[link.bgClass]">
-              <UIcon :name="link.icon" class="w-6 h-6 text-white" />
+            <!-- Background gradient decoration -->
+            <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" :class="[link.bgClass.replace('to-', 'to/5 ').replace('from-', 'from/5 ')]" />
+            <div class="absolute top-0 right-0 w-32 h-32 opacity-5 group-hover:opacity-10 transition-opacity" :class="[link.bgClass]">
+              <div class="absolute -top-8 -right-8 w-32 h-32 rounded-full blur-2xl" />
             </div>
-            <div>
-              <div class="font-semibold text-neutral-900 dark:text-white">
+
+            <!-- Icon container with gradient -->
+            <div class="relative flex items-start justify-between mb-4">
+              <div class="w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg shadow-primary-500/20 group-hover:scale-110 transition-transform duration-300" :class="[link.bgClass]">
+                <UIcon :name="link.icon" class="w-7 h-7 text-white" />
+              </div>
+              <UIcon name="i-lucide-arrow-right" class="w-5 h-5 text-primary-500 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all duration-300" />
+            </div>
+
+            <!-- Content -->
+            <div class="relative">
+              <h3 class="text-lg font-semibold text-neutral-900 dark:text-white mb-1.5 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
                 {{ link.title }}
-              </div>
-              <div class="text-sm text-neutral-500">
+              </h3>
+              <p class="text-sm text-neutral-500 dark:text-neutral-400">
                 {{ link.desc }}
-              </div>
+              </p>
             </div>
-            <UIcon name="i-lucide-arrow-right" class="w-5 h-5 text-neutral-400 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
+
+            <!-- Bottom accent line -->
+            <div class="absolute bottom-0 left-0 right-0 h-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300" :class="[link.bgClass.replace('to-', 'to-').split(' ')[0]]" />
           </NuxtLink>
         </div>
       </div>
     </section>
 
     <!-- CTA Section -->
-    <section class="py-20 lg:py-32">
+    <section class="py-20 lg:py-32 bg-neutral-50 dark:bg-neutral-900/50">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="relative rounded-3xl bg-gradient-to-r from-primary-500 to-secondary-500 p-12 lg:p-16 overflow-hidden">
-          <!-- Background pattern -->
-          <div class="absolute inset-0 opacity-10">
-            <div class="absolute top-0 left-0 w-40 h-40 bg-white rounded-full -translate-x-1/2 -translate-y-1/2" />
-            <div class="absolute bottom-0 right-0 w-60 h-60 bg-white rounded-full translate-x-1/3 translate-y-1/3" />
+        <div class="relative rounded-2xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-10 lg:p-14 overflow-hidden">
+          <!-- Subtle background decoration -->
+          <div class="absolute inset-0 opacity-30">
+            <div class="absolute top-0 right-0 w-64 h-64 bg-primary-500/5 rounded-full blur-3xl" />
+            <div class="absolute bottom-0 left-0 w-64 h-64 bg-secondary-500/5 rounded-full blur-3xl" />
           </div>
 
           <div class="relative text-center">
-            <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">
+            <h2 class="text-2xl sm:text-3xl lg:text-4xl font-semibold text-neutral-900 dark:text-white mb-3">
               开始提升开发效率
             </h2>
-            <p class="text-lg text-primary-100 max-w-2xl mx-auto mb-8">
+            <p class="text-base sm:text-lg text-neutral-600 dark:text-neutral-400 max-w-2xl mx-auto mb-8">
               立即进入工作台，体验 AI 驱动的前端开发工具
             </p>
-            <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <UButton to="/platform" size="xl" color="neutral" variant="solid" class="bg-white text-primary-600 hover:bg-neutral-100">
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+              <UButton to="/platform" size="lg" color="primary">
                 进入工作台
               </UButton>
-              <UButton to="/auth/login" size="xl" variant="outline" class="text-white border-white/30 hover:bg-white/10">
+              <UButton to="/auth/login" size="lg" variant="outline" color="neutral">
                 登录账号
               </UButton>
             </div>
