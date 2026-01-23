@@ -8,11 +8,19 @@ const { setTokens, fetchUser } = useAuth()
 const { post } = useApi()
 const toast = useToast()
 
+const provider = route.params.provider as string
+const providerNames: Record<string, string> = {
+  github: 'GitHub',
+  dingtalk: '钉钉',
+}
+const providerName = providerNames[provider] || provider
+
 const loading = ref(true)
 const error = ref<string | null>(null)
 
 onMounted(async () => {
-  const code = route.query.code as string
+  // GitHub uses 'code', DingTalk uses 'authCode'
+  const code = (route.query.code || route.query.authCode) as string
   const errorMsg = route.query.error as string
 
   if (errorMsg) {
@@ -28,7 +36,7 @@ onMounted(async () => {
   }
 
   try {
-    const result = await post<{ accessToken: string, refreshToken: string }>('/oauth/github/login', { code })
+    const result = await post<{ accessToken: string, refreshToken: string }>(`/oauth/${provider}/login`, { code })
     setTokens({ accessToken: result.accessToken, refreshToken: result.refreshToken })
     await fetchUser()
     toast.add({
@@ -39,7 +47,7 @@ onMounted(async () => {
     navigateTo('/dashboard')
   }
   catch (e: any) {
-    error.value = e.data?.message || e.message || 'GitHub 登录失败'
+    error.value = e.data?.message || e.message || `${providerName}登录失败`
     loading.value = false
   }
 })
@@ -50,7 +58,7 @@ onMounted(async () => {
     <div v-if="loading" class="text-center">
       <UIcon name="i-lucide-loader-2" class="w-12 h-12 animate-spin text-indigo-500" />
       <p class="mt-4 text-neutral-600 dark:text-neutral-400">
-        正在处理 GitHub 登录...
+        正在处理 {{ providerName }} 登录...
       </p>
     </div>
 

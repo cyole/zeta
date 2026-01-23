@@ -7,7 +7,6 @@ definePageMeta({
 })
 
 const { register } = useAuth()
-const { get } = useApi()
 const toast = useToast()
 
 const loading = ref(false)
@@ -83,32 +82,6 @@ async function onSubmit() {
   finally {
     loading.value = false
   }
-}
-
-async function registerWithGitHub() {
-  const oauthConfig = await get<{ clientId: string, redirectUri: string, scope: string, authUrl: string }>('/oauth/github/config')
-  const state = crypto.randomUUID()
-  const params = new URLSearchParams({
-    client_id: oauthConfig.clientId,
-    redirect_uri: oauthConfig.redirectUri,
-    scope: oauthConfig.scope,
-    state,
-  })
-  window.location.href = `${oauthConfig.authUrl}?${params.toString()}`
-}
-
-async function registerWithDingTalk() {
-  const oauthConfig = await get<{ clientId: string, redirectUri: string, scope: string, authUrl: string }>('/oauth/dingtalk/config')
-  const state = crypto.randomUUID()
-  const params = new URLSearchParams({
-    response_type: 'code',
-    client_id: oauthConfig.clientId,
-    redirect_uri: oauthConfig.redirectUri,
-    scope: oauthConfig.scope,
-    state,
-    prompt: 'consent',
-  })
-  window.location.href = `${oauthConfig.authUrl}?${params.toString()}`
 }
 </script>
 
@@ -193,39 +166,7 @@ async function registerWithDingTalk() {
       </UButton>
     </UForm>
 
-    <!-- Divider -->
-    <div class="relative my-8">
-      <div class="absolute inset-0 flex items-center">
-        <div class="w-full border-t border-neutral-200 dark:border-neutral-800" />
-      </div>
-      <div class="relative flex justify-center text-sm">
-        <span class="px-4 bg-neutral-50 dark:bg-neutral-950 text-neutral-400">或使用以下方式</span>
-      </div>
-    </div>
-
-    <!-- OAuth buttons -->
-    <div class="grid grid-cols-2 gap-3">
-      <UButton
-        color="neutral"
-        variant="outline"
-        size="lg"
-        class="hover:bg-neutral-100 dark:hover:bg-neutral-900"
-        @click="registerWithGitHub"
-      >
-        <UIcon name="i-simple-icons-github" class="w-5 h-5 mr-2" />
-        GitHub
-      </UButton>
-      <UButton
-        color="neutral"
-        variant="outline"
-        size="lg"
-        class="hover:bg-neutral-100 dark:hover:bg-neutral-900"
-        @click="registerWithDingTalk"
-      >
-        <UIcon name="i-simple-icons-dingtalk" class="w-5 h-5 mr-2" />
-        钉钉
-      </UButton>
-    </div>
+    <AuthOAuthButtons />
 
     <!-- Login link -->
     <p class="text-center text-sm text-neutral-500 dark:text-neutral-400 mt-8">
