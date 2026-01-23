@@ -56,7 +56,7 @@ onMounted(async () => {
 <template>
   <div class="flex flex-col items-center justify-center min-h-[400px]">
     <div v-if="loading" class="text-center">
-      <UIcon name="i-lucide-loader-2" class="w-12 h-12 animate-spin text-indigo-500" />
+      <UIcon name="i-lucide-loader-2" class="w-12 h-12 animate-spin text-primary-500" />
       <p class="mt-4 text-neutral-600 dark:text-neutral-400">
         正在处理 {{ providerName }} 登录...
       </p>
