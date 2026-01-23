@@ -13,6 +13,7 @@ const UBadge = resolveComponent('UBadge')
 const UButton = resolveComponent('UButton')
 const UCheckbox = resolveComponent('UCheckbox')
 const UDropdownMenu = resolveComponent('UDropdownMenu')
+const UIcon = resolveComponent('UIcon')
 
 const api = useApi()
 const toast = useToast()
@@ -147,10 +148,10 @@ const columns: TableColumn<User>[] = [
             style: { backgroundColor: getAvatarColor(row.original.email) },
           }, getInitial(row.original.email)),
       h('div', { class: 'flex flex-col gap-0.5' }, [
-        h('span', { class: 'text-base font-medium text-neutral-900 dark:text-white' }, row.original.email),
         row.original.name
-          ? h('span', { class: 'text-sm text-neutral-500 dark:text-neutral-400' }, row.original.name)
-          : null,
+          ? h('span', { class: 'text-base font-medium text-neutral-900 dark:text-white' }, row.original.name)
+          : h('span', { class: 'text-base font-medium text-neutral-900 dark:text-white' }, row.original.email),
+        h('span', { class: 'text-sm text-neutral-500 dark:text-neutral-400' }, row.original.email),
       ]),
     ]),
   },
@@ -213,7 +214,7 @@ const columns: TableColumn<User>[] = [
       ]
       return h('div', { class: 'flex items-center justify-end gap-2' }, [
         h(UButton, { variant: 'soft', color: 'neutral', size: 'sm', onClick: () => openEditModal(row.original) }, () => [
-          h('span', { class: 'i-lucide-edit w-4 h-4 mr-1' }),
+          h(UIcon, { name: 'i-lucide-edit', class: 'w-4 h-4 mr-1' }),
           '编辑',
         ]),
         h(UDropdownMenu, { items, content: { align: 'end' } }, () =>
