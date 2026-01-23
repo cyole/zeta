@@ -7,35 +7,51 @@ interface OAuthConfig {
 
 export function useOAuth() {
   const { get } = useApi()
+  const githubLoading = ref(false)
+  const dingtalkLoading = ref(false)
 
   async function loginWithGitHub() {
-    const oauthConfig = await get<OAuthConfig>('/oauth/github/config')
-    const state = crypto.randomUUID()
-    const params = new URLSearchParams({
-      client_id: oauthConfig.clientId,
-      redirect_uri: oauthConfig.redirectUri,
-      scope: oauthConfig.scope,
-      state,
-    })
-    window.location.href = `${oauthConfig.authUrl}?${params.toString()}`
+    githubLoading.value = true
+    try {
+      const oauthConfig = await get<OAuthConfig>('/oauth/github/config')
+      const state = crypto.randomUUID()
+      const params = new URLSearchParams({
+        client_id: oauthConfig.clientId,
+        redirect_uri: oauthConfig.redirectUri,
+        scope: oauthConfig.scope,
+        state,
+      })
+      window.location.href = `${oauthConfig.authUrl}?${params.toString()}`
+    }
+    finally {
+      githubLoading.value = false
+    }
   }
 
   async function loginWithDingTalk() {
-    const oauthConfig = await get<OAuthConfig>('/oauth/dingtalk/config')
-    const state = crypto.randomUUID()
-    const params = new URLSearchParams({
-      response_type: 'code',
-      client_id: oauthConfig.clientId,
-      redirect_uri: oauthConfig.redirectUri,
-      scope: oauthConfig.scope,
-      state,
-      prompt: 'consent',
-    })
-    window.location.href = `${oauthConfig.authUrl}?${params.toString()}`
+    dingtalkLoading.value = true
+    try {
+      const oauthConfig = await get<OAuthConfig>('/oauth/dingtalk/config')
+      const state = crypto.randomUUID()
+      const params = new URLSearchParams({
+        response_type: 'code',
+        client_id: oauthConfig.clientId,
+        redirect_uri: oauthConfig.redirectUri,
+        scope: oauthConfig.scope,
+        state,
+        prompt: 'consent',
+      })
+      window.location.href = `${oauthConfig.authUrl}?${params.toString()}`
+    }
+    finally {
+      dingtalkLoading.value = false
+    }
   }
 
   return {
     loginWithGitHub,
     loginWithDingTalk,
+    githubLoading,
+    dingtalkLoading,
   }
 }

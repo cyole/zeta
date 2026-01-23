@@ -1,5 +1,8 @@
 <script setup lang="ts">
-const { loginWithGitHub, loginWithDingTalk } = useOAuth()
+const { loginWithGitHub, loginWithDingTalk, githubLoading, dingtalkLoading } = useOAuth()
+
+const appConfig = useAppConfig()
+const primaryColor = computed(() => appConfig.ui.colors.primary)
 </script>
 
 <template>
@@ -12,25 +15,34 @@ const { loginWithGitHub, loginWithDingTalk } = useOAuth()
     </div>
   </div>
 
-  <div class="grid grid-cols-2 gap-3">
+  <div class="flex gap-3">
     <UButton
       color="neutral"
       variant="outline"
       size="lg"
-      class="hover:bg-neutral-100 dark:hover:bg-neutral-900"
+      class="flex-1"
+      :loading="githubLoading"
+      :loading-color="primaryColor"
       @click="loginWithGitHub"
     >
-      <UIcon name="i-simple-icons-github" class="w-5 h-5 mr-2" />
+      <template #leading>
+        <UIcon name="i-simple-icons-github" class="w-5 h-5" />
+      </template>
       GitHub
     </UButton>
+
     <UButton
       color="neutral"
       variant="outline"
       size="lg"
-      class="hover:bg-neutral-100 dark:hover:bg-neutral-900"
+      class="flex-1"
+      :loading="dingtalkLoading"
+      :loading-color="primaryColor"
       @click="loginWithDingTalk"
     >
-      <UIcon name="i-ant-design:dingtalk-circle-filled" class="w-5 h-5 mr-2" />
+      <template #leading>
+        <UIcon name="i-ant-design:dingtalk-circle-filled" class="w-5 h-5" />
+      </template>
       钉钉
     </UButton>
   </div>
