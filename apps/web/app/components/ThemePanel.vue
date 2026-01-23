@@ -13,16 +13,10 @@ const {
   setNeutralColor,
   setRadius,
   setBlackAsPrimary,
-  resetTheme,
-  hasCSSChanges,
-  hasAppConfigChanges,
-  exportCSS,
-  exportAppConfig,
   initTheme,
 } = useTheme()
 
 const colorMode = useColorMode()
-const toast = useToast()
 
 // Panel open state
 const isOpen = ref(false)
@@ -38,28 +32,6 @@ const colorModeOptions = [
   { label: 'Dark', value: 'dark', icon: 'i-lucide-moon' },
   { label: 'System', value: 'system', icon: 'i-lucide-monitor' },
 ]
-
-// Copy CSS to clipboard
-async function copyCSSConfig() {
-  const config = exportCSS()
-  await navigator.clipboard.writeText(config)
-  toast.add({
-    title: 'CSS copied to clipboard',
-    icon: 'i-lucide-check',
-    color: 'primary',
-  })
-}
-
-// Copy app.config.ts to clipboard
-async function copyAppConfig() {
-  const config = exportAppConfig()
-  await navigator.clipboard.writeText(config)
-  toast.add({
-    title: 'Config copied to clipboard',
-    icon: 'i-lucide-check',
-    color: 'primary',
-  })
-}
 </script>
 
 <template>

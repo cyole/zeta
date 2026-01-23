@@ -32,14 +32,14 @@ export class ThrottlerGuard implements CanActivate {
     }
 
     // Get custom throttle options from decorator
-    const customOptions = this.reflector.get<{ limit: number; ttl: number }>(
+    const customOptions = this.reflector.get<{ limit: number, ttl: number }>(
       THROTTLE_METADATA,
       context.getHandler(),
     )
-      || this.reflector.get<{ limit: number; ttl: number }>(
-        THROTTLE_METADATA,
-        context.getClass(),
-      )
+    || this.reflector.get<{ limit: number, ttl: number }>(
+      THROTTLE_METADATA,
+      context.getClass(),
+    )
 
     const limit = customOptions?.limit ?? this.defaultLimit
     const ttl = customOptions?.ttl ?? this.defaultTtl

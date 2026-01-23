@@ -13,8 +13,9 @@ export interface ThrottleOptions {
  * @param limit Maximum number of requests within TTL period
  * @param ttl Time to live in seconds (default: 60)
  */
-export const Throttle = (limit: number, ttl = 60) =>
-  SetMetadata(THROTTLE_METADATA, { limit, ttl })
+export function Throttle(limit: number, ttl = 60) {
+  return SetMetadata(THROTTLE_METADATA, { limit, ttl })
+}
 
 /**
  * Skip throttle decorator for routes that should bypass rate limiting

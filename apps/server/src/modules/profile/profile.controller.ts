@@ -1,5 +1,5 @@
-import type { Request } from 'express'
 import type { OAuthProvider } from '@prisma/client'
+import type { Request } from 'express'
 import type {
   ChangePasswordDto,
   UpdateNotificationPreferencesDto,

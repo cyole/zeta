@@ -1,4 +1,5 @@
 import type { Request } from 'express'
+import type { UploadDto } from './dto'
 import {
   Body,
   Controller,
@@ -9,9 +10,7 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express'
 import { ApiBearerAuth, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { memoryStorage } from 'multer'
-import { extname } from 'node:path'
 import { QiniuService } from '@/modules/qiniu/qiniu.service'
-import type { UploadDto } from './dto'
 
 @ApiTags('文件上传')
 @ApiBearerAuth()
@@ -46,7 +45,7 @@ export class UploadController {
   @Post('image/base64')
   @ApiOperation({ summary: '上传 Base64 图片' })
   async uploadBase64Image(
-    @Body() body: { data: string; folder?: string },
+    @Body() body: { data: string, folder?: string },
   ): Promise<UploadDto> {
     return this.qiniuService.uploadBase64(body.data, {
       folder: body.folder || 'images',

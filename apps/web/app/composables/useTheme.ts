@@ -5,10 +5,10 @@
  */
 
 // Primary colors - Tailwind CSS palette (excludes black, white, transparent, neutrals)
-export type PrimaryColor =
-  | 'red' | 'orange' | 'amber' | 'yellow' | 'lime'
-  | 'green' | 'emerald' | 'teal' | 'cyan' | 'sky' | 'blue'
-  | 'indigo' | 'violet' | 'purple' | 'fuchsia' | 'pink' | 'rose'
+export type PrimaryColor
+  = | 'red' | 'orange' | 'amber' | 'yellow' | 'lime'
+    | 'green' | 'emerald' | 'teal' | 'cyan' | 'sky' | 'blue'
+    | 'indigo' | 'violet' | 'purple' | 'fuchsia' | 'pink' | 'rose'
 
 // Neutral colors
 export type NeutralColor = 'slate' | 'gray' | 'zinc' | 'neutral' | 'stone'
@@ -103,7 +103,8 @@ export function useTheme() {
 
   // Apply black as primary CSS (only use class, let CSS handle light/dark)
   function applyBlackAsPrimary(enabled: boolean) {
-    if (!import.meta.client) return
+    if (!import.meta.client)
+      return
 
     if (enabled) {
       document.documentElement.classList.add('black-as-primary')
@@ -124,7 +125,8 @@ export function useTheme() {
 
   // Initialize theme from localStorage
   function initTheme() {
-    if (!import.meta.client) return
+    if (!import.meta.client)
+      return
 
     // Load primary color
     const savedPrimary = localStorage.getItem(STORAGE_KEYS.primary) as PrimaryColor | null

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { h, resolveComponent } from 'vue'
 import type { TableColumn } from '@nuxt/ui'
+import { h, resolveComponent } from 'vue'
 import { z } from 'zod'
 
 definePageMeta({
@@ -127,12 +127,12 @@ const columns: TableColumn<User>[] = [
     header: () => h(UCheckbox, {
       'modelValue': isAllSelected.value ? true : isSomeSelected.value ? 'indeterminate' : false,
       'onUpdate:modelValue': () => toggleSelectAll(),
-      size: 'lg',
+      'size': 'lg',
     }),
     cell: ({ row }) => h(UCheckbox, {
       'modelValue': isSelected(row.original),
       'onUpdate:modelValue': () => toggleSelection(row.original),
-      size: 'lg',
+      'size': 'lg',
     }),
     enableSorting: false,
   },
@@ -217,8 +217,7 @@ const columns: TableColumn<User>[] = [
           '编辑',
         ]),
         h(UDropdownMenu, { items, content: { align: 'end' } }, () =>
-          h(UButton, { icon: 'i-lucide-more-horizontal', variant: 'ghost', color: 'neutral', size: 'sm' }),
-        ),
+          h(UButton, { icon: 'i-lucide-more-horizontal', variant: 'ghost', color: 'neutral', size: 'sm' })),
       ])
     },
   },
@@ -645,8 +644,8 @@ onMounted(() => {
             >
               <UCheckbox
                 :model-value="selectedRoles.includes(role.id)"
-                @update:model-value="toggleRole(role.id)"
                 size="lg"
+                @update:model-value="toggleRole(role.id)"
               />
               <div class="flex-1">
                 <p class="font-medium text-base">
@@ -726,8 +725,8 @@ onMounted(() => {
                 >
                   <UCheckbox
                     :model-value="selectedPermissions.includes(perm.id)"
-                    @update:model-value="togglePermission(perm.id)"
                     size="md"
+                    @update:model-value="togglePermission(perm.id)"
                   />
                   <div class="flex-1">
                     <p class="text-sm font-medium">
@@ -758,7 +757,8 @@ onMounted(() => {
 
 <style scoped>
 /* Ensure table cells have proper height */
-:deep(td), :deep(th) {
+:deep(td),
+:deep(th) {
   vertical-align: middle;
 }
 

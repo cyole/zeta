@@ -75,7 +75,8 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
   // Cache helper methods
   async getJSON<T>(key: string): Promise<T | null> {
     const value = await this.get(key)
-    if (!value) return null
+    if (!value)
+      return null
     try {
       return JSON.parse(value) as T
     }
@@ -90,7 +91,8 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
 
   async deletePattern(pattern: string): Promise<number> {
     const keys = await this.client.keys(pattern)
-    if (keys.length === 0) return 0
+    if (keys.length === 0)
+      return 0
     return this.client.del(...keys)
   }
 

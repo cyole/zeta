@@ -1,8 +1,8 @@
-import { Module, DynamicModule, Provider } from '@nestjs/common'
-import { ConfigModule, ConfigService } from '@nestjs/config'
-import { QiniuService } from './qiniu.service'
-import { QINIU_MODULE_OPTIONS, QINIU_CONFIG_PROVIDER } from './qiniu.constants'
 import type { QiniuModuleOptions } from './qiniu.interface'
+import { DynamicModule, Module, Provider } from '@nestjs/common'
+import { ConfigModule, ConfigService } from '@nestjs/config'
+import { QINIU_CONFIG_PROVIDER } from './qiniu.constants'
+import { QiniuService } from './qiniu.service'
 
 export const QiniuConfigProvider: Provider = {
   provide: QINIU_CONFIG_PROVIDER,

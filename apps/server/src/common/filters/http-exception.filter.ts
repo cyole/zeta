@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common'
 
 // Prisma known error codes
-const PRISMA_ERROR_CODES: Record<string, { status: number; message: string }> = {
+const PRISMA_ERROR_CODES: Record<string, { status: number, message: string }> = {
   P2002: { status: HttpStatus.CONFLICT, message: '数据已存在，请检查后重试' },
   P2025: { status: HttpStatus.NOT_FOUND, message: '记录不存在' },
   P2003: { status: HttpStatus.BAD_REQUEST, message: '关联数据不存在' },
@@ -60,7 +60,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
     }
     // Handle Prisma errors
     else if (this.isPrismaError(exception)) {
-      const prismaError = exception as { code: string; meta?: { target?: string[] } }
+      const prismaError = exception as { code: string, meta?: { target?: string[] } }
       const errorInfo = PRISMA_ERROR_CODES[prismaError.code]
 
       if (errorInfo) {
@@ -115,13 +115,13 @@ export class HttpExceptionFilter implements ExceptionFilter {
     response.status(status).json(errorResponse)
   }
 
-  private isPrismaError(exception: unknown): exception is { code: string; meta?: { target?: string[] } } {
+  private isPrismaError(exception: unknown): exception is { code: string, meta?: { target?: string[] } } {
     return (
-      typeof exception === 'object' &&
-      exception !== null &&
-      'code' in exception &&
-      typeof (exception as { code: unknown }).code === 'string' &&
-      (exception as { code: string }).code.startsWith('P')
+      typeof exception === 'object'
+      && exception !== null
+      && 'code' in exception
+      && typeof (exception as { code: unknown }).code === 'string'
+      && (exception as { code: string }).code.startsWith('P')
     )
   }
 

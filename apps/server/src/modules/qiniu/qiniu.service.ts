@@ -132,6 +132,7 @@ export class QiniuService implements OnModuleInit {
     }
 
     const [, imageType, data] = matches
+    // eslint-disable-next-line node/prefer-global/buffer
     const buffer = Buffer.from(data, 'base64')
 
     // 生成文件 key，统一放在 zeta 文件夹下

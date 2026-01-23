@@ -1,8 +1,8 @@
+import type { OAuthProvider } from '@prisma/client'
 import type {
   ChangePasswordDto,
   UpdateNotificationPreferencesDto,
 } from './dto'
-import type { OAuthProvider } from '@prisma/client'
 import {
   BadRequestException,
   Injectable,

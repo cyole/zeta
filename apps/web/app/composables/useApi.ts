@@ -16,11 +16,11 @@ interface RequestOptions extends RequestInit {
  */
 function isApiErrorResponse(data: unknown): data is ApiErrorResponse {
   return (
-    typeof data === 'object' &&
-    data !== null &&
-    'statusCode' in data &&
-    'message' in data &&
-    'error' in data
+    typeof data === 'object'
+    && data !== null
+    && 'statusCode' in data
+    && 'message' in data
+    && 'error' in data
   )
 }
 
