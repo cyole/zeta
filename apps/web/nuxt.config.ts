@@ -10,6 +10,10 @@ export default defineNuxtConfig({
 
   modules: ['@nuxt/ui'],
 
+  ui: {
+    fonts: false,
+  },
+
   // Color mode configuration
   colorMode: {
     preference: 'system',
