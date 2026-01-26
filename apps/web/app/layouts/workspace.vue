@@ -5,20 +5,20 @@ const route = useRoute()
 
 // Module navigation
 const moduleNavItems = [
-  { label: '工作台', icon: 'i-lucide-layout-dashboard', to: '/platform', exact: true },
-  { label: '设计转代码', icon: 'i-lucide-figma', to: '/platform/d2c' },
-  { label: '编码助手', icon: 'i-lucide-code-2', to: '/platform/coding' },
-  { label: '文档管理', icon: 'i-lucide-book-open', to: '/platform/docs' },
-  { label: '接口协作', icon: 'i-lucide-plug', to: '/platform/api' },
-  { label: '测试优化', icon: 'i-lucide-test-tube', to: '/platform/testing' },
-  { label: '工程化', icon: 'i-lucide-settings-2', to: '/platform/engineering' },
+  { label: '工作台', icon: 'i-lucide-layout-dashboard', to: '/workspace', exact: true },
+  { label: '设计转代码', icon: 'i-lucide-figma', to: '/workspace/d2c' },
+  { label: '编码助手', icon: 'i-lucide-code-2', to: '/workspace/coding' },
+  { label: '文档管理', icon: 'i-lucide-book-open', to: '/workspace/docs' },
+  { label: '接口协作', icon: 'i-lucide-plug', to: '/workspace/api' },
+  { label: '测试优化', icon: 'i-lucide-test-tube', to: '/workspace/testing' },
+  { label: '工程化', icon: 'i-lucide-settings-2', to: '/workspace/engineering' },
 ]
 
 // Sidebar state
 const sidebarCollapsed = ref(false)
 const showSidebar = computed(() => {
   // Show sidebar only on module sub-pages
-  return route.path !== '/platform' && moduleNavItems.some(item => route.path.startsWith(item.to))
+  return route.path !== '/workspace' && moduleNavItems.some(item => route.path.startsWith(item.to))
 })
 
 // Current module title
@@ -42,41 +42,41 @@ function isActiveSidebarItem(path: string) {
 
 // Sidebar items for each module
 const moduleSidebarItems: Record<string, { label: string, icon: string, to: string }[]> = {
-  '/platform/d2c': [
-    { label: '设计稿转换', icon: 'i-lucide-wand-2', to: '/platform/d2c' },
-    { label: '组件识别', icon: 'i-lucide-scan', to: '/platform/d2c/components' },
-    { label: '转换记录', icon: 'i-lucide-history', to: '/platform/d2c/history' },
-    { label: '设置', icon: 'i-lucide-settings', to: '/platform/d2c/settings' },
+  '/workspace/d2c': [
+    { label: '设计稿转换', icon: 'i-lucide-wand-2', to: '/workspace/d2c' },
+    { label: '组件识别', icon: 'i-lucide-scan', to: '/workspace/d2c/components' },
+    { label: '转换记录', icon: 'i-lucide-history', to: '/workspace/d2c/history' },
+    { label: '设置', icon: 'i-lucide-settings', to: '/workspace/d2c/settings' },
   ],
-  '/platform/coding': [
-    { label: '对话', icon: 'i-lucide-message-square', to: '/platform/coding' },
-    { label: '代码片段', icon: 'i-lucide-code', to: '/platform/coding/snippets' },
-    { label: '历史记录', icon: 'i-lucide-history', to: '/platform/coding/history' },
-    { label: '收藏', icon: 'i-lucide-star', to: '/platform/coding/favorites' },
+  '/workspace/coding': [
+    { label: '对话', icon: 'i-lucide-message-square', to: '/workspace/coding' },
+    { label: '代码片段', icon: 'i-lucide-code', to: '/workspace/coding/snippets' },
+    { label: '历史记录', icon: 'i-lucide-history', to: '/workspace/coding/history' },
+    { label: '收藏', icon: 'i-lucide-star', to: '/workspace/coding/favorites' },
   ],
-  '/platform/docs': [
-    { label: '文档检索', icon: 'i-lucide-search', to: '/platform/docs' },
-    { label: '组件文档', icon: 'i-lucide-component', to: '/platform/docs/components' },
-    { label: '接口文档', icon: 'i-lucide-plug', to: '/platform/docs/api' },
-    { label: '上传管理', icon: 'i-lucide-upload', to: '/platform/docs/upload' },
+  '/workspace/docs': [
+    { label: '文档检索', icon: 'i-lucide-search', to: '/workspace/docs' },
+    { label: '组件文档', icon: 'i-lucide-component', to: '/workspace/docs/components' },
+    { label: '接口文档', icon: 'i-lucide-plug', to: '/workspace/docs/api' },
+    { label: '上传管理', icon: 'i-lucide-upload', to: '/workspace/docs/upload' },
   ],
-  '/platform/api': [
-    { label: '接口管理', icon: 'i-lucide-folder', to: '/platform/api' },
-    { label: 'Mock 数据', icon: 'i-lucide-database', to: '/platform/api/mock' },
-    { label: '接口调试', icon: 'i-lucide-play', to: '/platform/api/debug' },
-    { label: '设置', icon: 'i-lucide-settings', to: '/platform/api/settings' },
+  '/workspace/api': [
+    { label: '接口管理', icon: 'i-lucide-folder', to: '/workspace/api' },
+    { label: 'Mock 数据', icon: 'i-lucide-database', to: '/workspace/api/mock' },
+    { label: '接口调试', icon: 'i-lucide-play', to: '/workspace/api/debug' },
+    { label: '设置', icon: 'i-lucide-settings', to: '/workspace/api/settings' },
   ],
-  '/platform/testing': [
-    { label: '测试用例', icon: 'i-lucide-list-checks', to: '/platform/testing' },
-    { label: '覆盖率', icon: 'i-lucide-pie-chart', to: '/platform/testing/coverage' },
-    { label: '性能测试', icon: 'i-lucide-gauge', to: '/platform/testing/performance' },
-    { label: '报告', icon: 'i-lucide-file-text', to: '/platform/testing/reports' },
+  '/workspace/testing': [
+    { label: '测试用例', icon: 'i-lucide-list-checks', to: '/workspace/testing' },
+    { label: '覆盖率', icon: 'i-lucide-pie-chart', to: '/workspace/testing/coverage' },
+    { label: '性能测试', icon: 'i-lucide-gauge', to: '/workspace/testing/performance' },
+    { label: '报告', icon: 'i-lucide-file-text', to: '/workspace/testing/reports' },
   ],
-  '/platform/engineering': [
-    { label: '项目脚手架', icon: 'i-lucide-folder-plus', to: '/platform/engineering' },
-    { label: '代码规范', icon: 'i-lucide-shield-check', to: '/platform/engineering/lint' },
-    { label: 'CI/CD', icon: 'i-lucide-git-branch', to: '/platform/engineering/cicd' },
-    { label: '依赖管理', icon: 'i-lucide-package', to: '/platform/engineering/deps' },
+  '/workspace/engineering': [
+    { label: '项目脚手架', icon: 'i-lucide-folder-plus', to: '/workspace/engineering' },
+    { label: '代码规范', icon: 'i-lucide-shield-check', to: '/workspace/engineering/lint' },
+    { label: 'CI/CD', icon: 'i-lucide-git-branch', to: '/workspace/engineering/cicd' },
+    { label: '依赖管理', icon: 'i-lucide-package', to: '/workspace/engineering/deps' },
   ],
 }
 
@@ -118,7 +118,7 @@ provide('sidebarCollapsed', sidebarCollapsed)
     <!-- Top Navigation -->
     <header class="h-14 bg-white dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-800 flex items-center px-4 shrink-0 z-50">
       <!-- Logo -->
-      <NuxtLink to="/platform" class="flex items-center gap-2.5 mr-8">
+      <NuxtLink to="/workspace" class="flex items-center gap-2.5 mr-8">
         <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-primary-500 to-secondary-500 flex items-center justify-center shadow-lg shadow-primary-500/20">
           <UIcon name="i-lucide-zap" class="w-4 h-4 text-white" />
         </div>

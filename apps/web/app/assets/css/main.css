@@ -371,12 +371,12 @@ samp {
 }
 
 /* Platform card hover effect */
-.platform-card {
+.workspace-card {
   @apply bg-white rounded-xl border border-neutral-200 transition-all duration-200;
   @apply hover:border-neutral-300 hover:shadow-md;
 }
 
-.dark .platform-card {
+.dark .workspace-card {
   @apply bg-neutral-900 border-neutral-800;
   @apply hover:border-neutral-700;
 }

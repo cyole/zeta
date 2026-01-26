@@ -47,7 +47,7 @@ async function onSubmit() {
       description: '欢迎回来！',
       color: 'success',
     })
-    const redirect = (route.query.redirect as string) || '/platform'
+    const redirect = (route.query.redirect as string) || '/workspace'
     navigateTo(redirect)
   }
   catch {

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 definePageMeta({
-  layout: 'platform',
+  layout: 'workspace',
   middleware: 'auth',
 })
 
@@ -24,12 +24,12 @@ const greeting = computed(() => {
 
 // Module quick actions
 const modules = [
-  { label: '设计转代码', desc: 'D2C', icon: 'i-lucide-figma', to: '/platform/d2c', bgClass: 'bg-gradient-to-br from-primary-500 to-secondary-500' },
-  { label: '编码助手', desc: 'AI Code', icon: 'i-lucide-code-2', to: '/platform/coding', bgClass: 'bg-gradient-to-br from-secondary-500 to-blue-500' },
-  { label: '文档管理', desc: 'Docs', icon: 'i-lucide-book-open', to: '/platform/docs', bgClass: 'bg-gradient-to-br from-green-500 to-emerald-500' },
-  { label: '接口协作', desc: 'API', icon: 'i-lucide-plug', to: '/platform/api', bgClass: 'bg-gradient-to-br from-orange-500 to-amber-500' },
-  { label: '测试优化', desc: 'Test', icon: 'i-lucide-test-tube', to: '/platform/testing', bgClass: 'bg-gradient-to-br from-red-500 to-rose-500' },
-  { label: '工程化', desc: 'DevOps', icon: 'i-lucide-settings-2', to: '/platform/engineering', bgClass: 'bg-gradient-to-br from-neutral-500 to-neutral-600' },
+  { label: '设计转代码', desc: 'D2C', icon: 'i-lucide-figma', to: '/workspace/d2c', bgClass: 'bg-gradient-to-br from-primary-500 to-secondary-500' },
+  { label: '编码助手', desc: 'AI Code', icon: 'i-lucide-code-2', to: '/workspace/coding', bgClass: 'bg-gradient-to-br from-secondary-500 to-blue-500' },
+  { label: '文档管理', desc: 'Docs', icon: 'i-lucide-book-open', to: '/workspace/docs', bgClass: 'bg-gradient-to-br from-green-500 to-emerald-500' },
+  { label: '接口协作', desc: 'API', icon: 'i-lucide-plug', to: '/workspace/api', bgClass: 'bg-gradient-to-br from-orange-500 to-amber-500' },
+  { label: '测试优化', desc: 'Test', icon: 'i-lucide-test-tube', to: '/workspace/testing', bgClass: 'bg-gradient-to-br from-red-500 to-rose-500' },
+  { label: '工程化', desc: 'DevOps', icon: 'i-lucide-settings-2', to: '/workspace/engineering', bgClass: 'bg-gradient-to-br from-neutral-500 to-neutral-600' },
 ]
 
 // Stats

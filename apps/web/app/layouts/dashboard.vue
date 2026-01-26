@@ -75,7 +75,7 @@ const userMenuItems = computed(() => [
         </div>
         <!-- Back to Platform Button -->
         <NuxtLink
-          to="/platform"
+          to="/workspace"
           class="flex items-center gap-3 mx-3 mb-3 px-3 py-2.5 rounded-lg bg-primary-50 dark:bg-primary-950/50 text-primary-600 dark:text-primary-400 hover:bg-primary-100 dark:hover:bg-primary-950 transition-colors"
         >
           <UIcon name="i-lucide-arrow-left" class="w-4 h-4 shrink-0" />

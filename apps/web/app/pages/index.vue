@@ -43,12 +43,12 @@ const features = [
 ]
 
 const quickLinks = [
-  { title: '设计转代码', desc: 'Figma 设计稿智能转代码', icon: 'i-lucide-figma', to: '/platform/d2c', bgClass: 'bg-gradient-to-br from-primary-500 to-secondary-500' },
-  { title: '编码助手', desc: '自然语言生成代码', icon: 'i-lucide-code-2', to: '/platform/coding', bgClass: 'bg-gradient-to-br from-secondary-500 to-blue-500' },
-  { title: '文档管理', desc: '智能检索文档', icon: 'i-lucide-book-open', to: '/platform/docs', bgClass: 'bg-gradient-to-br from-green-500 to-emerald-500' },
-  { title: '接口协作', desc: '解析接口文档', icon: 'i-lucide-plug', to: '/platform/api', bgClass: 'bg-gradient-to-br from-orange-500 to-amber-500' },
-  { title: '测试优化', desc: 'AI 生成测试用例', icon: 'i-lucide-test-tube', to: '/platform/testing', bgClass: 'bg-gradient-to-br from-red-500 to-rose-500' },
-  { title: '工程化', desc: '项目初始化配置', icon: 'i-lucide-settings-2', to: '/platform/engineering', bgClass: 'bg-gradient-to-br from-neutral-500 to-neutral-600' },
+  { title: '设计转代码', desc: 'Figma 设计稿智能转代码', icon: 'i-lucide-figma', to: '/workspace/d2c', bgClass: 'bg-gradient-to-br from-primary-500 to-secondary-500' },
+  { title: '编码助手', desc: '自然语言生成代码', icon: 'i-lucide-code-2', to: '/workspace/coding', bgClass: 'bg-gradient-to-br from-secondary-500 to-blue-500' },
+  { title: '文档管理', desc: '智能检索文档', icon: 'i-lucide-book-open', to: '/workspace/docs', bgClass: 'bg-gradient-to-br from-green-500 to-emerald-500' },
+  { title: '接口协作', desc: '解析接口文档', icon: 'i-lucide-plug', to: '/workspace/api', bgClass: 'bg-gradient-to-br from-orange-500 to-amber-500' },
+  { title: '测试优化', desc: 'AI 生成测试用例', icon: 'i-lucide-test-tube', to: '/workspace/testing', bgClass: 'bg-gradient-to-br from-red-500 to-rose-500' },
+  { title: '工程化', desc: '项目初始化配置', icon: 'i-lucide-settings-2', to: '/workspace/engineering', bgClass: 'bg-gradient-to-br from-neutral-500 to-neutral-600' },
 ]
 </script>
 
@@ -70,7 +70,7 @@ const quickLinks = [
           <div class="flex items-center gap-3">
             <ColorModeToggle />
             <template v-if="isAuthenticated">
-              <UButton to="/platform" color="primary" icon="i-lucide-layout-dashboard">
+              <UButton to="/workspace" color="primary" icon="i-lucide-layout-dashboard">
                 打开工作台
               </UButton>
             </template>
@@ -115,7 +115,7 @@ const quickLinks = [
           </p>
 
           <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <UButton to="/platform" size="xl" class="w-full sm:w-auto" icon="i-lucide-layout-dashboard">
+            <UButton to="/workspace" size="xl" class="w-full sm:w-auto" icon="i-lucide-layout-dashboard">
               进入工作台
             </UButton>
             <UButton to="/auth/login" size="xl" variant="outline" color="neutral" class="w-full sm:w-auto">
@@ -230,7 +230,7 @@ const quickLinks = [
               立即进入工作台，体验 AI 驱动的前端开发工具
             </p>
             <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
-              <UButton to="/platform" size="lg" color="primary">
+              <UButton to="/workspace" size="lg" color="primary">
                 进入工作台
               </UButton>
               <UButton to="/auth/login" size="lg" variant="outline" color="neutral">
