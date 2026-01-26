@@ -1,4 +1,3 @@
-import 'reflect-metadata'
 import type { OpenAPIObject } from '@nestjs/swagger'
 import { join } from 'node:path'
 import { ValidationPipe } from '@nestjs/common'
@@ -10,6 +9,7 @@ import { AppModule } from './app.module'
 import { HttpExceptionFilter } from './common/filters/http-exception.filter'
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor'
 import { TransformInterceptor } from './common/interceptors/transform.interceptor'
+import 'reflect-metadata'
 
 function wrapResponseSchema(document: OpenAPIObject): void {
   document.components = document.components || {}

@@ -109,8 +109,10 @@ export class RoleService {
     // SuperAdmin can modify system roles, other users cannot access this endpoint for system roles
 
     const updateData: Record<string, unknown> = {}
-    if (dto.displayName !== undefined) updateData.displayName = dto.displayName
-    if (dto.description !== undefined) updateData.description = dto.description
+    if (dto.displayName !== undefined)
+      updateData.displayName = dto.displayName
+    if (dto.description !== undefined)
+      updateData.description = dto.description
 
     console.log('[SERVICE UPDATE] Final updateData:', updateData)
 

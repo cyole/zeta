@@ -1,4 +1,3 @@
-import { CreateRoleDto, UpdateRoleDto, UpdateRolePermissionsDto } from './dto'
 import {
   Body,
   Controller,
@@ -7,12 +6,13 @@ import {
   Param,
   Patch,
   Post,
-  UseGuards,
   Req,
+  UseGuards,
 } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { Permissions, SuperAdmin } from '@/common/decorators'
 import { PermissionsGuard, SuperAdminGuard } from '@/common/guards'
+import { CreateRoleDto, UpdateRoleDto, UpdateRolePermissionsDto } from './dto'
 import { RoleService } from './role.service'
 
 @ApiTags('角色管理')

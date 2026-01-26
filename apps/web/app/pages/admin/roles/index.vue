@@ -99,12 +99,6 @@ function canEditRole(role: any) {
   return isSuperAdmin.value
 }
 
-function canDeleteRole(role: any) {
-  if (role.isSystem)
-    return false
-  return !role.userCount && isSuperAdmin.value
-}
-
 async function onSubmit() {
   // Manual validation
   if (!form.name?.trim()) {

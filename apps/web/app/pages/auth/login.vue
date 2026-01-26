@@ -14,7 +14,7 @@ const loading = ref(false)
 const rememberMe = ref(true)
 
 const schema = z.object({
-  email: z.string().email('请输入有效的邮箱地址'),
+  email: z.email('请输入有效的邮箱地址'),
   password: z.string().min(1, '请输入密码'),
 })
 

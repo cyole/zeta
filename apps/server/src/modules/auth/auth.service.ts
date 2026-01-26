@@ -388,7 +388,7 @@ export class AuthService {
   }
 
   async resetPassword(dto: ResetPasswordDto) {
-    console.log('[resetPassword] Received request with token:', dto.token?.substring(0, 10) + '...')
+    console.log('[resetPassword] Received request with token:', `${dto.token?.substring(0, 10)}...`)
 
     const verificationToken = await this.prisma.verificationToken.findUnique({
       where: { token: dto.token },
