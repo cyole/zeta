@@ -13,32 +13,20 @@ const prisma = new PrismaClient({ adapter })
 const roles = [
   {
     name: 'SUPER_ADMIN',
-    displayName: '超级管理员',
-    description: '拥有系统所有权限',
+    displayName: '系统管理员',
+    description: '系统内最高权限，管理系统配置、内置角色、所有用户',
     isSystem: true,
   },
   {
     name: 'ADMIN',
     displayName: '管理员',
-    description: '可管理用户和角色',
+    description: '管理自己可操作的资源和用户，做业务管理',
     isSystem: true,
   },
   {
-    name: 'FRONTEND',
-    displayName: '前端开发',
-    description: '前端开发人员',
-    isSystem: true,
-  },
-  {
-    name: 'BACKEND',
-    displayName: '后端开发',
-    description: '后端开发人员',
-    isSystem: true,
-  },
-  {
-    name: 'TESTER',
-    displayName: '测试人员',
-    description: '测试人员',
+    name: 'GUEST',
+    displayName: '游客',
+    description: '最小权限角色，只读访问',
     isSystem: true,
   },
 ]
@@ -51,7 +39,6 @@ const permissions = [
   { name: 'user:update', displayName: '更新用户', module: 'user' },
   { name: 'user:delete', displayName: '删除用户', module: 'user' },
   { name: 'user:assign-role', displayName: '分配角色', module: 'user' },
-  { name: 'user:assign-permission', displayName: '分配权限', module: 'user' },
 
   // Role permissions
   { name: 'role:read', displayName: '查看角色', module: 'role' },
@@ -66,24 +53,28 @@ const permissions = [
 
 // Role-Permission mapping
 const rolePermissions: Record<string, string[]> = {
+  // SuperAdmin has all permissions
   SUPER_ADMIN: permissions.map(p => p.name),
+
+  // Admin can manage users and custom roles, but cannot delete users or manage system roles
   ADMIN: [
     'user:read',
     'user:create',
     'user:update',
-    'user:delete',
     'user:assign-role',
-    'user:assign-permission',
     'role:read',
     'role:create',
     'role:update',
-    'role:delete',
     'role:assign-permission',
     'permission:read',
   ],
-  FRONTEND: ['user:read', 'role:read', 'permission:read'],
-  BACKEND: ['user:read', 'role:read', 'permission:read'],
-  TESTER: ['user:read', 'role:read', 'permission:read'],
+
+  // Guest has minimal read-only permissions
+  GUEST: [
+    'user:read',
+    'role:read',
+    'permission:read',
+  ],
 }
 
 async function main() {
@@ -116,6 +107,11 @@ async function main() {
     if (!role)
       continue
 
+    // Delete existing role permissions for this role
+    await prisma.rolePermission.deleteMany({
+      where: { roleId: role.id },
+    })
+
     for (const permissionName of permissionNames) {
       const permission = await prisma.permission.findUnique({
         where: { name: permissionName },
@@ -137,6 +133,39 @@ async function main() {
         },
       })
     }
+  }
+
+  // Delete old roles (FRONTEND, BACKEND, TESTER)
+  console.log('Cleaning up old roles...')
+  const oldRoleNames = ['FRONTEND', 'BACKEND', 'TESTER']
+  for (const roleName of oldRoleNames) {
+    const oldRole = await prisma.role.findUnique({
+      where: { name: roleName },
+    })
+    if (oldRole) {
+      await prisma.rolePermission.deleteMany({
+        where: { roleId: oldRole.id },
+      })
+      await prisma.role.delete({
+        where: { id: oldRole.id },
+      })
+      console.log(`✅ Deleted old role: ${roleName}`)
+    }
+  }
+
+  // Delete old permission (user:assign-permission)
+  console.log('Cleaning up old permission...')
+  const oldPermission = await prisma.permission.findUnique({
+    where: { name: 'user:assign-permission' },
+  })
+  if (oldPermission) {
+    await prisma.rolePermission.deleteMany({
+      where: { permissionId: oldPermission.id },
+    })
+    await prisma.permission.delete({
+      where: { id: oldPermission.id },
+    })
+    console.log('✅ Deleted old permission: user:assign-permission')
   }
 
   // Create default super admin user

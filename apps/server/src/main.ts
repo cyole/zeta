@@ -1,3 +1,4 @@
+import 'reflect-metadata'
 import type { OpenAPIObject } from '@nestjs/swagger'
 import { join } from 'node:path'
 import { ValidationPipe } from '@nestjs/common'
@@ -71,7 +72,7 @@ async function bootstrap() {
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
-      forbidNonWhitelisted: true,
+      forbidNonWhitelisted: false,
       transform: true,
       transformOptions: {
         enableImplicitConversion: true,

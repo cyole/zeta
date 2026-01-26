@@ -8,6 +8,7 @@ definePageMeta({
 
 const api = useApi()
 const toast = useToast()
+const { isSuperAdmin } = usePermissions()
 
 // State
 const roles = ref<any[]>([])
@@ -36,6 +37,10 @@ const form = reactive({
   displayName: '',
   description: '',
 })
+
+// Computed
+const systemRoles = computed(() => roles.value.filter(r => r.isSystem))
+const customRoles = computed(() => roles.value.filter(r => !r.isSystem))
 
 // Methods
 async function fetchRoles() {
@@ -88,24 +93,50 @@ function togglePermission(permId: string) {
   }
 }
 
+function canEditRole(role: any) {
+  if (!role.isSystem)
+    return true
+  return isSuperAdmin.value
+}
+
+function canDeleteRole(role: any) {
+  if (role.isSystem)
+    return false
+  return !role.userCount && isSuperAdmin.value
+}
+
 async function onSubmit() {
+  // Manual validation
+  if (!form.name?.trim()) {
+    toast.add({ title: '请输入角色标识', color: 'error' })
+    return
+  }
+  if (!form.displayName?.trim()) {
+    toast.add({ title: '请输入显示名称', color: 'error' })
+    return
+  }
+
   submitting.value = true
   try {
     if (editingRole.value) {
       await api.patch(`/roles/${editingRole.value.id}`, {
-        displayName: form.displayName,
-        description: form.description,
+        displayName: form.displayName.trim(),
+        description: form.description?.trim() || undefined,
       })
     }
     else {
-      await api.post('/roles', form)
+      await api.post('/roles', {
+        name: form.name.trim(),
+        displayName: form.displayName.trim(),
+        description: form.description?.trim() || undefined,
+      })
     }
     toast.add({ title: '保存成功', color: 'success' })
     showModal.value = false
     fetchRoles()
   }
-  catch (error: any) {
-    toast.add({ title: '保存失败', description: error.message, color: 'error' })
+  catch {
+    // Error toast is already shown by useApi's handleApiError
   }
   finally {
     submitting.value = false
@@ -122,8 +153,8 @@ async function savePermissions() {
     showPermissionsModal.value = false
     fetchRoles()
   }
-  catch (error: any) {
-    toast.add({ title: '保存失败', description: error.message, color: 'error' })
+  catch {
+    // Error toast is already shown by useApi's handleApiError
   }
   finally {
     submitting.value = false
@@ -136,12 +167,12 @@ async function deleteRole(role: any) {
     return
 
   try {
-    await api.del(`/roles/${role.id}`)
+    await api.del(`/roles/${role.id}`, { showError: true })
     toast.add({ title: '删除成功', color: 'success' })
     fetchRoles()
   }
-  catch (error: any) {
-    toast.add({ title: '删除失败', description: error.message, color: 'error' })
+  catch {
+    // Error toast is already shown by useApi's handleApiError
   }
 }
 
@@ -160,7 +191,7 @@ onMounted(() => {
         <h1 class="text-2xl font-bold tracking-tight text-neutral-900 dark:text-white">
           角色管理
         </h1>
-        <p class="text-neutral-500">
+        <p class="text-neutral-500 dark:text-neutral-400">
           管理系统角色和分配权限
         </p>
       </div>
@@ -169,99 +200,220 @@ onMounted(() => {
       </UButton>
     </div>
 
-    <!-- Roles grid -->
-    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-      <UCard v-for="role in roles" :key="role.id" class="relative">
-        <!-- System badge -->
-        <UBadge
-          v-if="role.isSystem"
-          color="neutral"
-          variant="subtle"
-          class="absolute top-4 right-4"
-          size="xs"
-        >
-          系统
-        </UBadge>
+    <!-- Info banner for non-SuperAdmin users -->
+    <UAlert
+      v-if="!isSuperAdmin"
+      color="neutral"
+      variant="subtle"
+      icon="i-lucide-info"
+      title="系统角色仅超级管理员可修改"
+    />
 
-        <div class="space-y-4">
-          <!-- Role info -->
-          <div>
-            <h3 class="text-lg font-semibold text-neutral-900 dark:text-white">
-              {{ role.displayName }}
-            </h3>
-            <p class="text-sm text-neutral-500">
-              {{ role.name }}
-            </p>
-            <p v-if="role.description" class="mt-2 text-sm text-neutral-600 dark:text-neutral-400">
-              {{ role.description }}
-            </p>
-          </div>
+    <!-- System Roles Section -->
+    <div v-if="systemRoles.length > 0">
+      <h2 class="text-lg font-semibold text-neutral-900 dark:text-white mb-4">
+        系统内置角色
+      </h2>
+      <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <UCard v-for="role in systemRoles" :key="role.id" class="relative">
+          <!-- System badge -->
+          <UBadge
+            color="neutral"
+            variant="subtle"
+            class="absolute top-4 right-4"
+            size="xs"
+          >
+            系统角色
+          </UBadge>
 
-          <!-- Stats -->
-          <div class="flex gap-4 text-sm">
-            <div class="flex items-center gap-1.5 text-neutral-500">
-              <UIcon name="i-lucide-users" class="w-4 h-4" />
-              <span>{{ role.userCount || 0 }} 用户</span>
+          <div class="space-y-4">
+            <!-- Role info -->
+            <div>
+              <h3 class="text-lg font-semibold text-neutral-900 dark:text-white">
+                {{ role.displayName }}
+              </h3>
+              <p class="text-sm text-neutral-500">
+                {{ role.name }}
+              </p>
+              <p v-if="role.description" class="mt-2 text-sm text-neutral-600 dark:text-neutral-400">
+                {{ role.description }}
+              </p>
             </div>
-            <div class="flex items-center gap-1.5 text-neutral-500">
-              <UIcon name="i-lucide-key" class="w-4 h-4" />
-              <span>{{ role.permissions?.length || 0 }} 权限</span>
+
+            <!-- Stats -->
+            <div class="flex gap-4 text-sm">
+              <div class="flex items-center gap-1.5 text-neutral-500">
+                <UIcon name="i-lucide-users" class="w-4 h-4" />
+                <span>{{ role.userCount || 0 }} 用户</span>
+              </div>
+              <div class="flex items-center gap-1.5 text-neutral-500">
+                <UIcon name="i-lucide-key" class="w-4 h-4" />
+                <span>{{ role.permissions?.length || 0 }} 权限</span>
+              </div>
+            </div>
+
+            <!-- Permissions preview -->
+            <div v-if="role.permissions?.length" class="flex flex-wrap gap-1">
+              <UBadge
+                v-for="perm in role.permissions.slice(0, 3)"
+                :key="perm.name"
+                color="neutral"
+                variant="subtle"
+                size="xs"
+              >
+                {{ perm.displayName }}
+              </UBadge>
+              <UBadge
+                v-if="role.permissions.length > 3"
+                color="neutral"
+                variant="subtle"
+                size="xs"
+              >
+                +{{ role.permissions.length - 3 }}
+              </UBadge>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex gap-2 pt-4 border-t border-neutral-200 dark:border-neutral-800">
+              <UButton
+                variant="outline"
+                size="xs"
+                icon="i-lucide-key"
+                @click="openPermissionsModal(role)"
+              >
+                权限
+              </UButton>
+              <UButton
+                v-if="canEditRole(role)"
+                variant="outline"
+                size="xs"
+                icon="i-lucide-edit"
+                @click="openEditModal(role)"
+              >
+                编辑
+              </UButton>
+              <UButton
+                v-if="!isSuperAdmin"
+                variant="outline"
+                size="xs"
+                disabled
+              >
+                <UIcon name="i-lucide-lock" class="w-3 h-3" />
+              </UButton>
             </div>
           </div>
+        </UCard>
+      </div>
+    </div>
 
-          <!-- Permissions preview -->
-          <div v-if="role.permissions?.length" class="flex flex-wrap gap-1">
-            <UBadge
-              v-for="perm in role.permissions.slice(0, 3)"
-              :key="perm.name"
-              color="neutral"
-              variant="subtle"
-              size="xs"
-            >
-              {{ perm.displayName }}
-            </UBadge>
-            <UBadge
-              v-if="role.permissions.length > 3"
-              color="neutral"
-              variant="subtle"
-              size="xs"
-            >
-              +{{ role.permissions.length - 3 }}
-            </UBadge>
-          </div>
+    <!-- Custom Roles Section -->
+    <div v-if="customRoles.length > 0" class="mt-8">
+      <h2 class="text-lg font-semibold text-neutral-900 dark:text-white mb-4">
+        自定义角色
+      </h2>
+      <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <UCard v-for="role in customRoles" :key="role.id">
+          <div class="space-y-4">
+            <!-- Role info -->
+            <div>
+              <h3 class="text-lg font-semibold text-neutral-900 dark:text-white">
+                {{ role.displayName }}
+              </h3>
+              <p class="text-sm text-neutral-500">
+                {{ role.name }}
+              </p>
+              <p v-if="role.description" class="mt-2 text-sm text-neutral-600 dark:text-neutral-400">
+                {{ role.description }}
+              </p>
+            </div>
 
-          <!-- Actions -->
-          <div class="flex gap-2 pt-4 border-t border-neutral-200 dark:border-neutral-800">
-            <UButton
-              variant="outline"
-              size="xs"
-              icon="i-lucide-key"
-              @click="openPermissionsModal(role)"
-            >
-              权限
-            </UButton>
-            <UButton
-              v-if="!role.isSystem"
-              variant="outline"
-              size="xs"
-              icon="i-lucide-edit"
-              @click="openEditModal(role)"
-            >
-              编辑
-            </UButton>
-            <UButton
-              v-if="!role.isSystem && !role.userCount"
-              variant="outline"
-              size="xs"
-              color="error"
-              icon="i-lucide-trash"
-              @click="deleteRole(role)"
-            >
-              删除
-            </UButton>
+            <!-- Stats -->
+            <div class="flex gap-4 text-sm">
+              <div class="flex items-center gap-1.5 text-neutral-500">
+                <UIcon name="i-lucide-users" class="w-4 h-4" />
+                <span>{{ role.userCount || 0 }} 用户</span>
+              </div>
+              <div class="flex items-center gap-1.5 text-neutral-500">
+                <UIcon name="i-lucide-key" class="w-4 h-4" />
+                <span>{{ role.permissions?.length || 0 }} 权限</span>
+              </div>
+            </div>
+
+            <!-- Permissions preview -->
+            <div v-if="role.permissions?.length" class="flex flex-wrap gap-1">
+              <UBadge
+                v-for="perm in role.permissions.slice(0, 3)"
+                :key="perm.name"
+                color="neutral"
+                variant="subtle"
+                size="xs"
+              >
+                {{ perm.displayName }}
+              </UBadge>
+              <UBadge
+                v-if="role.permissions.length > 3"
+                color="neutral"
+                variant="subtle"
+                size="xs"
+              >
+                +{{ role.permissions.length - 3 }}
+              </UBadge>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex gap-2 pt-4 border-t border-neutral-200 dark:border-neutral-800">
+              <UButton
+                variant="outline"
+                size="xs"
+                icon="i-lucide-key"
+                @click="openPermissionsModal(role)"
+              >
+                权限
+              </UButton>
+              <UButton
+                variant="outline"
+                size="xs"
+                icon="i-lucide-edit"
+                @click="openEditModal(role)"
+              >
+                编辑
+              </UButton>
+              <UButton
+                v-if="!role.userCount && isSuperAdmin"
+                variant="outline"
+                size="xs"
+                color="error"
+                icon="i-lucide-trash"
+                @click="deleteRole(role)"
+              >
+                删除
+              </UButton>
+              <UButton
+                v-else-if="role.userCount"
+                variant="outline"
+                size="xs"
+                disabled
+              >
+                删除
+              </UButton>
+            </div>
           </div>
-        </div>
-      </UCard>
+        </UCard>
+      </div>
+
+      <!-- Empty state for custom roles -->
+      <div
+        v-if="customRoles.length === 0"
+        class="flex flex-col items-center justify-center py-12 border border-dashed border-neutral-300 dark:border-neutral-700 rounded-lg"
+      >
+        <UIcon name="i-lucide-shield" class="w-12 h-12 text-neutral-300 dark:text-neutral-600" />
+        <p class="mt-4 text-sm font-medium text-neutral-500">
+          暂无自定义角色
+        </p>
+        <p class="mt-1 text-xs text-neutral-400">
+          点击上方"创建角色"按钮添加
+        </p>
+      </div>
     </div>
 
     <!-- Create/Edit modal -->
@@ -309,10 +461,21 @@ onMounted(() => {
       <template #content>
         <UCard class="max-h-[80vh] overflow-auto">
           <template #header>
-            <h3 class="font-semibold">
-              分配权限 - {{ editingRole?.displayName }}
-            </h3>
+            <div class="flex items-center justify-between">
+              <h3 class="font-semibold">
+                分配权限 - {{ editingRole?.displayName }}
+              </h3>
+              <UBadge v-if="editingRole?.isSystem" color="neutral" variant="subtle" size="xs">
+                系统角色
+              </UBadge>
+            </div>
           </template>
+
+          <div v-if="editingRole?.isSystem && !isSuperAdmin" class="mb-4">
+            <UAlert color="neutral" variant="subtle" icon="i-lucide-lock">
+              系统角色权限仅超级管理员可修改
+            </UAlert>
+          </div>
 
           <div class="space-y-6">
             <div v-for="group in permissionGroups" :key="group.module">
@@ -327,7 +490,7 @@ onMounted(() => {
                 >
                   <UCheckbox
                     :model-value="selectedPermissions.includes(perm.id)"
-                    :disabled="editingRole?.isSystem && editingRole?.name === 'SUPER_ADMIN'"
+                    :disabled="editingRole?.isSystem && !isSuperAdmin"
                     @update:model-value="togglePermission(perm.id)"
                   />
                   <div>
@@ -349,10 +512,10 @@ onMounted(() => {
             </UButton>
             <UButton
               :loading="submitting"
-              :disabled="editingRole?.isSystem && editingRole?.name === 'SUPER_ADMIN'"
+              :disabled="editingRole?.isSystem && !isSuperAdmin"
               @click="savePermissions"
             >
-              保存
+              保存 ({{ selectedPermissions.length }})
             </UButton>
           </div>
         </UCard>

@@ -24,7 +24,6 @@ model User {
   lastLoginAt DateTime?
 
   roles                   UserRole[]
-  permissions             UserPermission[]
   oauthAccounts           OAuthAccount[]
   refreshTokens           RefreshToken[]
   verificationTokens      VerificationToken[]
@@ -128,7 +127,6 @@ model Permission {
   updatedAt DateTime @updatedAt
 
   roles RolePermission[]
-  users UserPermission[]
 
   @@map("permissions")
 }
@@ -145,20 +143,6 @@ model UserRole {
 
   @@id([userId, roleId])
   @@map("user_roles")
-}
-
-model UserPermission {
-  userId       String
-  permissionId String
-
-  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
-
-  assignedAt DateTime @default(now())
-  assignedBy String?
-
-  @@id([userId, permissionId])
-  @@map("user_permissions")
 }
 
 model RolePermission {

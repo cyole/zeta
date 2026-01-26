@@ -27,7 +27,6 @@ interface User {
   emailVerified: boolean
   createdAt: string
   roles: Array<{ id: string, name: string, displayName: string }>
-  permissions?: Array<{ id: string, name: string, displayName: string }>
 }
 
 // CRUD Table composable
@@ -54,15 +53,12 @@ const {
 // Modals
 const showModal = ref(false)
 const showRolesModal = ref(false)
-const showPermissionsModal = ref(false)
 const editingUser = ref<User | null>(null)
 const submitting = ref(false)
 
-// Roles & Permissions
+// Roles
 const allRoles = ref<any[]>([])
-const permissionGroups = ref<any[]>([])
 const selectedRoles = ref<string[]>([])
-const selectedPermissions = ref<string[]>([])
 
 // Form
 const formSchema = computed(() => {
@@ -96,12 +92,6 @@ const statusColors: Record<string, 'success' | 'warning' | 'error'> = {
   ACTIVE: 'success',
   INACTIVE: 'warning',
   SUSPENDED: 'error',
-}
-
-const moduleLabels: Record<string, string> = {
-  user: '用户管理',
-  role: '角色管理',
-  permission: '权限管理',
 }
 
 // Helper functions
@@ -172,22 +162,6 @@ const columns: TableColumn<User>[] = [
     },
   },
   {
-    accessorKey: 'permissions',
-    header: '直接权限',
-    cell: ({ row }) => {
-      const permissions = row.original.permissions || []
-      if (!permissions || permissions.length === 0) {
-        return h('span', { class: 'text-base text-neutral-400' }, '-')
-      }
-      return h('div', { class: 'flex flex-wrap gap-1.5' }, [
-        h(UBadge, { color: 'success', variant: 'subtle', size: 'md' }, () => permissions[0]?.displayName || permissions[0]?.name),
-        permissions.length > 1
-          ? h(UBadge, { color: 'neutral', variant: 'soft', size: 'md' }, () => `+${permissions.length - 1}`)
-          : null,
-      ])
-    },
-  },
-  {
     accessorKey: 'status',
     header: '状态',
     cell: ({ row }) => h(UBadge, {
@@ -208,7 +182,6 @@ const columns: TableColumn<User>[] = [
     cell: ({ row }) => {
       const items = [
         [{ label: '分配角色', icon: 'i-lucide-shield', onSelect: () => openRolesModal(row.original) }],
-        [{ label: '分配权限', icon: 'i-lucide-key', onSelect: () => openPermissionsModal(row.original) }],
         [{ label: row.original.status === 'ACTIVE' ? '禁用' : '启用', icon: row.original.status === 'ACTIVE' ? 'i-lucide-ban' : 'i-lucide-check', onSelect: () => toggleUserStatus(row.original) }],
         [{ label: '删除', icon: 'i-lucide-trash', onSelect: () => deleteItem(row.original.id) }],
       ]
@@ -228,15 +201,6 @@ async function fetchRoles() {
   }
   catch (error) {
     console.error('Failed to fetch roles', error)
-  }
-}
-
-async function fetchPermissions() {
-  try {
-    permissionGroups.value = await api.get('/permissions/modules')
-  }
-  catch (error) {
-    console.error('Failed to fetch permissions', error)
   }
 }
 
@@ -262,12 +226,6 @@ function openRolesModal(user: User) {
   showRolesModal.value = true
 }
 
-function openPermissionsModal(user: User) {
-  editingUser.value = user
-  selectedPermissions.value = user.permissions?.map(p => p.id) || []
-  showPermissionsModal.value = true
-}
-
 function toggleRole(roleId: string) {
   const index = selectedRoles.value.indexOf(roleId)
   if (index > -1) {
@@ -276,40 +234,6 @@ function toggleRole(roleId: string) {
   else {
     selectedRoles.value.push(roleId)
   }
-}
-
-function togglePermission(permId: string) {
-  const index = selectedPermissions.value.indexOf(permId)
-  if (index > -1) {
-    selectedPermissions.value.splice(index, 1)
-  }
-  else {
-    selectedPermissions.value.push(permId)
-  }
-}
-
-function toggleGroupPermissions(group: any) {
-  const groupIds = group.permissions.map((p: any) => p.id)
-  const allSelected = groupIds.every((id: string) => selectedPermissions.value.includes(id))
-  if (allSelected) {
-    selectedPermissions.value = selectedPermissions.value.filter((id: string) => !groupIds.includes(id))
-  }
-  else {
-    groupIds.forEach((id: string) => {
-      if (!selectedPermissions.value.includes(id)) {
-        selectedPermissions.value.push(id)
-      }
-    })
-  }
-}
-
-function isGroupAllSelected(group: any) {
-  return group.permissions.every((p: any) => selectedPermissions.value.includes(p.id))
-}
-
-function isGroupPartiallySelected(group: any) {
-  const selectedCount = group.permissions.filter((p: any) => selectedPermissions.value.includes(p.id)).length
-  return selectedCount > 0 && selectedCount < group.permissions.length
 }
 
 async function onSubmit() {
@@ -351,24 +275,6 @@ async function saveRoles() {
   }
 }
 
-async function savePermissions() {
-  if (!editingUser.value)
-    return
-  submitting.value = true
-  try {
-    await api.patch(`/users/${editingUser.value.id}/permissions`, { permissionIds: selectedPermissions.value })
-    toast.add({ title: '保存成功', color: 'success' })
-    showPermissionsModal.value = false
-    fetchItems()
-  }
-  catch (error: any) {
-    toast.add({ title: '保存失败', description: error.message, color: 'error' })
-  }
-  finally {
-    submitting.value = false
-  }
-}
-
 async function toggleUserStatus(user: User) {
   const newStatus = user.status === 'ACTIVE' ? 'SUSPENDED' : 'ACTIVE'
   try {
@@ -389,16 +295,6 @@ async function handleBatchAssignRoles() {
   showRolesModal.value = true
   editingUser.value = null
   selectedRoles.value = []
-}
-
-async function handleBatchAssignPermissions() {
-  if (selectedItems.value.length === 0) {
-    toast.add({ title: '请先选择用户', color: 'warning' })
-    return
-  }
-  showPermissionsModal.value = true
-  editingUser.value = null
-  selectedPermissions.value = []
 }
 
 async function saveBatchRoles() {
@@ -423,28 +319,6 @@ async function saveBatchRoles() {
   }
 }
 
-async function saveBatchPermissions() {
-  if (selectedItems.value.length === 0)
-    return
-  submitting.value = true
-  try {
-    await api.patch('/users/batch/permissions', {
-      userIds: selectedItems.value.map(u => u.id),
-      permissionIds: selectedPermissions.value,
-    })
-    toast.add({ title: '批量分配成功', color: 'success' })
-    showPermissionsModal.value = false
-    selectedItems.value = []
-    fetchItems()
-  }
-  catch (error: any) {
-    toast.add({ title: '批量分配失败', description: error.message, color: 'error' })
-  }
-  finally {
-    submitting.value = false
-  }
-}
-
 function handlePageSizeChange(value: unknown) {
   if (typeof value === 'number') {
     pagination.setPageSize(value)
@@ -455,7 +329,6 @@ function handlePageSizeChange(value: unknown) {
 onMounted(() => {
   fetchItems()
   fetchRoles()
-  fetchPermissions()
 })
 </script>
 
@@ -468,7 +341,7 @@ onMounted(() => {
           用户管理
         </h1>
         <p class="text-neutral-500 dark:text-neutral-400">
-          管理系统用户账户、角色和权限
+          管理系统用户账户和角色
         </p>
       </div>
       <UButton icon="i-lucide-plus" size="lg" @click="openCreateModal">
@@ -505,22 +378,12 @@ onMounted(() => {
             <UButton
               v-if="selectedItems.length > 0"
               variant="outline"
-              color="neutral"
+              color="primary"
               size="lg"
               icon="i-lucide-shield"
               @click="handleBatchAssignRoles"
             >
               分配角色
-            </UButton>
-            <UButton
-              v-if="selectedItems.length > 0"
-              variant="outline"
-              color="primary"
-              size="lg"
-              icon="i-lucide-key"
-              @click="handleBatchAssignPermissions"
-            >
-              分配权限
             </UButton>
           </div>
         </div>
@@ -647,6 +510,9 @@ onMounted(() => {
                   {{ role.description || role.name }}
                 </p>
               </div>
+              <UBadge v-if="role.isSystem" color="neutral" variant="subtle" size="sm">
+                系统角色
+              </UBadge>
             </div>
           </div>
 
@@ -661,87 +527,6 @@ onMounted(() => {
         </UCard>
       </template>
     </UModal>
-
-    <!-- Permissions Modal -->
-    <UModal v-model:open="showPermissionsModal">
-      <template #content>
-        <UCard>
-          <template #header>
-            <div class="flex items-center justify-between">
-              <div>
-                <h3 class="text-lg font-semibold">
-                  {{ editingUser ? `分配权限 - ${editingUser.name}` : `批量分配权限 (${selectedItems.length}个用户)` }}
-                </h3>
-                <p class="text-sm text-neutral-500 dark:text-neutral-400 mt-1">
-                  已选择 {{ selectedPermissions.length }} 个权限
-                </p>
-              </div>
-              <UButton icon="i-lucide-x" variant="ghost" color="neutral" size="sm" @click="showPermissionsModal = false" />
-            </div>
-          </template>
-
-          <div class="max-h-[60vh] overflow-y-auto space-y-6 pr-2">
-            <div v-for="group in permissionGroups" :key="group.module" class="bg-neutral-50 dark:bg-neutral-900/50 rounded-lg p-4">
-              <div class="flex items-center justify-between mb-3">
-                <div class="flex items-center gap-2">
-                  <UCheckbox
-                    :model-value="isGroupAllSelected(group)"
-                    :indeterminate="isGroupPartiallySelected(group)"
-                    size="lg"
-                    @update:model-value="toggleGroupPermissions(group)"
-                  />
-                  <h4 class="text-base font-semibold text-neutral-700 dark:text-neutral-300 capitalize">
-                    {{ moduleLabels[group.module] || group.module }}
-                  </h4>
-                  <span class="text-xs text-neutral-500">
-                    ({{ group.permissions.filter((p: any) => selectedPermissions.includes(p.id)).length }}/{{ group.permissions.length }})
-                  </span>
-                </div>
-                <UButton
-                  variant="ghost"
-                  color="neutral"
-                  size="xs"
-                  @click="toggleGroupPermissions(group)"
-                >
-                  {{ isGroupAllSelected(group) ? '取消' : '全选' }}
-                </UButton>
-              </div>
-              <div class="space-y-2 pl-9">
-                <div
-                  v-for="perm in group.permissions"
-                  :key="perm.id"
-                  class="flex items-center gap-3 p-2.5 rounded-md hover:bg-white dark:hover:bg-neutral-800 transition-colors cursor-pointer"
-                  @click="togglePermission(perm.id)"
-                >
-                  <UCheckbox
-                    :model-value="selectedPermissions.includes(perm.id)"
-                    size="md"
-                    @update:model-value="togglePermission(perm.id)"
-                  />
-                  <div class="flex-1">
-                    <p class="text-sm font-medium">
-                      {{ perm.displayName }}
-                    </p>
-                    <p class="text-xs text-neutral-500 dark:text-neutral-400">
-                      {{ perm.name }}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="flex gap-3 justify-end pt-5 mt-5 border-t border-neutral-200 dark:border-neutral-800">
-            <UButton variant="outline" color="neutral" size="lg" @click="showPermissionsModal = false">
-              取消
-            </UButton>
-            <UButton :loading="submitting" size="lg" @click="editingUser ? savePermissions() : saveBatchPermissions()">
-              保存 ({{ selectedPermissions.length }})
-            </UButton>
-          </div>
-        </UCard>
-      </template>
-    </UModal>
   </div>
 </template>
 
@@ -750,28 +535,5 @@ onMounted(() => {
 :deep(td),
 :deep(th) {
   vertical-align: middle;
-}
-
-/* Custom scrollbar for permissions modal */
-:deep(.max-h-\\[60vh\\]) {
-  scrollbar-width: thin;
-  scrollbar-color: rgb(229 231 235) transparent;
-}
-
-:deep(.max-h-\\[60vh\\])::-webkit-scrollbar {
-  width: 6px;
-}
-
-:deep(.max-h-\\[60vh\\])::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-:deep(.max-h-\\[60vh\\])::-webkit-scrollbar-thumb {
-  background-color: rgb(229 231 235);
-  border-radius: 3px;
-}
-
-.dark :deep(.max-h-\\[60vh\\])::-webkit-scrollbar-thumb {
-  background-color: rgb(55 65 81);
 }
 </style>

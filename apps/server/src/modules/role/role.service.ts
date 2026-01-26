@@ -77,25 +77,46 @@ export class RoleService {
       throw new ConflictException('角色名称已存在')
     }
 
-    return this.prisma.role.create({
-      data: dto,
+    // Validate displayName is not empty
+    const displayName = dto.displayName?.trim()
+    if (!displayName) {
+      throw new BadRequestException('显示名称不能为空')
+    }
+
+    const newRole = await this.prisma.role.create({
+      data: {
+        name: dto.name,
+        displayName,
+        description: dto.description,
+      },
     })
+
+    return newRole
   }
 
   async update(id: string, dto: UpdateRoleDto) {
+    console.log('[SERVICE UPDATE] Input dto:', dto)
+    console.log('[SERVICE UPDATE] dto.displayName:', dto.displayName)
+    console.log('[SERVICE UPDATE] dto.description:', dto.description)
+
     const role = await this.prisma.role.findUnique({ where: { id } })
 
     if (!role) {
       throw new NotFoundException('角色不存在')
     }
 
-    if (role.isSystem) {
-      throw new BadRequestException('系统角色不能修改')
-    }
+    // Note: System role check is handled at controller level by SuperAdminGuard
+    // SuperAdmin can modify system roles, other users cannot access this endpoint for system roles
+
+    const updateData: Record<string, unknown> = {}
+    if (dto.displayName !== undefined) updateData.displayName = dto.displayName
+    if (dto.description !== undefined) updateData.description = dto.description
+
+    console.log('[SERVICE UPDATE] Final updateData:', updateData)
 
     return this.prisma.role.update({
       where: { id },
-      data: dto,
+      data: updateData,
     })
   }
 
@@ -105,6 +126,9 @@ export class RoleService {
     if (!role) {
       throw new NotFoundException('角色不存在')
     }
+
+    // Note: System role check is handled at controller level by SuperAdminGuard
+    // SuperAdmin can modify system roles, other users cannot access this endpoint for system roles
 
     // Delete existing permissions
     await this.prisma.rolePermission.deleteMany({
@@ -132,6 +156,7 @@ export class RoleService {
       throw new NotFoundException('角色不存在')
     }
 
+    // System roles cannot be deleted, even by SuperAdmin
     if (role.isSystem) {
       throw new BadRequestException('系统角色不能删除')
     }
