@@ -126,7 +126,7 @@ export function useErrorHandler() {
         title,
         description,
         color: 'error',
-        icon: 'i-heroicons-exclamation-circle',
+        icon: 'lucide:circle-alert',
         duration: 5000,
       })
     }
@@ -146,7 +146,7 @@ export function useErrorHandler() {
         title: customTitle || '网络错误',
         description: customDescription || error.message || '请检查网络连接后重试',
         color: 'error',
-        icon: 'i-heroicons-exclamation-circle',
+        icon: 'lucide:circle-alert',
         duration: 5000,
       })
     }

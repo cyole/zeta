@@ -96,12 +96,7 @@ async function onSubmit() {
       </UFormField>
 
       <div class="flex items-center justify-between gap-2">
-        <div class="flex items-center gap-2">
-          <UCheckbox id="remember" v-model="rememberMe" />
-          <label for="remember" class="text-sm text-neutral-600 dark:text-neutral-400 cursor-pointer">
-            记住登录状态
-          </label>
-        </div>
+        <UCheckbox id="remember" v-model="rememberMe" label="记住登录状态" />
         <NuxtLink to="/auth/forgot-password" class="text-sm text-primary-500 hover:text-primary-600">
           忘记密码？
         </NuxtLink>
