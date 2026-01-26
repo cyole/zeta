@@ -38,22 +38,31 @@ export function useAuth() {
   const user = useState<User | null>('auth:user', () => null)
   const isLoading = useState<boolean>('auth:loading', () => true)
 
-  // Cookies
-  const getAccessTokenCookie = () => useCookie('zeta_access_token', {
-    maxAge: 60 * 15, // 15 minutes
+  // Cookies - use consistent cookie refs with useState for shared reactivity
+  // Note: Access token cookie doesn't have maxAge - it's a session cookie
+  // The JWT itself has expiration (15min by default) and the server will
+  // reject expired tokens with 401, triggering the refresh mechanism
+  const accessTokenCookie = useCookie('zeta_access_token', {
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
   })
 
-  const getRefreshTokenCookie = (rememberMe = true) => useCookie('zeta_refresh_token', {
-    maxAge: rememberMe ? 60 * 60 * 24 * 7 : undefined, // 7 days if remember me, session cookie otherwise
-    expires: rememberMe ? undefined : new Date(0), // Session cookie if not remember me
+  const refreshTokenCookie = useCookie('zeta_refresh_token', {
+    maxAge: 60 * 60 * 24 * 7, // 7 days
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
   })
 
-  let accessToken = getAccessTokenCookie()
-  let refreshToken = getRefreshTokenCookie()
+  // Use computed to expose the cookie values reactively
+  const accessToken = computed({
+    get: () => accessTokenCookie.value,
+    set: (val) => { accessTokenCookie.value = val },
+  })
+
+  const refreshToken = computed({
+    get: () => refreshTokenCookie.value,
+    set: (val) => { refreshTokenCookie.value = val },
+  })
 
   // Computed
   const isAuthenticated = computed(() => !!user.value)
@@ -131,7 +140,7 @@ export function useAuth() {
   }
 
   // Actions
-  const login = async (credentials: LoginRequest, rememberMe = true) => {
+  const login = async (credentials: LoginRequest, _rememberMe = true) => {
     const result = await api<{
       accessToken: string
       refreshToken: string
@@ -141,10 +150,7 @@ export function useAuth() {
       body: JSON.stringify(credentials),
     })
 
-    // Re-initialize cookies with correct rememberMe setting
-    accessToken = getAccessTokenCookie()
-    refreshToken = getRefreshTokenCookie(rememberMe)
-
+    // Set tokens - cookies are already configured
     accessToken.value = result.accessToken
     refreshToken.value = result.refreshToken
     user.value = result.user
