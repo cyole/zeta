@@ -13,7 +13,7 @@ export default defineNuxtConfig({
   icon: {
     provider: 'none',
     clientBundle: {
-      icons: ['lucide:sun', 'lucide:moon', 'lucide:circle-alert'],
+      icons: ['lucide:sun', 'lucide:moon', 'lucide:circle-alert', 'lucide:loader-circle'],
       scan: true,
     },
   },

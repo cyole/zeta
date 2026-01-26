@@ -1,4 +1,4 @@
-import type { ForgotPasswordDto, LoginDto, RegisterDto, ResetPasswordDto } from './dto'
+import type { ForgotPasswordDto, LoginDto, RegisterDto, ResendVerificationDto, ResetPasswordDto } from './dto'
 import * as crypto from 'node:crypto'
 import {
   BadRequestException,
@@ -131,6 +131,11 @@ export class AuthService {
     // Check user status
     if (user.status !== 'ACTIVE') {
       throw new UnauthorizedException('账号已被禁用')
+    }
+
+    // Check email verification
+    if (!user.emailVerified) {
+      throw new UnauthorizedException('EMAIL_NOT_VERIFIED')
     }
 
     // Generate tokens
@@ -273,6 +278,46 @@ export class AuthService {
     // Delete existing verification tokens
     await this.prisma.verificationToken.deleteMany({
       where: { userId, type: 'EMAIL_VERIFICATION' },
+    })
+
+    // Create new verification token
+    const verificationToken = crypto.randomBytes(32).toString('hex')
+    await this.prisma.verificationToken.create({
+      data: {
+        token: verificationToken,
+        type: 'EMAIL_VERIFICATION',
+        userId: user.id,
+        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
+      },
+    })
+
+    // Send verification email
+    await this.mailService.sendVerificationEmail(
+      user.email,
+      user.name,
+      verificationToken,
+    )
+
+    return { message: '验证邮件已发送' }
+  }
+
+  async resendVerificationEmailByEmail(dto: ResendVerificationDto) {
+    const user = await this.prisma.user.findUnique({
+      where: { email: dto.email },
+    })
+
+    if (!user) {
+      // Don't reveal if email exists or not for security
+      return { message: '如果该邮箱已注册，验证邮件已发送' }
+    }
+
+    if (user.emailVerified) {
+      return { message: '邮箱已验证' }
+    }
+
+    // Delete existing verification tokens
+    await this.prisma.verificationToken.deleteMany({
+      where: { userId: user.id, type: 'EMAIL_VERIFICATION' },
     })
 
     // Create new verification token

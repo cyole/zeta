@@ -141,21 +141,39 @@ export function useAuth() {
 
   // Actions
   const login = async (credentials: LoginRequest, _rememberMe = true) => {
-    const result = await api<{
-      accessToken: string
-      refreshToken: string
-      user: User
-    }>('/auth/login', {
-      method: 'POST',
-      body: JSON.stringify(credentials),
-    })
+    try {
+      const result = await api<{
+        accessToken: string
+        refreshToken: string
+        user: User
+      }>('/auth/login', {
+        method: 'POST',
+        body: JSON.stringify(credentials),
+        // Don't show default error for email verification case
+        showError: false,
+        onError: (error) => {
+          if (error.message !== 'EMAIL_NOT_VERIFIED') {
+            handleApiError(new Response(), error, { showError: true })
+          }
+        },
+      })
 
-    // Set tokens - cookies are already configured
-    accessToken.value = result.accessToken
-    refreshToken.value = result.refreshToken
-    user.value = result.user
+      // Set tokens - cookies are already configured
+      accessToken.value = result.accessToken
+      refreshToken.value = result.refreshToken
+      user.value = result.user
 
-    return result
+      return result
+    }
+    catch (error) {
+      // Check if error is due to unverified email
+      if (error instanceof Error && error.message === 'EMAIL_NOT_VERIFIED') {
+        const emailNotVerifiedError = new Error('EMAIL_NOT_VERIFIED') as Error & { email: string }
+        emailNotVerifiedError.email = credentials.email
+        throw emailNotVerifiedError
+      }
+      throw error
+    }
   }
 
   const register = async (data: RegisterRequest) => {

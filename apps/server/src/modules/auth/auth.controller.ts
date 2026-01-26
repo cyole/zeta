@@ -12,7 +12,7 @@ import { AuthGuard } from '@nestjs/passport'
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { CurrentUser, Public } from '@/common/decorators'
 import { AuthService } from './auth.service'
-import { ForgotPasswordDto, LoginDto, RefreshTokenDto, RegisterDto, ResetPasswordDto, VerifyEmailDto } from './dto'
+import { ForgotPasswordDto, LoginDto, RefreshTokenDto, RegisterDto, ResendVerificationDto, ResetPasswordDto, VerifyEmailDto } from './dto'
 
 @ApiTags('认证')
 @Controller('auth')
@@ -88,6 +88,13 @@ export class AuthController {
   @ApiOperation({ summary: '重发验证邮件' })
   async resendVerification(@CurrentUser('id') userId: string) {
     return this.authService.resendVerificationEmail(userId)
+  }
+
+  @Public()
+  @Post('resend-verification-by-email')
+  @ApiOperation({ summary: '通过邮箱重发验证邮件' })
+  async resendVerificationByEmail(@Body() dto: ResendVerificationDto) {
+    return this.authService.resendVerificationEmailByEmail(dto)
   }
 
   @Public()
