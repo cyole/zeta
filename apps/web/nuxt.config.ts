@@ -10,6 +10,13 @@ export default defineNuxtConfig({
 
   modules: ['@nuxt/ui'],
 
+  icon: {
+    provider: 'none',
+    clientBundle: {
+      scan: true,
+    },
+  },
+
   ui: {
     fonts: false,
   },

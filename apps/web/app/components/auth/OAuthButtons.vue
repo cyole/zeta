@@ -21,13 +21,11 @@ const primaryColor = computed(() => appConfig.ui.colors.primary)
       variant="outline"
       size="lg"
       class="flex-1"
+      icon="i-simple-icons-github"
       :loading="githubLoading"
       :loading-color="primaryColor"
       @click="loginWithGitHub"
     >
-      <template #leading>
-        <UIcon name="i-simple-icons-github" class="w-5 h-5" />
-      </template>
       GitHub
     </UButton>
 
@@ -38,11 +36,9 @@ const primaryColor = computed(() => appConfig.ui.colors.primary)
       class="flex-1"
       :loading="dingtalkLoading"
       :loading-color="primaryColor"
+      icon="i-ant-design:dingtalk-circle-filled"
       @click="loginWithDingTalk"
     >
-      <template #leading>
-        <UIcon name="i-ant-design:dingtalk-circle-filled" class="w-5 h-5" />
-      </template>
       钉钉
     </UButton>
   </div>
