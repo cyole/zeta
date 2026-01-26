@@ -165,6 +165,8 @@ async function onSubmit() {
       </UButton>
     </UForm>
 
+    <USeparator label="或使用以下方式" class="my-8" />
+
     <AuthOAuthButtons />
 
     <!-- Login link -->
