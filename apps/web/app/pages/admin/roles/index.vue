@@ -221,7 +221,6 @@ onMounted(() => {
             color="neutral"
             variant="subtle"
             class="absolute top-4 right-4"
-            size="xs"
           >
             系统角色
           </UBadge>
@@ -259,7 +258,6 @@ onMounted(() => {
                 :key="perm.name"
                 color="neutral"
                 variant="subtle"
-                size="xs"
               >
                 {{ perm.displayName }}
               </UBadge>
