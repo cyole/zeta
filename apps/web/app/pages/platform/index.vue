@@ -233,7 +233,7 @@ const features = [
               class="p-3 bg-neutral-50 dark:bg-neutral-800/50 rounded-lg cursor-pointer hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
             >
               <div class="flex items-center gap-2 mb-1">
-                <UBadge :color="announcement.type === 'feature' ? 'primary' : announcement.type === 'update' ? 'success' : 'warning'" variant="soft" size="xs">
+                <UBadge :color="announcement.type === 'feature' ? 'primary' : announcement.type === 'update' ? 'success' : 'warning'" variant="soft">
                   {{ announcement.type === 'feature' ? '新功能' : announcement.type === 'update' ? '更新' : '通知' }}
                 </UBadge>
                 <span class="text-xs text-neutral-400">{{ announcement.date }}</span>

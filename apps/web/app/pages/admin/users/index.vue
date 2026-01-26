@@ -154,9 +154,9 @@ const columns: TableColumn<User>[] = [
         return h('span', { class: 'text-base text-neutral-400' }, '-')
       }
       return h('div', { class: 'flex flex-wrap gap-1.5' }, [
-        h(UBadge, { color: 'primary', variant: 'subtle', size: 'md' }, () => roles[0]?.displayName || roles[0]?.name),
+        h(UBadge, { color: 'primary', variant: 'subtle' }, () => roles[0]?.displayName || roles[0]?.name),
         roles.length > 1
-          ? h(UBadge, { color: 'neutral', variant: 'soft', size: 'md' }, () => `+${roles.length - 1}`)
+          ? h(UBadge, { color: 'neutral', variant: 'soft' }, () => `+${roles.length - 1}`)
           : null,
       ])
     },
@@ -510,7 +510,7 @@ onMounted(() => {
                   {{ role.description || role.name }}
                 </p>
               </div>
-              <UBadge v-if="role.isSystem" color="neutral" variant="subtle" size="sm">
+              <UBadge v-if="role.isSystem" color="neutral" variant="subtle">
                 系统角色
               </UBadge>
             </div>

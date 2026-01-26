@@ -344,7 +344,6 @@ onMounted(() => {
                 :key="perm.name"
                 color="neutral"
                 variant="subtle"
-                size="xs"
               >
                 {{ perm.displayName }}
               </UBadge>
@@ -352,7 +351,6 @@ onMounted(() => {
                 v-if="role.permissions.length > 3"
                 color="neutral"
                 variant="subtle"
-                size="xs"
               >
                 +{{ role.permissions.length - 3 }}
               </UBadge>
@@ -463,7 +461,7 @@ onMounted(() => {
               <h3 class="font-semibold">
                 分配权限 - {{ editingRole?.displayName }}
               </h3>
-              <UBadge v-if="editingRole?.isSystem" color="neutral" variant="subtle" size="xs">
+              <UBadge v-if="editingRole?.isSystem" color="neutral" variant="subtle">
                 系统角色
               </UBadge>
             </div>
