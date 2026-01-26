@@ -205,14 +205,16 @@ const userMenuItems = computed(() => [
         </div>
 
         <div class="flex items-center gap-3">
-          <!-- Theme panel -->
-          <ThemePanel />
-
           <!-- Notifications -->
           <div class="relative">
             <UButton icon="i-lucide-bell" color="neutral" variant="ghost" />
             <span class="absolute -top-0.5 -right-0.5 w-2 h-2 bg-red-500 rounded-full" />
           </div>
+
+          <!-- Theme panel -->
+          <ThemePanel />
+
+          <UColorModeButton />
 
           <div class="h-5 w-px bg-neutral-200 dark:bg-neutral-700" />
 

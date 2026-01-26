@@ -162,6 +162,8 @@ provide('sidebarCollapsed', sidebarCollapsed)
         <!-- Theme panel -->
         <ThemePanel />
 
+        <UColorModeButton />
+
         <!-- User dropdown -->
         <UDropdownMenu :items="userMenuItems">
           <button class="flex items-center gap-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg px-2 py-1.5 transition-colors">

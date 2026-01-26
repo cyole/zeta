@@ -88,12 +88,7 @@ function toggleColorMode() {
 
         <!-- Theme toggle -->
         <div class="absolute top-6 right-6">
-          <UButton
-            :icon="isDark ? 'i-lucide-moon' : 'i-lucide-sun'"
-            color="neutral"
-            variant="ghost"
-            @click="toggleColorMode"
-          />
+          <UColorModeButton />
         </div>
 
         <!-- Slot for login/register form -->

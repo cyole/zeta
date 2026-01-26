@@ -16,8 +16,6 @@ const {
   initTheme,
 } = useTheme()
 
-const colorMode = useColorMode()
-
 // Panel open state
 const isOpen = ref(false)
 
@@ -25,13 +23,6 @@ const isOpen = ref(false)
 onMounted(() => {
   initTheme()
 })
-
-// Color mode options
-const colorModeOptions = [
-  { label: 'Light', value: 'light', icon: 'i-lucide-sun' },
-  { label: 'Dark', value: 'dark', icon: 'i-lucide-moon' },
-  { label: 'System', value: 'system', icon: 'i-lucide-monitor' },
-]
 </script>
 
 <template>
@@ -127,30 +118,6 @@ const colorModeOptions = [
               @click="setRadius(option.value as RadiusValue)"
             >
               {{ option.label }}
-            </button>
-          </div>
-        </div>
-
-        <!-- Color Mode -->
-        <div>
-          <div class="flex items-center gap-1.5 mb-2.5">
-            <span class="text-sm font-medium text-neutral-900 dark:text-white">Color Mode</span>
-          </div>
-          <div class="flex gap-1.5">
-            <button
-              v-for="option in colorModeOptions"
-              :key="option.value"
-              type="button"
-              class="flex-1 flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-md text-xs font-medium transition-colors"
-              :class="[
-                colorMode.preference === option.value
-                  ? 'bg-neutral-900 dark:bg-white text-white dark:text-neutral-900'
-                  : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-700',
-              ]"
-              @click="colorMode.preference = option.value"
-            >
-              <UIcon :name="option.icon" class="w-3.5 h-3.5" />
-              <span>{{ option.label }}</span>
             </button>
           </div>
         </div>
