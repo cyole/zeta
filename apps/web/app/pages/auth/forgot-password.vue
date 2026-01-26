@@ -14,7 +14,7 @@ const loading = ref(false)
 const submitted = ref(false)
 
 const schema = z.object({
-  email: z.string().email('请输入有效的邮箱地址'),
+  email: z.email('请输入有效的邮箱地址'),
 })
 
 const form = reactive({
