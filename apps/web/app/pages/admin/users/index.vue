@@ -17,6 +17,7 @@ const UIcon = resolveComponent('UIcon')
 
 const api = useApi()
 const toast = useToast()
+const { user: currentUser } = useAuth()
 
 interface User {
   id: string
@@ -95,6 +96,10 @@ const statusColors: Record<string, 'success' | 'warning' | 'error'> = {
 }
 
 // Helper functions
+function isCurrentUser(userId: string) {
+  return currentUser.value?.id === userId
+}
+
 function getAvatarColor(email: string) {
   const colors = ['#6366f1', '#8b5cf6', '#d946ef', '#ec4899', '#f43f5e', '#ef4444', '#f97316', '#eab308', '#84cc16', '#22c55e', '#14b8a6', '#06b6d4', '#0ea5e9', '#3b82f6']
   const hash = email.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)
@@ -138,9 +143,14 @@ const columns: TableColumn<User>[] = [
             style: { backgroundColor: getAvatarColor(row.original.email) },
           }, getInitial(row.original.email)),
       h('div', { class: 'flex flex-col gap-0.5' }, [
-        row.original.name
-          ? h('span', { class: 'text-base font-medium text-neutral-900 dark:text-white' }, row.original.name)
-          : h('span', { class: 'text-base font-medium text-neutral-900 dark:text-white' }, row.original.email),
+        h('div', { class: 'flex items-center gap-2' }, [
+          row.original.name
+            ? h('span', { class: 'text-base font-medium text-neutral-900 dark:text-white' }, row.original.name)
+            : h('span', { class: 'text-base font-medium text-neutral-900 dark:text-white' }, row.original.email),
+          isCurrentUser(row.original.id)
+            ? h(UBadge, { color: 'primary', variant: 'subtle' }, () => '当前用户')
+            : null,
+        ]),
         h('span', { class: 'text-sm text-neutral-500 dark:text-neutral-400' }, row.original.email),
       ]),
     ]),
@@ -180,10 +190,21 @@ const columns: TableColumn<User>[] = [
     header: '操作',
     meta: { class: { td: 'text-right' } },
     cell: ({ row }) => {
+      const cannotModify = isCurrentUser(row.original.id)
       const items = [
         [{ label: '分配角色', icon: 'i-lucide-shield', onSelect: () => openRolesModal(row.original) }],
-        [{ label: row.original.status === 'ACTIVE' ? '禁用' : '启用', icon: row.original.status === 'ACTIVE' ? 'i-lucide-ban' : 'i-lucide-check', onSelect: () => toggleUserStatus(row.original) }],
-        [{ label: '删除', icon: 'i-lucide-trash', onSelect: () => deleteItem(row.original.id) }],
+        [{
+          label: row.original.status === 'ACTIVE' ? '禁用' : '启用',
+          icon: row.original.status === 'ACTIVE' ? 'i-lucide-ban' : 'i-lucide-check',
+          onSelect: () => toggleUserStatus(row.original),
+          disabled: cannotModify,
+        }],
+        [{
+          label: '删除',
+          icon: 'i-lucide-trash',
+          onSelect: () => deleteItem(row.original.id),
+          disabled: cannotModify,
+        }],
       ]
       return h('div', { class: 'flex items-center justify-end gap-2' }, [
         h(UButton, { variant: 'soft', color: 'neutral', size: 'sm', icon: 'i-lucide-edit', onClick: () => openEditModal(row.original) }, () => '编辑'),
