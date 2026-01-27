@@ -4,8 +4,10 @@ definePageMeta({
 })
 
 const { isAuthenticated, fetchUser } = useAuth()
+const { initTheme } = useTheme()
 
 onMounted(() => {
+  initTheme()
   fetchUser()
 })
 
