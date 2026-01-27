@@ -29,8 +29,8 @@ const schema = z.object({
   name: z.string().min(2, '应用名称至少需要 2 个字符').max(50, '应用名称最多 50 个字符'),
   description: z.string().max(500, '应用描述最多 500 个字符').optional(),
   homepage: urlValidator.optional(),
-  redirectUris: z.array(z.string().refine(
-    val => !val || /^https?:\/\//.test(val),
+  redirectUris: z.array(z.string().min(1, '回调地址不能为空').refine(
+    val => /^https?:\/\//.test(val),
     { message: '请输入有效的 URL' },
   )).min(1, '至少需要一个回调地址').max(5, '最多支持 5 个回调地址'),
   logo: urlValidator.optional(),
@@ -42,7 +42,7 @@ const form = reactive({
   name: '',
   description: '',
   homepage: '',
-  redirectUris: [''] as string[],
+  redirectUris: ['https://'] as string[],
   logo: '',
   isActive: true,
 })
@@ -67,7 +67,7 @@ watch(() => props.open, (isOpen) => {
         name: '',
         description: '',
         homepage: '',
-        redirectUris: [''],
+        redirectUris: ['https://'],
         logo: '',
         isActive: true,
       })
@@ -78,7 +78,13 @@ watch(() => props.open, (isOpen) => {
 async function handleSubmit() {
   formLoading.value = true
   try {
-    const validUris = form.redirectUris.filter(uri => uri.trim())
+    const validUris = form.redirectUris.filter(uri => uri.trim() && uri !== 'https://')
+
+    if (validUris.length === 0) {
+      toast.add({ title: '请至少填写一个有效的回调地址', color: 'error' })
+      formLoading.value = false
+      return
+    }
 
     if (props.application) {
       // 编辑模式 - 使用 UpdateApplicationDto
@@ -111,6 +117,8 @@ async function handleSubmit() {
   }
   catch (e: any) {
     console.error('Failed to save application:', e)
+    const message = e.response?._data?.message || e.message || '保存失败，请重试'
+    toast.add({ title: message, color: 'error' })
   }
   finally {
     formLoading.value = false
@@ -119,7 +127,7 @@ async function handleSubmit() {
 
 function addRedirectUri() {
   if (form.redirectUris.length < 5) {
-    form.redirectUris.push('')
+    form.redirectUris.push('https://')
   }
 }
 
@@ -133,7 +141,7 @@ const isEdit = computed(() => !!props.application)
 </script>
 
 <template>
-  <UModal :model-value="open" @update:model-value="emit('update:open', $event)">
+  <UModal :open="open" @update:open="emit('update:open', $event)">
     <template #content>
       <UCard>
         <template #header>
@@ -182,7 +190,7 @@ const isEdit = computed(() => !!props.application)
           </UFormField>
 
           <!-- 回调地址 -->
-          <UFormField label="回调地址" required>
+          <UFormField name="redirectUris" label="回调地址" required>
             <div class="space-y-2">
               <div
                 v-for="(_, index) in form.redirectUris"

@@ -11,6 +11,8 @@ const toast = useToast()
 const router = useRouter()
 
 const loading = ref(true)
+const isFirstLoad = ref(true)
+const error = ref<string | null>(null)
 const applications = ref<Application[]>([])
 const pagination = reactive({
   page: 1,
@@ -30,6 +32,7 @@ const editingApp = ref<Application | null>(null)
 // 加载应用列表
 async function loadApplications() {
   loading.value = true
+  error.value = null
   try {
     const result = await getMyApplications({
       page: pagination.page,
@@ -43,9 +46,13 @@ async function loadApplications() {
   }
   catch (e: any) {
     console.error('Failed to load applications:', e)
+    const message = e.response?._data?.message || e.message || '加载失败'
+    error.value = message
+    toast.add({ title: message, color: 'error' })
   }
   finally {
     loading.value = false
+    isFirstLoad.value = false
   }
 }
 
@@ -94,13 +101,20 @@ async function confirmDelete() {
   }
   catch (e: any) {
     console.error('Failed to delete application:', e)
+    const message = e.response?._data?.message || e.message || '删除失败'
+    toast.add({ title: message, color: 'error' })
   }
 }
 
 // 复制 Client ID
 async function copyClientId(clientId: string) {
-  await navigator.clipboard.writeText(clientId)
-  toast.add({ title: '已复制到剪贴板' })
+  try {
+    await navigator.clipboard.writeText(clientId)
+    toast.add({ title: '已复制到剪贴板' })
+  }
+  catch {
+    toast.add({ title: '复制失败', color: 'error' })
+  }
 }
 
 // 分页
@@ -131,8 +145,22 @@ function onPageChange(page: number) {
     </div>
 
     <!-- Loading State -->
-    <div v-if="loading && applications.length === 0" class="flex justify-center py-12">
+    <div v-if="isFirstLoad && loading" class="flex justify-center py-12">
       <UIcon name="i-lucide-loader-2" class="h-8 w-8 animate-spin text-primary-600" />
+    </div>
+
+    <!-- Error State -->
+    <div v-else-if="error && isFirstLoad && applications.length === 0" class="flex flex-col items-center rounded-xl border border-dashed border-red-300 py-12 dark:border-red-700">
+      <UIcon name="i-lucide-alert-circle" class="mb-4 h-16 w-16 text-red-400" />
+      <h3 class="mb-2 text-lg font-medium text-neutral-900 dark:text-white">
+        加载失败
+      </h3>
+      <p class="mb-6 text-center text-neutral-600 dark:text-neutral-400">
+        {{ error }}
+      </p>
+      <UButton color="primary" variant="soft" @click="loadApplications">
+        重试
+      </UButton>
     </div>
 
     <!-- Empty State -->

@@ -8,7 +8,8 @@ definePageMeta({
 
 const route = useRoute()
 const router = useRouter()
-const { getApplication, regenerateSecret } = useApplication()
+const { getApplication, regenerateSecret, deleteApplication } = useApplication()
+const toast = useToast()
 
 const loading = ref(true)
 const regenerating = ref(false)
@@ -20,7 +21,10 @@ const showEditModal = ref(false)
 // Secret 相关
 const showSecretModal = ref(false)
 const newSecret = ref('')
-const showingSecret = ref(false)
+const copiedSecret = ref(false)
+
+// 删除确认
+const deleteModal = ref(false)
 
 const appId = route.params.id as string
 
@@ -32,6 +36,8 @@ async function loadApplication() {
   }
   catch (e: any) {
     console.error('Failed to load application:', e)
+    const message = e.response?._data?.message || e.message || '加载失败'
+    toast.add({ title: message, color: 'error' })
     if (e.message?.includes('不存在') || e.message?.includes('无权')) {
       router.push('/dashboard/applications')
     }
@@ -58,6 +64,8 @@ async function handleRegenerateSecret() {
   }
   catch (e: any) {
     console.error('Failed to regenerate secret:', e)
+    const message = e.response?._data?.message || e.message || '重新生成失败'
+    toast.add({ title: message, color: 'error' })
   }
   finally {
     regenerating.value = false
@@ -66,16 +74,33 @@ async function handleRegenerateSecret() {
 
 async function copySecret() {
   await navigator.clipboard.writeText(newSecret.value)
+  copiedSecret.value = true
+  toast.add({ title: '已复制到剪贴板' })
 }
 
 async function copyClientId() {
   if (application.value?.clientId) {
     await navigator.clipboard.writeText(application.value.clientId)
+    toast.add({ title: '已复制到剪贴板' })
   }
 }
 
 function handleDelete() {
-  router.push(`/dashboard/applications/${appId}/delete`)
+  deleteModal.value = true
+}
+
+async function confirmDelete() {
+  try {
+    await deleteApplication(appId)
+    toast.add({ title: '应用已删除' })
+    deleteModal.value = false
+    router.push('/dashboard/applications')
+  }
+  catch (e: any) {
+    console.error('Failed to delete application:', e)
+    const message = e.response?._data?.message || e.message || '删除失败'
+    toast.add({ title: message, color: 'error' })
+  }
 }
 </script>
 
@@ -166,6 +191,7 @@ function handleDelete() {
           <div>
             <div class="mb-2 text-sm text-neutral-600 dark:text-neutral-400">
               Client Secret
+              <span class="ml-2 text-xs text-neutral-400">(仅创建时显示一次)</span>
             </div>
             <div class="flex items-center gap-2 rounded-lg border border-neutral-200 bg-neutral-50 px-4 py-2 dark:border-neutral-800 dark:bg-neutral-900">
               <code class="flex-1 text-sm text-neutral-900 dark:text-white">••••••••••••••••••••••••••••••••</code>
@@ -173,11 +199,16 @@ function handleDelete() {
                 size="xs"
                 color="neutral"
                 variant="ghost"
+                icon="i-lucide-refresh-cw"
                 :loading="regenerating"
                 @click="handleRegenerateSecret"
               >
                 重新生成
               </UButton>
+            </div>
+            <div class="mt-1.5 flex items-center gap-1 text-xs text-amber-600 dark:text-amber-400">
+              <UIcon name="i-lucide-alert-triangle" class="h-3 w-3" />
+              <span>复制将生成新的 Secret，旧的将立即失效</span>
             </div>
           </div>
         </div>
@@ -282,9 +313,12 @@ function handleDelete() {
       <template #content>
         <UCard>
           <template #header>
-            <div class="flex items-center gap-2">
-              <UIcon name="i-lucide-key" class="h-5 w-5 text-primary-600" />
-              <span class="font-medium">新的 Client Secret</span>
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <UIcon name="i-lucide-key" class="h-5 w-5 text-primary-600" />
+                <span class="font-medium">新的 Client Secret</span>
+              </div>
+              <UButton icon="i-lucide-x" variant="ghost" color="neutral" size="sm" @click="showSecretModal = false" />
             </div>
           </template>
 
@@ -294,42 +328,71 @@ function handleDelete() {
               请立即复制并保存新的 Client Secret，关闭此窗口后将无法再次查看。
             </div>
 
-            <div class="rounded-lg border border-neutral-200 bg-neutral-50 p-4 dark:border-neutral-800 dark:bg-neutral-900">
-              <code v-if="showingSecret" class="break-all text-sm text-neutral-900 dark:text-white">
-                {{ newSecret }}
-              </code>
-              <code v-else class="text-sm text-neutral-900 dark:text-white">
-                ••••••••••••••••••••••••••••••••
-              </code>
-            </div>
-          </div>
-
-          <template #footer>
-            <div class="flex justify-between">
-              <UButton
-                v-if="!showingSecret"
-                variant="ghost"
-                color="neutral"
-                @click="showingSecret = true"
-              >
-                显示 Secret
-              </UButton>
-              <div v-else class="flex gap-2">
+            <div class="space-y-2">
+              <div class="flex items-center justify-between rounded-lg border border-neutral-200 bg-neutral-50 px-4 py-3 dark:border-neutral-800 dark:bg-neutral-900">
+                <code class="flex-1 break-all text-sm text-neutral-900 dark:text-white">
+                  {{ newSecret }}
+                </code>
                 <UButton
-                  variant="ghost"
+                  size="xs"
                   color="neutral"
+                  variant="ghost"
                   icon="i-lucide-copy"
                   @click="copySecret"
                 >
                   复制
                 </UButton>
               </div>
+              <div v-if="copiedSecret" class="flex items-center gap-1 text-xs text-green-600 dark:text-green-400">
+                <UIcon name="i-lucide-check" class="h-3 w-3" />
+                <span>已复制到剪贴板</span>
+              </div>
+            </div>
+          </div>
+
+          <template #footer>
+            <div class="flex justify-end">
               <UButton
                 variant="solid"
                 color="primary"
-                @click="showSecretModal = false; showingSecret = false; newSecret = ''"
+                @click="showSecretModal = false; newSecret = ''; copiedSecret = false"
               >
                 我已保存
+              </UButton>
+            </div>
+          </template>
+        </UCard>
+      </template>
+    </UModal>
+
+    <!-- Delete Modal -->
+    <UModal v-model:open="deleteModal">
+      <template #content>
+        <UCard>
+          <template #header>
+            <div class="flex items-center gap-2">
+              <UIcon name="i-lucide-alert-triangle" class="h-5 w-5 text-amber-600" />
+              <span class="font-medium">确认删除</span>
+            </div>
+          </template>
+
+          <div class="space-y-4">
+            <p class="text-neutral-700 dark:text-neutral-300">
+              确定要删除应用 <span class="font-medium text-neutral-900 dark:text-white">{{ application?.name }}</span> 吗？
+            </p>
+            <div class="rounded-lg bg-red-50 p-3 text-sm text-red-700 dark:bg-red-900/20 dark:text-red-300">
+              <UIcon name="i-lucide-alert-circle" class="mr-1 inline-block h-4 w-4 align-middle" />
+              删除后，该应用的所有授权将被撤销，已颁发的 token 将失效。此操作不可撤销。
+            </div>
+          </div>
+
+          <template #footer>
+            <div class="flex justify-end gap-3">
+              <UButton variant="ghost" color="neutral" @click="deleteModal = false">
+                取消
+              </UButton>
+              <UButton color="error" variant="solid" @click="confirmDelete">
+                确认删除
               </UButton>
             </div>
           </template>

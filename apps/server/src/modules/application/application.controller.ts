@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -84,11 +85,11 @@ export class OAuthAuthorizationController {
     const application = await this.applicationService.findByClientId(query.clientId)
 
     if (!application.isActive) {
-      throw new Error('应用已被禁用')
+      throw new BadRequestException('应用已被禁用')
     }
 
     if (!this.applicationService.validateRedirectUri(application.redirectUris as string[], query.redirectUri)) {
-      throw new Error('无效的回调地址')
+      throw new BadRequestException('无效的回调地址')
     }
 
     // 返回授权页面需要的参数
@@ -106,7 +107,6 @@ export class OAuthAuthorizationController {
   }
 
   @Post('authorize')
-  @Public()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '用户确认授权' })
   async authorize(@Body() dto: AuthorizeDto, @CurrentUser('id') userId: string) {
