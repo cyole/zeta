@@ -13,6 +13,7 @@ const isExpanded = computed(() => !sidebarCollapsed.value || sidebarHovered.valu
 // Navigation items
 const generalNavItems = [
   { label: '仪表盘', icon: 'i-lucide-layout-dashboard', to: '/dashboard' },
+  { label: '应用管理', icon: 'i-lucide-layout-grid', to: '/dashboard/applications' },
 ]
 
 const adminNavItems = [

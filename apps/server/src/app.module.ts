@@ -5,6 +5,7 @@ import { APP_GUARD } from '@nestjs/core'
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard'
 import { ThrottlerGuard } from './common/guards/throttler.guard'
 import configuration from './config/configuration'
+import { ApplicationModule } from './modules/application/application.module'
 import { AuthModule } from './modules/auth/auth.module'
 import { MailModule } from './modules/mail/mail.module'
 import { OAuthModule } from './modules/oauth/oauth.module'
@@ -37,6 +38,7 @@ import { UserModule } from './modules/user/user.module'
     PermissionModule,
     ProfileModule,
     OAuthModule,
+    ApplicationModule,
     MailModule,
     QiniuModule,
     UploadModule,

@@ -28,6 +28,11 @@ model User {
   refreshTokens           RefreshToken[]
   verificationTokens      VerificationToken[]
   notificationPreferences UserNotificationPreferences?
+  applications            Application[]
+  oauthAuthorizationCodes OAuthAuthorizationCode[]
+  oauthAccessTokens       OAuthAccessToken[]
+  oauthRefreshTokens      OAuthRefreshToken[]
+  userApplicationGrants   UserApplicationGrant[]
 
   @@map("users")
 }
@@ -212,4 +217,105 @@ enum EmailDigestFrequency {
   NONE
   DAILY
   WEEKLY
+}
+
+// ============================================
+// OAuth Applications
+// ============================================
+
+model Application {
+  id           String   @id @default(cuid())
+  clientId     String   @unique
+  clientSecret String
+  name         String
+  description  String?
+  homepage     String?
+  redirectUris Json     // Array of redirect URIs
+  logo         String?
+  scopes       Json     @default("[]")
+  isActive     Boolean  @default(true)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt            DateTime                 @default(now())
+  updatedAt            DateTime                 @updatedAt
+  authorizationCodes   OAuthAuthorizationCode[]
+  accessTokens         OAuthAccessToken[]
+  refreshTokens        OAuthRefreshToken[]
+  userGrants           UserApplicationGrant[]
+
+  @@map("applications")
+}
+
+model OAuthAuthorizationCode {
+  id          String   @id @default(cuid())
+  code        String   @unique
+  redirectUri String
+  expiresAt   DateTime
+
+  applicationId String
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([code])
+  @@index([expiresAt])
+  @@map("oauth_authorization_codes")
+}
+
+model OAuthAccessToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  expiresAt DateTime
+
+  applicationId String
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([token])
+  @@index([userId])
+  @@map("oauth_access_tokens")
+}
+
+model OAuthRefreshToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  expiresAt DateTime
+  revoked   Boolean  @default(false)
+
+  applicationId String
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([token])
+  @@index([userId])
+  @@map("oauth_refresh_tokens")
+}
+
+model UserApplicationGrant {
+  id String @id @default(cuid())
+
+  applicationId String
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([applicationId, userId])
+  @@index([userId])
+  @@map("user_application_grants")
 }

@@ -29,6 +29,7 @@ definePageMeta({
       <div class="space-y-6">
         <ProfileRoles />
         <ProfileOAuthAccounts />
+        <ProfileAuthorizedApps />
         <ProfileAccountInfo />
       </div>
     </div>
