@@ -1,12 +1,7 @@
 <script setup lang="ts">
 import type { PrimaryColor } from '~/composables/useTheme'
 
-const { primaryColors, primaryColor, setPrimaryColor, initTheme } = useTheme()
-
-// Initialize theme on mount
-onMounted(() => {
-  initTheme()
-})
+const { primaryColors, primaryColor, setPrimaryColor } = useTheme()
 
 const items = computed(() => [
   primaryColors.map(color => ({

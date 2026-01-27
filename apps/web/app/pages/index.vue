@@ -4,10 +4,8 @@ definePageMeta({
 })
 
 const { isAuthenticated, fetchUser } = useAuth()
-const { initTheme } = useTheme()
 
 onMounted(() => {
-  initTheme()
   fetchUser()
 })
 
@@ -45,12 +43,12 @@ const features = [
 ]
 
 const quickLinks = [
-  { title: '设计转代码', desc: 'Figma 设计稿智能转代码', icon: 'i-lucide-figma', to: '/workspace/d2c', bgClass: 'bg-gradient-to-br from-primary-500 to-secondary-500' },
-  { title: '编码助手', desc: '自然语言生成代码', icon: 'i-lucide-code-2', to: '/workspace/coding', bgClass: 'bg-gradient-to-br from-secondary-500 to-blue-500' },
-  { title: '文档管理', desc: '智能检索文档', icon: 'i-lucide-book-open', to: '/workspace/docs', bgClass: 'bg-gradient-to-br from-green-500 to-emerald-500' },
-  { title: '接口协作', desc: '解析接口文档', icon: 'i-lucide-plug', to: '/workspace/api', bgClass: 'bg-gradient-to-br from-orange-500 to-amber-500' },
-  { title: '测试优化', desc: 'AI 生成测试用例', icon: 'i-lucide-test-tube', to: '/workspace/testing', bgClass: 'bg-gradient-to-br from-red-500 to-rose-500' },
-  { title: '工程化', desc: '项目初始化配置', icon: 'i-lucide-settings-2', to: '/workspace/engineering', bgClass: 'bg-gradient-to-br from-neutral-500 to-neutral-600' },
+  { title: '设计转代码', desc: 'Figma 设计稿智能转代码', icon: 'i-lucide-figma', to: '/workspace/d2c', bgClass: 'bg-linear-to-br from-primary-500 to-secondary-500' },
+  { title: '编码助手', desc: '自然语言生成代码', icon: 'i-lucide-code-2', to: '/workspace/coding', bgClass: 'bg-linear-to-br from-secondary-500 to-blue-500' },
+  { title: '文档管理', desc: '智能检索文档', icon: 'i-lucide-book-open', to: '/workspace/docs', bgClass: 'bg-linear-to-br from-green-500 to-emerald-500' },
+  { title: '接口协作', desc: '解析接口文档', icon: 'i-lucide-plug', to: '/workspace/api', bgClass: 'bg-linear-to-br from-orange-500 to-amber-500' },
+  { title: '测试优化', desc: 'AI 生成测试用例', icon: 'i-lucide-test-tube', to: '/workspace/testing', bgClass: 'bg-linear-to-br from-red-500 to-rose-500' },
+  { title: '工程化', desc: '项目初始化配置', icon: 'i-lucide-settings-2', to: '/workspace/engineering', bgClass: 'bg-linear-to-br from-neutral-500 to-neutral-600' },
 ]
 </script>
 
@@ -62,7 +60,7 @@ const quickLinks = [
         <div class="flex items-center justify-between h-16">
           <!-- Logo -->
           <div class="flex items-center gap-3">
-            <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-primary-500 to-secondary-500 flex items-center justify-center">
+            <div class="w-9 h-9 rounded-lg bg-linear-to-br from-primary-500 to-secondary-500 flex items-center justify-center">
               <UIcon name="i-lucide-zap" class="w-5 h-5 text-white" />
             </div>
             <span class="font-bold text-xl text-neutral-900 dark:text-white">Zeta</span>
@@ -70,7 +68,7 @@ const quickLinks = [
 
           <!-- Actions -->
           <div class="flex items-center gap-3">
-            <ColorModeToggle />
+            <UColorModeButton />
             <template v-if="isAuthenticated">
               <UButton to="/workspace" color="primary" icon="i-lucide-layout-dashboard">
                 打开工作台
@@ -95,9 +93,9 @@ const quickLinks = [
       <div class="absolute inset-0 overflow-hidden pointer-events-none">
         <div class="absolute -top-40 -right-40 w-[500px] h-[500px] bg-primary-400/30 rounded-full blur-3xl" />
         <div class="absolute -bottom-40 -left-40 w-[500px] h-[500px] bg-secondary-400/30 rounded-full blur-3xl" />
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-primary-100/50 to-secondary-100/50 dark:from-primary-900/20 dark:to-secondary-900/20 rounded-full blur-3xl" />
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-linear-to-r from-primary-100/50 to-secondary-100/50 dark:from-primary-900/20 dark:to-secondary-900/20 rounded-full blur-3xl" />
         <!-- Bottom fade -->
-        <div class="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white dark:from-neutral-950 to-transparent" />
+        <div class="absolute bottom-0 left-0 right-0 h-32 bg-linear-to-t from-white dark:from-neutral-950 to-transparent" />
       </div>
 
       <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16">
@@ -109,7 +107,7 @@ const quickLinks = [
 
           <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-neutral-900 dark:text-white leading-tight mb-6">
             让 AI 成为你的
-            <span class="bg-gradient-to-r from-primary-500 to-secondary-500 bg-clip-text text-transparent">智能协作助手</span>
+            <span class="bg-linear-to-r from-primary-500 to-secondary-500 bg-clip-text text-transparent">智能协作助手</span>
           </h1>
 
           <p class="text-lg sm:text-xl text-neutral-600 dark:text-neutral-400 max-w-2xl mx-auto mb-10">
@@ -249,7 +247,7 @@ const quickLinks = [
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex flex-col md:flex-row items-center justify-between gap-6">
           <div class="flex items-center gap-3">
-            <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-primary-500 to-secondary-500 flex items-center justify-center">
+            <div class="w-8 h-8 rounded-lg bg-linear-to-br from-primary-500 to-secondary-500 flex items-center justify-center">
               <UIcon name="i-lucide-zap" class="w-4 h-4 text-white" />
             </div>
             <span class="font-semibold text-neutral-900 dark:text-white">Zeta</span>

@@ -1,10 +1,4 @@
 <script setup lang="ts">
-const { initTheme } = useTheme()
-
-// Initialize theme on mount
-onMounted(() => {
-  initTheme()
-})
 </script>
 
 <template>

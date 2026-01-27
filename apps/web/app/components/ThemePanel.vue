@@ -13,16 +13,10 @@ const {
   setNeutralColor,
   setRadius,
   setBlackAsPrimary,
-  initTheme,
 } = useTheme()
 
 // Panel open state
 const isOpen = ref(false)
-
-// Initialize theme on mount
-onMounted(() => {
-  initTheme()
-})
 </script>
 
 <template>
