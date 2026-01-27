@@ -1,5 +1,4 @@
 <script setup lang="ts">
-const config = useRuntimeConfig()
 const { user, fetchUser } = useAuth()
 const api = useApi()
 const toast = useToast()
@@ -20,14 +19,6 @@ const canUnlink = computed(() => {
   const oauthCount = user.value?.oauthAccounts?.length || 0
   return hasPassword.value || oauthCount > 1
 })
-
-function linkGitHub() {
-  window.location.href = `${config.public.apiBase}/oauth/github`
-}
-
-function linkDingTalk() {
-  window.location.href = `${config.public.apiBase}/oauth/dingtalk`
-}
 
 async function unlinkOAuth(provider: 'GITHUB' | 'DINGTALK') {
   if (!canUnlink.value) {
@@ -89,16 +80,13 @@ async function unlinkOAuth(provider: 'GITHUB' | 'DINGTALK') {
           >
             解绑
           </UButton>
-          <UButton v-else size="xs" variant="outline" @click="linkGitHub">
-            关联
-          </UButton>
         </div>
       </div>
 
       <!-- DingTalk -->
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-2">
-          <UIcon name="i-simple-icons-dingtalk" class="w-5 h-5" />
+          <UIcon name="i-ant-design:dingtalk-circle-filled" class="w-5 h-5" />
           <span>钉钉</span>
         </div>
         <div class="flex items-center gap-2">
@@ -115,9 +103,6 @@ async function unlinkOAuth(provider: 'GITHUB' | 'DINGTALK') {
             @click="unlinkOAuth('DINGTALK')"
           >
             解绑
-          </UButton>
-          <UButton v-else size="xs" variant="outline" @click="linkDingTalk">
-            关联
           </UButton>
         </div>
       </div>

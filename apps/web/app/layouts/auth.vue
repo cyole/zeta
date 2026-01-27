@@ -1,28 +1,16 @@
 <script setup lang="ts">
-const colorMode = useColorMode()
 const { initTheme } = useTheme()
 
 // Initialize theme on mount
 onMounted(() => {
   initTheme()
 })
-
-// Color mode
-const isDark = computed(() => {
-  if (colorMode.preference === 'system') {
-    return window.matchMedia('(prefers-color-scheme: dark)').matches
-  }
-  return colorMode.preference === 'dark'
-})
-function toggleColorMode() {
-  colorMode.preference = isDark.value ? 'light' : 'dark'
-}
 </script>
 
 <template>
   <div class="min-h-screen flex">
     <!-- Left side - Branding -->
-    <div class="hidden lg:flex lg:w-3/5 relative bg-gradient-to-br from-primary-50 via-secondary-50 to-sky-100 dark:from-neutral-900 dark:via-neutral-800 dark:to-neutral-900 overflow-hidden">
+    <div class="hidden lg:flex lg:w-3/5 relative bg-linear-to-br from-primary-50 via-secondary-50 to-sky-100 dark:from-neutral-900 dark:via-neutral-800 dark:to-neutral-900 overflow-hidden">
       <!-- Background Pattern -->
       <div class="absolute inset-0 opacity-30 dark:opacity-20">
         <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2260%22%20height%3D%2260%22%20viewBox%3D%220%200%2060%2060%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Cg%20fill%3D%22%2314b8a6%22%20fill-opacity%3D%220.3%22%3E%3Ccircle%20cx%3D%2230%22%20cy%3D%2230%22%20r%3D%222%22%2F%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E')]" />
@@ -37,7 +25,7 @@ function toggleColorMode() {
       <div class="relative z-10 flex flex-col justify-center px-12 xl:px-20">
         <!-- Logo -->
         <div class="flex items-center gap-3 mb-12">
-          <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-primary-400 to-secondary-400 flex items-center justify-center shadow-lg">
+          <div class="w-12 h-12 rounded-xl bg-linear-to-br from-primary-400 to-secondary-400 flex items-center justify-center shadow-lg">
             <UIcon name="i-lucide-zap" class="w-6 h-6 text-white" />
           </div>
           <span class="text-2xl font-bold text-primary-700 dark:text-primary-400">Zeta</span>
