@@ -168,33 +168,33 @@ samp {
 /* Page transitions - silky smooth */
 .page-enter-active {
   transition:
-    opacity 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-    transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    opacity 0.28s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    transform 0.28s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .page-leave-active {
   transition:
-    opacity 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-    transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    opacity 0.22s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    transform 0.22s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .page-enter-from {
   opacity: 0;
-  transform: translateY(12px);
+  transform: translateY(8px);
 }
 
 .page-leave-to {
   opacity: 0;
-  transform: translateY(-6px);
+  transform: translateY(-4px);
 }
 
 /* Layout transitions - silky smooth */
 .layout-enter-active {
-  transition: opacity 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition: opacity 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .layout-leave-active {
-  transition: opacity 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition: opacity 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .layout-enter-from,
