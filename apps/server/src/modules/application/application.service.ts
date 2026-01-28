@@ -185,12 +185,18 @@ export class ApplicationService {
 
     // 只更新提供的字段，避免将 undefined 设置为 null
     const updateData: Record<string, unknown> = {}
-    if (dto.name !== undefined) updateData.name = dto.name
-    if (dto.description !== undefined) updateData.description = dto.description
-    if (dto.homepage !== undefined) updateData.homepage = dto.homepage
-    if (dto.redirectUris !== undefined) updateData.redirectUris = dto.redirectUris
-    if (dto.logo !== undefined) updateData.logo = dto.logo
-    if (dto.isActive !== undefined) updateData.isActive = dto.isActive
+    if (dto.name !== undefined)
+      updateData.name = dto.name
+    if (dto.description !== undefined)
+      updateData.description = dto.description
+    if (dto.homepage !== undefined)
+      updateData.homepage = dto.homepage
+    if (dto.redirectUris !== undefined)
+      updateData.redirectUris = dto.redirectUris
+    if (dto.logo !== undefined)
+      updateData.logo = dto.logo
+    if (dto.isActive !== undefined)
+      updateData.isActive = dto.isActive
 
     const updated = await this.prisma.application.update({
       where: { id },

@@ -27,7 +27,7 @@ export class CreateApplicationDto {
 
   @ApiPropertyOptional({ example: 'https://example.com', description: '应用首页' })
   @IsOptional()
-  @IsUrl({}, { message: '首页必须是有效的 URL' })
+  @IsUrl({ require_tld: false }, { message: '首页必须是有效的 URL' })
   homepage?: string
 
   @ApiProperty({
@@ -36,14 +36,14 @@ export class CreateApplicationDto {
   })
   @IsArray()
   @IsString({ each: true })
-  @IsUrl({}, { each: true, message: '每个回调地址必须是有效的 URL' })
+  @IsUrl({ require_tld: false }, { each: true, message: '每个回调地址必须是有效的 URL' })
   @ArrayMinSize(1, { message: '至少需要一个回调地址' })
   @ArrayMaxSize(5, { message: '最多支持 5 个回调地址' })
   redirectUris: string[]
 
   @ApiPropertyOptional({ example: 'https://example.com/logo.png', description: '应用 Logo URL' })
   @IsOptional()
-  @IsUrl({}, { message: 'Logo 必须是有效的 URL' })
+  @IsUrl({ require_tld: false }, { message: 'Logo 必须是有效的 URL' })
   logo?: string
 }
 
@@ -63,21 +63,21 @@ export class UpdateApplicationDto {
 
   @ApiPropertyOptional({ example: 'https://example.com' })
   @IsOptional()
-  @IsUrl({}, { message: '首页必须是有效的 URL' })
+  @IsUrl({ require_tld: false }, { message: '首页必须是有效的 URL' })
   homepage?: string
 
   @ApiPropertyOptional({ example: ['https://example.com/callback'] })
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
-  @IsUrl({}, { each: true, message: '每个回调地址必须是有效的 URL' })
+  @IsUrl({ require_tld: false }, { each: true, message: '每个回调地址必须是有效的 URL' })
   @ArrayMinSize(1, { message: '至少需要一个回调地址' })
   @ArrayMaxSize(5, { message: '最多支持 5 个回调地址' })
   redirectUris?: string[]
 
   @ApiPropertyOptional({ example: 'https://example.com/logo.png' })
   @IsOptional()
-  @IsUrl({}, { message: 'Logo 必须是有效的 URL' })
+  @IsUrl({ require_tld: false }, { message: 'Logo 必须是有效的 URL' })
   logo?: string
 
   @ApiPropertyOptional({ example: true, description: '是否启用' })

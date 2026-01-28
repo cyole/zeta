@@ -6,7 +6,7 @@ definePageMeta({
 
 const route = useRoute()
 const { getAuthorizeInfo, authorize } = useApplication()
-const { user } = useAuth()
+const { user, logout } = useAuth()
 
 interface AuthorizeApplication {
   id: string
@@ -16,9 +16,9 @@ interface AuthorizeApplication {
 }
 
 // 查询参数
-const clientId = ref((route.query.clientId as string) || '')
-const redirectUri = ref((route.query.redirectUri as string) || '')
-const responseType = ref((route.query.responseType as string) || 'code')
+const clientId = ref((route.query.client_id as string) || '')
+const redirectUri = ref((route.query.redirect_uri as string) || '')
+const responseType = ref((route.query.response_type as string) || 'code')
 const state = ref((route.query.state as string) || '')
 
 // 加载状态
@@ -211,9 +211,9 @@ async function handleAuthorize() {
         >
         <span v-if="user">{{ user.name }}</span>
         <span>·</span>
-        <NuxtLink to="/logout" class="text-primary-600 hover:underline">
+        <button type="button" class="text-primary-600 hover:underline" @click="logout">
           切换账号
-        </NuxtLink>
+        </button>
       </div>
     </div>
   </div>

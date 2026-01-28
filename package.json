@@ -12,6 +12,7 @@
     "dev": "pnpm -r --parallel dev",
     "dev:web": "pnpm --filter @zeta/web dev",
     "dev:server": "pnpm --filter @zeta/server dev",
+    "dev:demo": "pnpm --filter @zeta/demo-app dev",
     "build": "pnpm -r build",
     "build:web": "pnpm --filter @zeta/web build",
     "build:server": "pnpm --filter @zeta/server build",
