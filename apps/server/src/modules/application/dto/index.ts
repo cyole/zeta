@@ -165,7 +165,7 @@ export class TokenDto {
   grantType: string
 }
 
-export class RefreshTokenDto {
+export class RefreshClientTokenDto {
   @ApiProperty({ example: 'REFRESH_TOKEN', description: '刷新令牌' })
   @IsString()
   refreshToken: string

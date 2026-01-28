@@ -61,7 +61,7 @@ export class OAuthService {
     }
   }
 
-  async handleGitHubCallback(code: string, userAgent?: string, ipAddress?: string) {
+  async handleGitHubCallback(code: string, userAgent?: string, ipAddress?: string, bindUserId?: string) {
     // Exchange code for access token
     const tokenResponse = await fetch('https://github.com/login/oauth/access_token', {
       method: 'POST',
@@ -119,6 +119,7 @@ export class OAuthService {
       accessToken: tokenData.access_token,
       userAgent,
       ipAddress,
+      bindUserId,
     })
   }
 
@@ -135,7 +136,7 @@ export class OAuthService {
     }
   }
 
-  async handleDingTalkCallback(authCode: string, userAgent?: string, ipAddress?: string) {
+  async handleDingTalkCallback(authCode: string, userAgent?: string, ipAddress?: string, bindUserId?: string) {
     const appKey = this.configService.get('dingtalk.appKey')
     const appSecret = this.configService.get('dingtalk.appSecret')
 
@@ -186,6 +187,7 @@ export class OAuthService {
       refreshToken: tokenData.refreshToken,
       userAgent,
       ipAddress,
+      bindUserId,
     })
   }
 
@@ -201,6 +203,7 @@ export class OAuthService {
     refreshToken?: string
     userAgent?: string
     ipAddress?: string
+    bindUserId?: string
   }) {
     // Check if OAuth account exists
     const oauthAccount = await this.prisma.oAuthAccount.findUnique({
@@ -213,6 +216,48 @@ export class OAuthService {
       include: { user: true },
     })
 
+    // Bind mode: Link OAuth account to existing logged-in user
+    if (data.bindUserId) {
+      // Verify the bind user exists
+      const bindUser = await this.prisma.user.findUnique({
+        where: { id: data.bindUserId },
+      })
+      if (!bindUser) {
+        throw new UnauthorizedException('用户不存在')
+      }
+
+      // Check if OAuth account is already linked to another user
+      if (oauthAccount) {
+        if (oauthAccount.userId === data.bindUserId) {
+          // Already linked to current user
+          return {
+            bindSuccess: true,
+            alreadyLinked: true,
+            message: '该账号已绑定',
+          }
+        }
+        throw new UnauthorizedException(`该${data.provider === OAuthProvider.GITHUB ? 'GitHub' : '钉钉'}账号已绑定其他用户`)
+      }
+
+      // Create new OAuth account for current user
+      await this.prisma.oAuthAccount.create({
+        data: {
+          provider: data.provider,
+          providerId: data.providerId,
+          userId: data.bindUserId,
+          accessToken: data.accessToken,
+          refreshToken: data.refreshToken,
+        },
+      })
+
+      return {
+        bindSuccess: true,
+        alreadyLinked: false,
+        message: '绑定成功',
+      }
+    }
+
+    // Normal login flow
     let user
 
     if (oauthAccount) {

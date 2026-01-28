@@ -19,24 +19,65 @@ const loading = ref(true)
 const error = ref<string | null>(null)
 
 onMounted(async () => {
+  // Check bind mode from localStorage
+  const bindMode = localStorage.getItem('oauth_bind_mode')
+  const isBindMode = bindMode === 'true'
+  // Read user ID from localStorage (more reliable than user state in callback)
+  const bindUserId = localStorage.getItem('oauth_bind_user_id') || undefined
+
   // GitHub uses 'code', DingTalk uses 'authCode'
   const code = (route.query.code || route.query.authCode) as string
   const errorMsg = route.query.error as string
 
+  // Clean up bind mode flags
+  const cleanup = () => {
+    if (isBindMode) {
+      localStorage.removeItem('oauth_bind_mode')
+      localStorage.removeItem('oauth_bind_user_id')
+    }
+  }
+
   if (errorMsg) {
     error.value = decodeURIComponent(errorMsg)
     loading.value = false
+    cleanup()
     return
   }
 
   if (!code) {
     error.value = '未收到授权码'
     loading.value = false
+    cleanup()
     return
   }
 
   try {
-    const result = await post<{ accessToken: string, refreshToken: string }>(`/oauth/${provider}/login`, { code })
+    // For bind mode, pass current user's ID from localStorage
+    const payload: { code: string, bindUserId?: string } = { code }
+    if (isBindMode && bindUserId) {
+      payload.bindUserId = bindUserId
+    }
+
+    const result = await post<any>(`/oauth/${provider}/login`, payload)
+
+    // Handle bind mode response
+    if (isBindMode) {
+      cleanup()
+      if (result.bindSuccess) {
+        await fetchUser()
+        toast.add({
+          title: result.alreadyLinked ? '已绑定' : '绑定成功',
+          description: result.alreadyLinked
+            ? `该${providerName}账号已经绑定`
+            : `成功绑定${providerName}账号`,
+          color: 'success',
+        })
+        navigateTo('/dashboard/profile')
+        return
+      }
+    }
+
+    // Normal login flow
     setTokens({ accessToken: result.accessToken, refreshToken: result.refreshToken })
     await fetchUser()
     toast.add({
@@ -49,6 +90,7 @@ onMounted(async () => {
   catch (e: any) {
     error.value = e.data?.message || e.message || `${providerName}登录失败`
     loading.value = false
+    cleanup()
   }
 })
 </script>

@@ -1,9 +1,11 @@
 <script setup lang="ts">
 const { user, fetchUser } = useAuth()
+const { loginWithGitHub, loginWithDingTalk, githubLoading, dingtalkLoading } = useOAuth()
 const api = useApi()
 const toast = useToast()
 
 const unlinking = ref<string | null>(null)
+const binding = ref<string | null>(null)
 
 const hasGitHub = computed(() =>
   user.value?.oauthAccounts?.some((a: any) => a.provider === 'GITHUB'),
@@ -19,6 +21,40 @@ const canUnlink = computed(() => {
   const oauthCount = user.value?.oauthAccounts?.length || 0
   return hasPassword.value || oauthCount > 1
 })
+
+async function bindGitHub() {
+  binding.value = 'GITHUB'
+  try {
+    localStorage.setItem('oauth_bind_mode', 'true')
+    localStorage.setItem('oauth_bind_user_id', user.value!.id)
+    await loginWithGitHub()
+  }
+  catch (error: any) {
+    toast.add({ title: '绑定失败', description: error.message, color: 'error' })
+    localStorage.removeItem('oauth_bind_mode')
+    localStorage.removeItem('oauth_bind_user_id')
+  }
+  finally {
+    binding.value = null
+  }
+}
+
+async function bindDingTalk() {
+  binding.value = 'DINGTALK'
+  try {
+    localStorage.setItem('oauth_bind_mode', 'true')
+    localStorage.setItem('oauth_bind_user_id', user.value!.id)
+    await loginWithDingTalk()
+  }
+  catch (error: any) {
+    toast.add({ title: '绑定失败', description: error.message, color: 'error' })
+    localStorage.removeItem('oauth_bind_mode')
+    localStorage.removeItem('oauth_bind_user_id')
+  }
+  finally {
+    binding.value = null
+  }
+}
 
 async function unlinkOAuth(provider: 'GITHUB' | 'DINGTALK') {
   if (!canUnlink.value) {
@@ -80,6 +116,15 @@ async function unlinkOAuth(provider: 'GITHUB' | 'DINGTALK') {
           >
             解绑
           </UButton>
+          <UButton
+            v-else
+            size="xs"
+            variant="outline"
+            :loading="binding === 'GITHUB' || githubLoading"
+            @click="bindGitHub"
+          >
+            绑定
+          </UButton>
         </div>
       </div>
 
@@ -103,6 +148,15 @@ async function unlinkOAuth(provider: 'GITHUB' | 'DINGTALK') {
             @click="unlinkOAuth('DINGTALK')"
           >
             解绑
+          </UButton>
+          <UButton
+            v-else
+            size="xs"
+            variant="outline"
+            :loading="binding === 'DINGTALK' || dingtalkLoading"
+            @click="bindDingTalk"
+          >
+            绑定
           </UButton>
         </div>
       </div>

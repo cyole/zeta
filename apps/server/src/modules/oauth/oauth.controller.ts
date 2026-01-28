@@ -15,6 +15,7 @@ import { OAuthService } from './oauth.service'
 
 class OAuthCodeDto {
   code: string
+  bindUserId?: string
 }
 
 class DeptIdDto {
@@ -49,11 +50,12 @@ export class OAuthController {
   @ApiBody({ type: OAuthCodeDto })
   async githubLogin(
     @Body('code') code: string,
+    @Body('bindUserId') bindUserId: string | undefined,
     @Headers('user-agent') userAgent: string,
     @Req() req: Request,
   ) {
     const ipAddress = req.ip || req.socket.remoteAddress
-    return this.oauthService.handleGitHubCallback(code, userAgent, ipAddress)
+    return this.oauthService.handleGitHubCallback(code, userAgent, ipAddress, bindUserId)
   }
 
   // ==================== DingTalk OAuth ====================
@@ -71,11 +73,12 @@ export class OAuthController {
   @ApiBody({ type: OAuthCodeDto })
   async dingtalkLogin(
     @Body('code') code: string,
+    @Body('bindUserId') bindUserId: string | undefined,
     @Headers('user-agent') userAgent: string,
     @Req() req: Request,
   ) {
     const ipAddress = req.ip || req.socket.remoteAddress
-    return this.oauthService.handleDingTalkCallback(code, userAgent, ipAddress)
+    return this.oauthService.handleDingTalkCallback(code, userAgent, ipAddress, bindUserId)
   }
 
   // ==================== DingTalk Test APIs ====================

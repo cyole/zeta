@@ -1,7 +1,7 @@
 import { randomBytes } from 'node:crypto'
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common'
 import { PrismaService } from '@/modules/prisma/prisma.service'
-import { ApplicationQueryDto, AuthorizeDto, CreateApplicationDto, RefreshTokenDto, TokenDto, UpdateApplicationDto } from './dto'
+import { ApplicationQueryDto, AuthorizeDto, CreateApplicationDto, RefreshClientTokenDto, TokenDto, UpdateApplicationDto } from './dto'
 
 @Injectable()
 export class ApplicationService {
@@ -429,7 +429,7 @@ export class ApplicationService {
   /**
    * 刷新 Token
    */
-  async refreshToken(dto: RefreshTokenDto) {
+  async refreshToken(dto: RefreshClientTokenDto) {
     // 查找 refresh token
     const refreshTokenRecord = await this.prisma.oAuthRefreshToken.findUnique({
       where: { token: dto.refreshToken },

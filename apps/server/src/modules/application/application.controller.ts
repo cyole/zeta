@@ -23,7 +23,7 @@ import {
   AuthorizeDto,
   AuthorizeQueryDto,
   CreateApplicationDto,
-  RefreshTokenDto,
+  RefreshClientTokenDto,
   RevokeGrantDto,
   TokenDto,
   UpdateApplicationDto,
@@ -143,7 +143,7 @@ export class OAuthAuthorizationController {
   @Public()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '刷新 Token' })
-  async refreshToken(@Body() dto: RefreshTokenDto) {
+  async refreshToken(@Body() dto: RefreshClientTokenDto) {
     return this.applicationService.refreshToken(dto)
   }
 
