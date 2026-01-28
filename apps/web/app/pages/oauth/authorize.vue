@@ -91,6 +91,11 @@ async function handleAuthorize() {
       redirectUri: redirectUri.value,
       state: state.value,
     })
+
+    if (!result.redirectUrl) {
+      throw new Error('服务器未返回重定向地址')
+    }
+
     window.location.href = result.redirectUrl
   }
   catch (e: any) {
@@ -211,7 +216,7 @@ async function handleAuthorize() {
         >
         <span v-if="user">{{ user.name }}</span>
         <span>·</span>
-        <button type="button" class="text-primary-600 hover:underline" @click="logout">
+        <button type="button" class="text-primary-600 hover:underline" @click="logout(route.fullPath)">
           切换账号
         </button>
       </div>

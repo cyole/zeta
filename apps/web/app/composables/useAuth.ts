@@ -185,7 +185,7 @@ export function useAuth() {
     return result
   }
 
-  const logout = async () => {
+  const logout = async (redirectUrl?: string) => {
     try {
       await api('/auth/logout', {
         method: 'POST',
@@ -200,7 +200,13 @@ export function useAuth() {
       accessToken.value = null
       refreshToken.value = null
       user.value = null
-      router.push('/auth/login')
+
+      // Use provided redirect URL or current path, default to login
+      const loginPath = redirectUrl || router.currentRoute.value.fullPath
+      router.push({
+        path: '/auth/login',
+        query: loginPath !== '/auth/login' ? { redirect: loginPath } : undefined,
+      })
     }
   }
 

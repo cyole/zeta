@@ -4,12 +4,14 @@ import {
   Controller,
   Delete,
   Get,
+  Headers,
   HttpCode,
   HttpStatus,
   Param,
   Patch,
   Post,
   Query,
+  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger'
@@ -143,6 +145,17 @@ export class OAuthAuthorizationController {
   @ApiOperation({ summary: '刷新 Token' })
   async refreshToken(@Body() dto: RefreshTokenDto) {
     return this.applicationService.refreshToken(dto)
+  }
+
+  @Get('me')
+  @Public()
+  @ApiOperation({ summary: '根据 Access Token 获取用户信息' })
+  async getUserInfo(@Headers('authorization') authHeader: string) {
+    if (!authHeader?.startsWith('Bearer ')) {
+      throw new UnauthorizedException('缺少 Access Token')
+    }
+    const accessToken = authHeader.substring(7)
+    return this.applicationService.getUserByAccessToken(accessToken)
   }
 }
 

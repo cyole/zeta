@@ -7,8 +7,8 @@ const CONFIG: OAuthConfig = {
   clientSecret: '50759abd32ce4b92aff4086cba90d6d4e9d0521d41b959397443ef8a02cda229',
   redirectUri: 'http://localhost:3002/callback',
   authorizeUrl: 'http://localhost:3000/oauth/authorize',
-  tokenUrl: 'http://localhost:3001/oauth/token',
-  userInfoUrl: 'http://localhost:3001/api/user/me',
+  tokenUrl: 'http://localhost:3001/api/oauth/token',
+  userInfoUrl: 'http://localhost:3001/api/oauth/me',
 }
 
 const isLoggedIn = ref(false)

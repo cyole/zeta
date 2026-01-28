@@ -10,8 +10,8 @@ const CONFIG: OAuthConfig = {
   clientSecret: '50759abd32ce4b92aff4086cba90d6d4e9d0521d41b959397443ef8a02cda229',
   redirectUri: 'http://localhost:3002/callback',
   authorizeUrl: 'http://localhost:3000/oauth/authorize',
-  tokenUrl: 'http://localhost:3001/oauth/token',
-  userInfoUrl: 'http://localhost:3001/api/user/me',
+  tokenUrl: 'http://localhost:3001/api/oauth/token',
+  userInfoUrl: 'http://localhost:3001/api/oauth/me',
 }
 
 onMounted(() => {
@@ -67,12 +67,35 @@ async function exchangeToken(code: string): Promise<void> {
       globalThis.localStorage.setItem('refresh_token', data.refreshToken)
     }
 
+    // Fetch user info immediately after token exchange
+    await fetchUserInfo()
+
     globalThis.sessionStorage.removeItem('oauth_state')
     router.push('/')
   }
   catch (err) {
     console.error('Token exchange error:', err)
     router.push({ path: '/', query: { error: 'token_exchange_failed' } })
+  }
+}
+
+async function fetchUserInfo(): Promise<void> {
+  const token = globalThis.localStorage.getItem('access_token')
+  if (!token)
+    return
+
+  try {
+    const response = await fetch(CONFIG.userInfoUrl, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+
+    if (response.ok) {
+      const user = await response.json()
+      globalThis.localStorage.setItem('user_info', JSON.stringify(user))
+    }
+  }
+  catch (e) {
+    console.error('Failed to fetch user info:', e)
   }
 }
 </script>
