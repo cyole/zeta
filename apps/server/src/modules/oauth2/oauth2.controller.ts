@@ -14,8 +14,8 @@ import { CurrentUser, Public } from '@/common/decorators'
 import { AuthorizeDto, AuthorizeQueryDto, RefreshClientTokenDto, TokenDto } from './dto'
 import { OAuth2Service } from './oauth2.service'
 
-@ApiTags('OAuth 授权')
-@Controller('oauth')
+@ApiTags('OAuth2 授权')
+@Controller('oauth2')
 export class OAuth2Controller {
   constructor(private oauth2Service: OAuth2Service) {}
 
