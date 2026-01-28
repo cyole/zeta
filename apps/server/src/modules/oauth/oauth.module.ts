@@ -1,6 +1,7 @@
-import { Module } from '@nestjs/common'
+import { forwardRef, Module } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { JwtModule } from '@nestjs/jwt'
+import { DingtalkModule } from '@/modules/dingtalk'
 import { OAuthController } from './oauth.controller'
 import { OAuthService } from './oauth.service'
 
@@ -15,6 +16,7 @@ import { OAuthService } from './oauth.service'
         },
       }),
     }),
+    forwardRef(() => DingtalkModule),
   ],
   controllers: [OAuthController],
   providers: [OAuthService],

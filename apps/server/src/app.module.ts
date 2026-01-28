@@ -7,6 +7,7 @@ import { ThrottlerGuard } from './common/guards/throttler.guard'
 import configuration from './config/configuration'
 import { ApplicationModule } from './modules/application/application.module'
 import { AuthModule } from './modules/auth/auth.module'
+import { DingtalkModule } from './modules/dingtalk'
 import { MailModule } from './modules/mail/mail.module'
 import { OAuthModule } from './modules/oauth/oauth.module'
 import { PermissionModule } from './modules/permission/permission.module'
@@ -38,6 +39,7 @@ import { UserModule } from './modules/user/user.module'
     PermissionModule,
     ProfileModule,
     OAuthModule,
+    DingtalkModule,
     ApplicationModule,
     MailModule,
     QiniuModule,

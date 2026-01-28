@@ -92,7 +92,7 @@ function toggleExpanded(key: string, idx: number) {
 async function fetchConfig() {
   loading.value.config = true
   try {
-    config.value = await api.get<DingTalkConfig>('/oauth/dingtalk/test/config')
+    config.value = await api.get<DingTalkConfig>('/dingtalk/test/config')
   }
   catch (error: any) {
     toast.add({
@@ -110,7 +110,7 @@ async function fetchConfig() {
 async function fetchBindingStatus() {
   loading.value.binding = true
   try {
-    bindingStatus.value = await api.get<BindingStatus>('/oauth/dingtalk/test/binding-status')
+    bindingStatus.value = await api.get<BindingStatus>('/dingtalk/test/binding-status')
   }
   catch (error: any) {
     toast.add({
@@ -129,7 +129,7 @@ async function testGetUserInfo() {
   loading.value.userInfo = true
   userInfoResult.value = null
   try {
-    userInfoResult.value = await api.post<{ accounts: number, results: TestResult[] }>('/oauth/dingtalk/test/user-info')
+    userInfoResult.value = await api.post<{ accounts: number, results: TestResult[] }>('/dingtalk/test/user-info')
     toast.add({
       title: '测试完成',
       description: `成功获取 ${userInfoResult.value.results.filter(r => r.success).length}/${userInfoResult.value.accounts} 个账号的用户信息`,
@@ -153,7 +153,7 @@ async function testRefreshToken() {
   loading.value.refreshToken = true
   refreshTokenResult.value = null
   try {
-    refreshTokenResult.value = await api.post<{ accounts: number, results: TestResult[] }>('/oauth/dingtalk/test/token')
+    refreshTokenResult.value = await api.post<{ accounts: number, results: TestResult[] }>('/dingtalk/test/token')
     toast.add({
       title: '测试完成',
       description: `成功刷新 ${refreshTokenResult.value.results.filter(r => r.success).length}/${refreshTokenResult.value.accounts} 个账号的令牌`,
@@ -177,7 +177,7 @@ async function testGetOrgInfo() {
   loading.value.orgInfo = true
   orgInfoResult.value = null
   try {
-    orgInfoResult.value = await api.post<{ accounts: number, results: TestResult[] }>('/oauth/dingtalk/test/organization-info')
+    orgInfoResult.value = await api.post<{ accounts: number, results: TestResult[] }>('/dingtalk/test/organization-info')
     const successCount = orgInfoResult.value.results.filter(r => r.success).length
     toast.add({
       title: '测试完成',
@@ -202,7 +202,7 @@ async function testGetDepartments() {
   loading.value.departments = true
   departmentsResult.value = null
   try {
-    departmentsResult.value = await api.post<{ accounts: number, results: TestResult[] }>('/oauth/dingtalk/test/departments')
+    departmentsResult.value = await api.post<{ accounts: number, results: TestResult[] }>('/dingtalk/test/departments')
     const successCount = departmentsResult.value.results.filter(r => r.success).length
     toast.add({
       title: '测试完成',
@@ -227,7 +227,7 @@ async function testGetSubDepartments() {
   loading.value.subDepartments = true
   subDepartmentsResult.value = null
   try {
-    subDepartmentsResult.value = await api.post<{ accounts: number, results: TestResult[] }>('/oauth/dingtalk/test/sub-departments', {
+    subDepartmentsResult.value = await api.post<{ accounts: number, results: TestResult[] }>('/dingtalk/test/sub-departments', {
       deptId: deptIdInput.value || undefined,
     })
     const successCount = subDepartmentsResult.value.results.filter(r => r.success).length
@@ -254,7 +254,7 @@ async function testGetDeptUsers() {
   loading.value.deptUsers = true
   deptUsersResult.value = null
   try {
-    deptUsersResult.value = await api.post<{ accounts: number, results: TestResult[] }>('/oauth/dingtalk/test/department-users', {
+    deptUsersResult.value = await api.post<{ accounts: number, results: TestResult[] }>('/dingtalk/test/department-users', {
       deptId: deptIdInput.value || undefined,
     })
     const successCount = deptUsersResult.value.results.filter(r => r.success).length
@@ -281,7 +281,7 @@ async function testGetUserDetails() {
   loading.value.userDetails = true
   userDetailsResult.value = null
   try {
-    userDetailsResult.value = await api.post<{ accounts: number, results: TestResult[] }>('/oauth/dingtalk/test/user-details', {
+    userDetailsResult.value = await api.post<{ accounts: number, results: TestResult[] }>('/dingtalk/test/user-details', {
       userId: userIdInput.value || undefined,
     })
     const successCount = userDetailsResult.value.results.filter(r => r.success).length
