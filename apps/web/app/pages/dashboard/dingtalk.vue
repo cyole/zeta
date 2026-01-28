@@ -67,7 +67,6 @@ const departmentsResult = ref<{ accounts: number, results: TestResult[] } | null
 const subDepartmentsResult = ref<{ accounts: number, results: TestResult[] } | null>(null)
 const deptUsersResult = ref<{ accounts: number, results: TestResult[] } | null>(null)
 const userDetailsResult = ref<{ accounts: number, results: TestResult[] } | null>(null)
-const appScopeResult = ref<{ accounts: number, results: TestResult[] } | null>(null)
 
 // 展开状态
 const expandedStates = ref<Record<string, Set<number>>>({})
@@ -304,31 +303,6 @@ async function testGetUserDetails() {
   }
 }
 
-// 测试获取应用可见范围
-async function testGetAppScope() {
-  loading.value.appScope = true
-  appScopeResult.value = null
-  try {
-    appScopeResult.value = await api.post<{ accounts: number, results: TestResult[] }>('/oauth/dingtalk/test/app-scope')
-    const successCount = appScopeResult.value.results.filter(r => r.success).length
-    toast.add({
-      title: '测试完成',
-      description: `成功获取 ${successCount}/${appScopeResult.value.accounts} 个应用可见范围`,
-      color: successCount > 0 ? 'success' : 'warning',
-    })
-  }
-  catch (error: any) {
-    toast.add({
-      title: '测试失败',
-      description: error.message,
-      color: 'error',
-    })
-  }
-  finally {
-    loading.value.appScope = false
-  }
-}
-
 // 页面加载时获取配置和绑定状态
 onMounted(() => {
   fetchConfig()
@@ -506,7 +480,7 @@ function formatJson(data: unknown) {
               {{ userInfoResult.results.filter(r => r.success).length }}/{{ userInfoResult.accounts }} 成功
             </UBadge>
             <div class="space-y-2">
-              <component is="div" v-for="(result, idx) in userInfoResult.results" :key="`ui-${idx}`">
+              <div v-for="(result, idx) in userInfoResult.results" :key="`ui-${idx}`">
                 <div class="border border-neutral-200 dark:border-neutral-800 rounded-lg overflow-hidden">
                   <button
                     class="w-full flex items-center justify-between px-3 py-2 bg-neutral-50 dark:bg-neutral-900/50 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
@@ -524,7 +498,7 @@ function formatJson(data: unknown) {
                     <pre class="text-xs bg-neutral-100 dark:bg-neutral-800 p-3 rounded-lg overflow-x-auto">{{ result.error ? `错误: ${result.error}` : formatJson(result.data) }}</pre>
                   </div>
                 </div>
-              </component>
+              </div>
             </div>
           </div>
         </div>
@@ -558,7 +532,7 @@ function formatJson(data: unknown) {
               {{ refreshTokenResult.results.filter(r => r.success).length }}/{{ refreshTokenResult.accounts }} 成功
             </UBadge>
             <div class="space-y-2">
-              <component is="div" v-for="(result, idx) in refreshTokenResult.results" :key="`rt-${idx}`">
+              <div v-for="(result, idx) in refreshTokenResult.results" :key="`rt-${idx}`">
                 <div class="border border-neutral-200 dark:border-neutral-800 rounded-lg overflow-hidden">
                   <button
                     class="w-full flex items-center justify-between px-3 py-2 bg-neutral-50 dark:bg-neutral-900/50 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
@@ -576,7 +550,7 @@ function formatJson(data: unknown) {
                     <pre class="text-xs bg-neutral-100 dark:bg-neutral-800 p-3 rounded-lg overflow-x-auto">{{ result.error ? `错误: ${result.error}` : formatJson(result.data) }}</pre>
                   </div>
                 </div>
-              </component>
+              </div>
             </div>
           </div>
         </div>
@@ -620,7 +594,7 @@ function formatJson(data: unknown) {
               {{ orgInfoResult.results.filter(r => r.success).length }}/{{ orgInfoResult.accounts }} 成功
             </UBadge>
             <div class="space-y-2">
-              <component is="div" v-for="(result, idx) in orgInfoResult.results" :key="`org-${idx}`">
+              <div v-for="(result, idx) in orgInfoResult.results" :key="`org-${idx}`">
                 <div class="border border-neutral-200 dark:border-neutral-800 rounded-lg overflow-hidden">
                   <button
                     class="w-full flex items-center justify-between px-3 py-2 bg-neutral-50 dark:bg-neutral-900/50 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors text-left"
@@ -638,7 +612,7 @@ function formatJson(data: unknown) {
                     <pre class="text-xs bg-neutral-100 dark:bg-neutral-800 p-3 rounded-lg overflow-x-auto">{{ result.error ? `错误: ${result.error}` : formatJson(result.data) }}</pre>
                   </div>
                 </div>
-              </component>
+              </div>
             </div>
           </div>
         </div>
@@ -672,7 +646,7 @@ function formatJson(data: unknown) {
               {{ departmentsResult.results.filter(r => r.success).length }}/{{ departmentsResult.accounts }} 成功
             </UBadge>
             <div class="space-y-2">
-              <component is="div" v-for="(result, idx) in departmentsResult.results" :key="`dept-${idx}`">
+              <div v-for="(result, idx) in departmentsResult.results" :key="`dept-${idx}`">
                 <div class="border border-neutral-200 dark:border-neutral-800 rounded-lg overflow-hidden">
                   <button
                     class="w-full flex items-center justify-between px-3 py-2 bg-neutral-50 dark:bg-neutral-900/50 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors text-left"
@@ -690,7 +664,7 @@ function formatJson(data: unknown) {
                     <pre class="text-xs bg-neutral-100 dark:bg-neutral-800 p-3 rounded-lg overflow-x-auto">{{ result.error ? `错误: ${result.error}` : formatJson(result.data) }}</pre>
                   </div>
                 </div>
-              </component>
+              </div>
             </div>
           </div>
         </div>
@@ -729,7 +703,7 @@ function formatJson(data: unknown) {
               {{ subDepartmentsResult.results.filter(r => r.success).length }}/{{ subDepartmentsResult.accounts }} 成功
             </UBadge>
             <div class="space-y-2">
-              <component is="div" v-for="(result, idx) in subDepartmentsResult.results" :key="`sub-${idx}`">
+              <div v-for="(result, idx) in subDepartmentsResult.results" :key="`sub-${idx}`">
                 <div class="border border-neutral-200 dark:border-neutral-800 rounded-lg overflow-hidden">
                   <button
                     class="w-full flex items-center justify-between px-3 py-2 bg-neutral-50 dark:bg-neutral-900/50 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors text-left"
@@ -747,7 +721,7 @@ function formatJson(data: unknown) {
                     <pre class="text-xs bg-neutral-100 dark:bg-neutral-800 p-3 rounded-lg overflow-x-auto">{{ result.error ? `错误: ${result.error}` : formatJson(result.data) }}</pre>
                   </div>
                 </div>
-              </component>
+              </div>
             </div>
           </div>
         </div>
@@ -786,7 +760,7 @@ function formatJson(data: unknown) {
               {{ deptUsersResult.results.filter(r => r.success).length }}/{{ deptUsersResult.accounts }} 成功
             </UBadge>
             <div class="space-y-2">
-              <component is="div" v-for="(result, idx) in deptUsersResult.results" :key="`du-${idx}`">
+              <div v-for="(result, idx) in deptUsersResult.results" :key="`du-${idx}`">
                 <div class="border border-neutral-200 dark:border-neutral-800 rounded-lg overflow-hidden">
                   <button
                     class="w-full flex items-center justify-between px-3 py-2 bg-neutral-50 dark:bg-neutral-900/50 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors text-left"
@@ -804,7 +778,7 @@ function formatJson(data: unknown) {
                     <pre class="text-xs bg-neutral-100 dark:bg-neutral-800 p-3 rounded-lg overflow-x-auto">{{ result.error ? `错误: ${result.error}` : formatJson(result.data) }}</pre>
                   </div>
                 </div>
-              </component>
+              </div>
             </div>
           </div>
         </div>
@@ -843,7 +817,7 @@ function formatJson(data: unknown) {
               {{ userDetailsResult.results.filter(r => r.success).length }}/{{ userDetailsResult.accounts }} 成功
             </UBadge>
             <div class="space-y-2">
-              <component is="div" v-for="(result, idx) in userDetailsResult.results" :key="`ud-${idx}`">
+              <div v-for="(result, idx) in userDetailsResult.results" :key="`ud-${idx}`">
                 <div class="border border-neutral-200 dark:border-neutral-800 rounded-lg overflow-hidden">
                   <button
                     class="w-full flex items-center justify-between px-3 py-2 bg-neutral-50 dark:bg-neutral-900/50 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors text-left"
@@ -861,7 +835,7 @@ function formatJson(data: unknown) {
                     <pre class="text-xs bg-neutral-100 dark:bg-neutral-800 p-3 rounded-lg overflow-x-auto">{{ result.error ? `错误: ${result.error}` : formatJson(result.data) }}</pre>
                   </div>
                 </div>
-              </component>
+              </div>
             </div>
           </div>
         </div>

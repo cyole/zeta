@@ -9,7 +9,7 @@ import {
   UseGuards,
 } from '@nestjs/common'
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger'
-import { Public, CurrentUser } from '@/common/decorators'
+import { CurrentUser, Public } from '@/common/decorators'
 import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard'
 import { OAuthService } from './oauth.service'
 
