@@ -1,7 +1,8 @@
-import { Module } from '@nestjs/common'
+import { forwardRef, Module } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { JwtModule } from '@nestjs/jwt'
 import { PassportModule } from '@nestjs/passport'
+import { DingtalkModule } from '@/modules/dingtalk'
 import { MailModule } from '../mail/mail.module'
 import { AuthController } from './auth.controller'
 import { AuthService } from './auth.service'
@@ -20,6 +21,7 @@ import { JwtRefreshStrategy, JwtStrategy } from './strategies'
       }),
     }),
     MailModule,
+    forwardRef(() => DingtalkModule),
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy, JwtRefreshStrategy],

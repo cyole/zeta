@@ -12,6 +12,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common'
@@ -83,5 +84,22 @@ export class ProfileController {
     @Body() dto: UpdateNotificationPreferencesDto,
   ) {
     return this.profileService.updateNotificationPreferences(userId, dto)
+  }
+
+  // ==================== OAuth2 授权管理 ====================
+
+  @Get('oauth-grants')
+  @ApiOperation({ summary: '获取已授权的 OAuth2 应用列表' })
+  async getOAuthGrants(@CurrentUser('id') userId: string) {
+    return this.profileService.getOAuthGrants(userId)
+  }
+
+  @Delete('oauth-grants')
+  @ApiOperation({ summary: '撤销 OAuth2 应用授权' })
+  async revokeOAuthGrant(
+    @CurrentUser('id') userId: string,
+    @Query('applicationId') applicationId: string,
+  ) {
+    return this.profileService.revokeOAuthGrant(userId, applicationId)
   }
 }

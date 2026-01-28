@@ -13,7 +13,7 @@ export function useOAuth() {
   async function loginWithGitHub() {
     githubLoading.value = true
     try {
-      const oauthConfig = await get<OAuthConfig>('/oauth/github/config')
+      const oauthConfig = await get<OAuthConfig>('/auth/github/config')
       const state = crypto.randomUUID()
       const params = new URLSearchParams({
         client_id: oauthConfig.clientId,

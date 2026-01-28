@@ -12,6 +12,10 @@ import * as bcrypt from 'bcrypt'
 import { PrismaService } from '@/modules/prisma/prisma.service'
 import { QiniuService } from '@/modules/qiniu/qiniu.service'
 
+class RevokeGrantDto {
+  applicationId: string
+}
+
 @Injectable()
 export class ProfileService {
   constructor(
@@ -163,5 +167,70 @@ export class ProfileService {
       update: dto,
       create: { userId, ...dto },
     })
+  }
+
+  // ==================== OAuth2 授权管理 ====================
+
+  async getOAuthGrants(userId: string) {
+    const grants = await this.prisma.userApplicationGrant.findMany({
+      where: { userId },
+      include: {
+        application: {
+          select: {
+            id: true,
+            name: true,
+            logo: true,
+            homepage: true,
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    })
+
+    return grants.map(grant => ({
+      id: grant.id,
+      application: grant.application,
+      authorizedAt: grant.createdAt,
+    }))
+  }
+
+  async revokeOAuthGrant(userId: string, applicationId: string) {
+    const grant = await this.prisma.userApplicationGrant.findUnique({
+      where: {
+        applicationId_userId: {
+          applicationId,
+          userId,
+        },
+      },
+    })
+
+    if (!grant) {
+      throw new NotFoundException('授权记录不存在')
+    }
+
+    await this.prisma.$transaction(async (tx) => {
+      // 删除授权记录
+      await tx.userApplicationGrant.delete({
+        where: { id: grant.id },
+      })
+
+      // 撤销该应用的所有 token
+      await tx.oAuthAccessToken.deleteMany({
+        where: {
+          applicationId,
+          userId,
+        },
+      })
+
+      await tx.oAuthRefreshToken.updateMany({
+        where: {
+          applicationId,
+          userId,
+        },
+        data: { revoked: true },
+      })
+    })
+
+    return { message: '授权已撤销' }
   }
 }

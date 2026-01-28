@@ -9,7 +9,7 @@ import { ApplicationModule } from './modules/application/application.module'
 import { AuthModule } from './modules/auth/auth.module'
 import { DingtalkModule } from './modules/dingtalk'
 import { MailModule } from './modules/mail/mail.module'
-import { OAuthModule } from './modules/oauth/oauth.module'
+import { OAuth2Module } from './modules/oauth2/oauth2.module'
 import { PermissionModule } from './modules/permission/permission.module'
 import { PrismaModule } from './modules/prisma/prisma.module'
 import { ProfileModule } from './modules/profile/profile.module'
@@ -38,8 +38,8 @@ import { UserModule } from './modules/user/user.module'
     RoleModule,
     PermissionModule,
     ProfileModule,
-    OAuthModule,
     DingtalkModule,
+    OAuth2Module,
     ApplicationModule,
     MailModule,
     QiniuModule,

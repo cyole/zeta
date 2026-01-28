@@ -193,14 +193,14 @@ export function useApplication() {
    * 获取用户的授权列表
    */
   const getUserGrants = async () => {
-    return get<UserGrant[]>('/user/grants')
+    return get<UserGrant[]>('/profile/oauth-grants')
   }
 
   /**
    * 撤销授权
    */
   const revokeGrant = async (applicationId: string) => {
-    return del<{ message: string }>(`/user/grants?applicationId=${applicationId}`)
+    return del<{ message: string }>(`/profile/oauth-grants?applicationId=${applicationId}`)
   }
 
   return {

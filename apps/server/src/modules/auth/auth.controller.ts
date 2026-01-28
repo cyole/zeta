@@ -9,7 +9,7 @@ import {
   UseGuards,
 } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger'
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { CurrentUser, Public } from '@/common/decorators'
 import { AuthService } from './auth.service'
 import { ForgotPasswordDto, LoginDto, RefreshTokenDto, RegisterDto, ResendVerificationDto, ResetPasswordDto, VerifyEmailDto } from './dto'
@@ -109,5 +109,51 @@ export class AuthController {
   @ApiOperation({ summary: '重置密码' })
   async resetPassword(@Body() dto: ResetPasswordDto) {
     return this.authService.resetPassword(dto)
+  }
+
+  // ==================== GitHub OAuth ====================
+
+  @Public()
+  @Get('github/config')
+  @ApiOperation({ summary: '获取 GitHub OAuth 配置' })
+  getGitHubConfig() {
+    return this.authService.getGitHubConfig()
+  }
+
+  @Public()
+  @Post('github/login')
+  @ApiOperation({ summary: 'GitHub 授权登录' })
+  @ApiBody({ schema: { properties: { code: { type: 'string' }, bindUserId: { type: 'string' } } } })
+  async githubLogin(
+    @Body('code') code: string,
+    @Body('bindUserId') bindUserId: string | undefined,
+    @Headers('user-agent') userAgent: string,
+    @Req() req: Request,
+  ) {
+    const ipAddress = req.ip || req.socket.remoteAddress
+    return this.authService.handleGitHubCallback(code, userAgent, ipAddress, bindUserId)
+  }
+
+  // ==================== DingTalk OAuth ====================
+
+  @Public()
+  @Get('dingtalk/config')
+  @ApiOperation({ summary: '获取钉钉 OAuth 配置' })
+  getDingTalkConfig() {
+    return this.authService.getDingTalkConfig()
+  }
+
+  @Public()
+  @Post('dingtalk/login')
+  @ApiOperation({ summary: '钉钉授权登录' })
+  @ApiBody({ schema: { properties: { code: { type: 'string' }, bindUserId: { type: 'string' } } } })
+  async dingtalkLogin(
+    @Body('code') code: string,
+    @Body('bindUserId') bindUserId: string | undefined,
+    @Headers('user-agent') userAgent: string,
+    @Req() req: Request,
+  ) {
+    const ipAddress = req.ip || req.socket.remoteAddress
+    return this.authService.handleDingTalkCallback(code, userAgent, ipAddress, bindUserId)
   }
 }

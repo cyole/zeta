@@ -58,7 +58,7 @@ onMounted(async () => {
       payload.bindUserId = bindUserId
     }
 
-    const result = await post<any>(`/oauth/${provider}/login`, payload)
+    const result = await post<any>(`/auth/${provider}/login`, payload)
 
     // Handle bind mode response
     if (isBindMode) {
