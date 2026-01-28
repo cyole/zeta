@@ -12,10 +12,6 @@ import * as bcrypt from 'bcrypt'
 import { PrismaService } from '@/modules/prisma/prisma.service'
 import { QiniuService } from '@/modules/qiniu/qiniu.service'
 
-class RevokeGrantDto {
-  applicationId: string
-}
-
 @Injectable()
 export class ProfileService {
   constructor(
