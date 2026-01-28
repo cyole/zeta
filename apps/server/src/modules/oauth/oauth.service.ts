@@ -1,5 +1,5 @@
 import * as crypto from 'node:crypto'
-import { Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common'
+import { Injectable, InternalServerErrorException, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { JwtService } from '@nestjs/jwt'
 import { OAuthProvider } from '@prisma/client'
@@ -223,7 +223,7 @@ export class OAuthService {
         where: { id: data.bindUserId },
       })
       if (!bindUser) {
-        throw new UnauthorizedException('用户不存在')
+        throw new InternalServerErrorException('用户不存在')
       }
 
       // Check if OAuth account is already linked to another user
@@ -236,7 +236,7 @@ export class OAuthService {
             message: '该账号已绑定',
           }
         }
-        throw new UnauthorizedException(`该${data.provider === OAuthProvider.GITHUB ? 'GitHub' : '钉钉'}账号已绑定其他用户`)
+        throw new InternalServerErrorException(`该${data.provider === OAuthProvider.GITHUB ? 'GitHub' : '钉钉'}账号已绑定其他用户`)
       }
 
       // Create new OAuth account for current user

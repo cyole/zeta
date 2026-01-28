@@ -337,7 +337,7 @@ function formatJson(data: unknown) {
       description="请先在「账号设置」中绑定钉钉账户后，再进行接口测试。"
     >
       <template #actions>
-        <UButton to="/settings" color="warning" variant="solid" size="xs">
+        <UButton to="/dashboard/profile" color="warning" variant="solid" size="xs">
           前往绑定
         </UButton>
       </template>
