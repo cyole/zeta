@@ -1,14 +1,5 @@
+import type { PaginatedResponse } from '@zeta/shared'
 import { useDebounceFn } from '@vueuse/core'
-
-export interface PaginatedResponse<T> {
-  items: T[]
-  meta: {
-    total: number
-    page: number
-    limit: number
-    totalPages: number
-  }
-}
 
 export interface CrudTableOptions<T, F = Record<string, unknown>> {
   endpoint: string

@@ -1,14 +1,4 @@
-/**
- * API 错误响应类型
- */
-export interface ApiErrorResponse {
-  statusCode: number
-  message: string
-  error: string
-  details?: string
-  timestamp: string
-  path: string
-}
+import type { ApiErrorResponse } from '@zeta/shared'
 
 /**
  * 错误处理选项
@@ -23,6 +13,9 @@ export interface ErrorHandlerOptions {
   /** 错误发生时的回调 */
   onError?: (error: ApiErrorResponse) => void
 }
+
+// Re-export ApiErrorResponse for convenience
+export type { ApiErrorResponse }
 
 /**
  * 根据 HTTP 状态码获取用户友好的错误标题

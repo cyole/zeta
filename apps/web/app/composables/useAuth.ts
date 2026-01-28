@@ -1,5 +1,5 @@
-import type { LoginRequest, RegisterRequest, User } from '@zeta/shared'
-import type { ApiErrorResponse } from './useErrorHandler'
+import type { ApiErrorResponse, LoginRequest, RegisterRequest, User } from '@zeta/shared'
+import { createDefaultErrorResponse, isApiErrorResponse } from '@zeta/shared'
 
 interface AuthApiOptions extends RequestInit {
   /** 是否显示错误提示，默认为 true */
@@ -10,19 +10,6 @@ interface AuthApiOptions extends RequestInit {
   customDescription?: string
   /** 错误发生时的回调 */
   onError?: (error: ApiErrorResponse) => void
-}
-
-/**
- * 判断是否为错误响应
- */
-function isApiErrorResponse(data: unknown): data is ApiErrorResponse {
-  return (
-    typeof data === 'object'
-    && data !== null
-    && 'statusCode' in data
-    && 'message' in data
-    && 'error' in data
-  )
 }
 
 /**
@@ -103,13 +90,12 @@ export function useAuth() {
     }
     catch {
       if (!response.ok && showError) {
-        handleApiError(response, {
-          statusCode: response.status,
-          message: '响应解析失败',
-          error: 'Parse Error',
-          timestamp: new Date().toISOString(),
+        handleApiError(response, createDefaultErrorResponse(
+          response.status,
+          '响应解析失败',
+          'Parse Error',
           path,
-        }, { showError, customTitle, customDescription, onError })
+        ), { showError, customTitle, customDescription, onError })
       }
       throw new Error('响应解析失败')
     }
@@ -118,13 +104,7 @@ export function useAuth() {
     if (!response.ok) {
       const errorResponse = isApiErrorResponse(data)
         ? data
-        : {
-            statusCode: response.status,
-            message: '请求失败',
-            error: 'Error',
-            timestamp: new Date().toISOString(),
-            path,
-          }
+        : createDefaultErrorResponse(response.status, '请求失败', 'Error', path)
 
       handleApiError(response, errorResponse, {
         showError,

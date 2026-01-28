@@ -1,38 +1,28 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
+import { UserStatus } from '@prisma/client'
 import { Type } from 'class-transformer'
 import {
   ArrayMinSize,
   IsArray,
   IsDateString,
-  IsEmail,
   IsEnum,
   IsInt,
   IsOptional,
   IsPositive,
   IsString,
   Max,
-  MinLength,
 } from 'class-validator'
-
-export enum UserStatus {
-  ACTIVE = 'ACTIVE',
-  INACTIVE = 'INACTIVE',
-  SUSPENDED = 'SUSPENDED',
-}
+import { EmailField, NameField, StrongPasswordField } from '@/common/dto/base.dto'
 
 export class CreateUserDto {
-  @ApiProperty({ example: 'user@example.com' })
-  @IsEmail()
-  email: string
+  @EmailField()
+  email!: string
 
-  @ApiProperty({ example: 'password123' })
-  @IsString()
-  @MinLength(8)
-  password: string
+  @StrongPasswordField()
+  password!: string
 
-  @ApiProperty({ example: '张三' })
-  @IsString()
-  name: string
+  @NameField()
+  name!: string
 
   @ApiPropertyOptional()
   @IsOptional()
