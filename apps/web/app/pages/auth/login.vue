@@ -7,6 +7,7 @@ definePageMeta({
 })
 
 const { login } = useAuth()
+const { loginWithGitHub, loginWithDingTalk, githubLoading, dingtalkLoading } = useOAuth()
 const toast = useToast()
 const route = useRoute()
 
@@ -15,6 +16,7 @@ const rememberMe = ref(true)
 const showEmailNotVerified = ref(false)
 const unverifiedEmail = ref('')
 const resendingEmail = ref(false)
+const showEmailLogin = ref(false)
 
 const schema = z.object({
   email: z.email('请输入有效的邮箱地址'),
@@ -122,52 +124,106 @@ async function resendVerificationEmail() {
         欢迎回来
       </h2>
       <p class="mt-2 text-sm text-neutral-500 dark:text-neutral-400">
-        登录您的账号，继续高效开发
+        请输入您的账号信息以登录
       </p>
     </div>
 
-    <!-- Login form -->
-    <UForm :state="form" :schema="schema" class="space-y-5" @submit="onSubmit">
-      <UFormField name="email" label="邮箱地址">
-        <UInput
-          v-model="form.email"
-          type="email"
-          placeholder="name@company.com"
-          icon="i-lucide-mail"
-          size="lg"
-          class="w-full"
-        />
-      </UFormField>
+    <!-- DingTalk Login - Primary -->
+    <UButton
+      size="lg"
+      block
+      :loading="dingtalkLoading"
+      color="primary"
+      class="mb-4"
+      icon="i-ant-design:dingtalk-circle-filled"
+      @click="loginWithDingTalk"
+    >
+      使用 DingTalk 登录
+    </UButton>
 
-      <UFormField name="password" label="密码">
-        <UInput
-          v-model="form.password"
-          type="password"
-          placeholder="输入您的密码"
-          icon="i-lucide-lock"
-          size="lg"
-          class="w-full"
-        />
-      </UFormField>
+    <!-- GitHub Login - Secondary -->
+    <UButton
+      size="lg"
+      block
+      :loading="githubLoading"
+      color="neutral"
+      variant="outline"
+      class="mb-4"
+      icon="i-simple-icons-github"
+      @click="loginWithGitHub"
+    >
+      使用 GitHub 登录
+    </UButton>
 
-      <div class="flex items-center justify-between gap-2">
-        <UCheckbox id="remember" v-model="rememberMe" label="记住登录状态" />
-        <NuxtLink to="/auth/forgot-password" class="text-sm text-primary-500 hover:text-primary-600">
-          忘记密码？
-        </NuxtLink>
-      </div>
+    <USeparator label="或继续使用" class="my-6" />
 
-      <UButton type="submit" block size="lg" :loading="loading" class="mt-6" icon="i-lucide-log-in">
-        登录
+    <!-- Email Login Toggle -->
+    <div v-if="!showEmailLogin" class="text-center">
+      <UButton
+        variant="ghost"
+        color="neutral"
+        size="md"
+        icon="i-lucide-chevron-down"
+        trailing
+        @click="showEmailLogin = true"
+      >
+        使用邮箱密码登录
       </UButton>
-    </UForm>
+    </div>
 
-    <USeparator label="或使用以下方式" class="my-8" />
+    <!-- Email Login Form -->
+    <div v-else class="space-y-4">
+      <USeparator label="或使用邮箱密码" class="my-4" />
+      <UForm :state="form" :schema="schema" class="space-y-4" @submit="onSubmit">
+        <UFormField name="email">
+          <UInput
+            v-model="form.email"
+            type="email"
+            placeholder="邮箱地址"
+            icon="i-lucide-mail"
+            size="lg"
+            class="w-full"
+          />
+        </UFormField>
 
-    <AuthOAuthButtons />
+        <UFormField name="password">
+          <UInput
+            v-model="form.password"
+            type="password"
+            placeholder="密码"
+            icon="i-lucide-lock"
+            size="lg"
+            class="w-full"
+          />
+        </UFormField>
+
+        <div class="flex items-center justify-between gap-2">
+          <UCheckbox id="remember" v-model="rememberMe" label="记住登录状态" />
+          <NuxtLink to="/auth/forgot-password" class="text-sm text-primary-500 hover:text-primary-600">
+            忘记密码？
+          </NuxtLink>
+        </div>
+
+        <UButton type="submit" block size="lg" :loading="loading">
+          登录
+        </UButton>
+      </UForm>
+
+      <UButton
+        variant="ghost"
+        color="neutral"
+        size="sm"
+        block
+        icon="i-lucide-chevron-up"
+        trailing
+        @click="showEmailLogin = false"
+      >
+        收起
+      </UButton>
+    </div>
 
     <!-- Register link -->
-    <p class="text-center text-sm text-neutral-500 dark:text-neutral-400 mt-8">
+    <p class="text-center text-sm text-neutral-500 dark:text-neutral-400 mt-6">
       还没有账号？
       <NuxtLink to="/auth/register" class="text-primary-500 hover:text-primary-600 font-medium">
         立即注册
