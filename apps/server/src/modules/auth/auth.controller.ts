@@ -5,11 +5,12 @@ import {
   Get,
   Headers,
   Post,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger'
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger'
 import { CurrentUser, Public } from '@/common/decorators'
 import { AuthService } from './auth.service'
 import { ForgotPasswordDto, LoginDto, RefreshTokenDto, RegisterDto, ResendVerificationDto, ResetPasswordDto, VerifyEmailDto } from './dto'
@@ -116,8 +117,9 @@ export class AuthController {
   @Public()
   @Get('github/config')
   @ApiOperation({ summary: '获取 GitHub OAuth 配置' })
-  getGitHubConfig() {
-    return this.authService.getGitHubConfig()
+  @ApiQuery({ name: 'redirectUri', required: false, description: 'OAuth 回调地址，不传则使用默认配置' })
+  getGitHubConfig(@Query('redirectUri') redirectUri?: string) {
+    return this.authService.getGitHubConfig(redirectUri)
   }
 
   @Public()
@@ -139,8 +141,9 @@ export class AuthController {
   @Public()
   @Get('dingtalk/config')
   @ApiOperation({ summary: '获取钉钉 OAuth 配置' })
-  getDingTalkConfig() {
-    return this.authService.getDingTalkConfig()
+  @ApiQuery({ name: 'redirectUri', required: false, description: 'OAuth 回调地址，不传则使用默认配置' })
+  getDingTalkConfig(@Query('redirectUri') redirectUri?: string) {
+    return this.authService.getDingTalkConfig(redirectUri)
   }
 
   @Public()

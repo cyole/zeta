@@ -3,9 +3,10 @@ import {
   Controller,
   Get,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common'
-import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger'
+import { ApiBody, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger'
 import { CurrentUser, Public } from '@/common/decorators'
 import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard'
 import { DingtalkService } from './dingtalk.service'
@@ -21,8 +22,9 @@ export class DingtalkController {
   @Public()
   @Get('config')
   @ApiOperation({ summary: '获取钉钉 OAuth 配置' })
-  getOAuthConfig() {
-    return this.dingtalkService.getOAuthConfig()
+  @ApiQuery({ name: 'redirectUri', required: false, description: 'OAuth 回调地址，不传则使用默认配置' })
+  getOAuthConfig(@Query('redirectUri') redirectUri?: string) {
+    return this.dingtalkService.getOAuthConfig(redirectUri)
   }
 
   // ==================== DingTalk Test APIs ====================

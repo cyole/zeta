@@ -38,12 +38,12 @@ export class DingtalkService {
 
   // ==================== DingTalk OAuth ====================
 
-  getOAuthConfig(): DingTalkOAuthConfig {
+  getOAuthConfig(redirectUri?: string): DingTalkOAuthConfig {
     const clientId = this.configService.get('dingtalk.appKey')
-    const redirectUri = this.configService.get('dingtalk.callbackUrl')
+    const finalRedirectUri = redirectUri || this.configService.get('dingtalk.callbackUrl') || ''
     return {
       clientId,
-      redirectUri,
+      redirectUri: finalRedirectUri,
       scope: 'openid',
       authUrl: 'https://login.dingtalk.com/oauth2/auth',
     }

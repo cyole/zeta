@@ -483,12 +483,12 @@ export class AuthService {
 
   // ==================== GitHub OAuth ====================
 
-  getGitHubConfig() {
+  getGitHubConfig(redirectUri?: string) {
     const clientId = this.configService.get('github.clientId')
-    const redirectUri = this.configService.get('github.callbackUrl')
+    const finalRedirectUri = redirectUri || this.configService.get('github.callbackUrl') || ''
     return {
       clientId,
-      redirectUri,
+      redirectUri: finalRedirectUri,
       scope: 'read:user user:email',
       authUrl: 'https://github.com/login/oauth/authorize',
     }
@@ -558,8 +558,8 @@ export class AuthService {
 
   // ==================== DingTalk OAuth ====================
 
-  getDingTalkConfig() {
-    return this.dingtalkService.getOAuthConfig()
+  getDingTalkConfig(redirectUri?: string) {
+    return this.dingtalkService.getOAuthConfig(redirectUri)
   }
 
   async handleDingTalkCallback(authCode: string, userAgent?: string, ipAddress?: string, bindUserId?: string) {
