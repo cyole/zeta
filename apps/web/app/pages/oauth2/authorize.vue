@@ -139,7 +139,7 @@ async function handleAuthorize() {
       <div class="mb-8 text-center">
         <div class="mb-4 flex justify-center">
           <div
-            class="flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-primary-400 to-secondary-400 shadow-lg"
+            class="flex h-20 w-20 items-center justify-center rounded-2xl bg-linear-to-br from-primary-400 to-secondary-400 shadow-lg"
           >
             <img
               v-if="application.logo"
