@@ -122,12 +122,14 @@ export function useApplication() {
 
   /**
    * 获取授权页面信息
+   * OAuth 2.0 标准使用 snake_case 参数名
    */
   const getAuthorizeInfo = async (params: { clientId: string, redirectUri: string, responseType: string, state?: string }) => {
     const queryParams = new URLSearchParams()
-    queryParams.append('clientId', params.clientId)
-    queryParams.append('redirectUri', params.redirectUri)
-    queryParams.append('responseType', params.responseType)
+    // 使用 OAuth 2.0 标准的 snake_case 参数名
+    queryParams.append('client_id', params.clientId)
+    queryParams.append('redirect_uri', params.redirectUri)
+    queryParams.append('response_type', params.responseType)
     if (params.state)
       queryParams.append('state', params.state)
 
@@ -141,14 +143,14 @@ export function useApplication() {
       redirectUri: string
       state?: string
       clientId: string
-    }>(`/oauth/authorize?${queryParams.toString()}`)
+    }>(`/oauth2/authorize?${queryParams.toString()}`)
   }
 
   /**
    * 确认授权
    */
   const authorize = async (dto: { clientId: string, redirectUri: string, state?: string }) => {
-    return post<{ redirectUrl: string, application: { name: string, logo?: string } }>('/oauth/authorize', dto)
+    return post<{ redirectUrl: string, application: { name: string, logo?: string } }>('/oauth2/authorize', dto)
   }
 
   /**

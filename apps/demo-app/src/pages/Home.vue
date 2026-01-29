@@ -1,15 +1,7 @@
 <script setup lang="ts">
-import type { OAuthConfig, UserInfo } from '@/types'
+import type { UserInfo } from '@/types'
 import { computed, onMounted, ref } from 'vue'
-
-const CONFIG: OAuthConfig = {
-  clientId: '9a71927e9242293768c5fe41fa8f07c4',
-  clientSecret: '50759abd32ce4b92aff4086cba90d6d4e9d0521d41b959397443ef8a02cda229',
-  redirectUri: 'http://localhost:3002/callback',
-  authorizeUrl: 'http://localhost:3000/oauth/authorize',
-  tokenUrl: 'http://localhost:3001/api/oauth/token',
-  userInfoUrl: 'http://localhost:3001/api/oauth/me',
-}
+import { CONFIG, isConfigured } from '@/config'
 
 const isLoggedIn = ref(false)
 const userInfo = ref<UserInfo | null>(null)
@@ -38,8 +30,6 @@ onMounted(() => {
   }
 })
 
-const isConfigured = computed(() => CONFIG.clientId !== 'your-client-id-here')
-
 const userStatusClass = computed(() => {
   if (!userInfo.value)
     return ''
@@ -63,7 +53,7 @@ const userStatusText = computed(() => {
 })
 
 function login(): void {
-  if (!isConfigured.value) {
+  if (!isConfigured()) {
     error.value = '请先配置 Demo 应用信息'
     return
   }
@@ -225,7 +215,7 @@ async function copyToClipboard(text: string): Promise<void> {
           </div>
 
           <!-- Error Message -->
-          <div v-if="error && isConfigured" class="error-box">
+          <div v-if="error && isConfigured()" class="error-box">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="12" cy="12" r="10" />
               <line x1="15" y1="9" x2="9" y2="15" />

@@ -1,18 +1,10 @@
 <script setup lang="ts">
-import type { OAuthConfig, TokenResponse } from '@/types'
+import type { TokenResponse } from '@/types'
 import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { CONFIG } from '@/config'
 
 const router = useRouter()
-
-const CONFIG: OAuthConfig = {
-  clientId: '9a71927e9242293768c5fe41fa8f07c4',
-  clientSecret: '50759abd32ce4b92aff4086cba90d6d4e9d0521d41b959397443ef8a02cda229',
-  redirectUri: 'http://localhost:3002/callback',
-  authorizeUrl: 'http://localhost:3000/oauth/authorize',
-  tokenUrl: 'http://localhost:3001/api/oauth/token',
-  userInfoUrl: 'http://localhost:3001/api/oauth/me',
-}
 
 onMounted(() => {
   const urlParams = new URLSearchParams(window.location.search)

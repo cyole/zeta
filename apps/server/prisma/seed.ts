@@ -203,6 +203,41 @@ async function main() {
     }
   }
 
+  // Create demo OAuth application
+  console.log('Creating demo OAuth application...')
+  const demoUser = await prisma.user.findUnique({
+    where: { email: 'admin@zeta.dev' },
+  })
+
+  if (demoUser) {
+    // 查找或创建 demo OAuth 应用
+    const demoClientId = '9a71927e9242293768c5fe41fa8f07c4'
+    const existingDemoApp = await prisma.application.findUnique({
+      where: { clientId: demoClientId },
+    })
+
+    if (!existingDemoApp) {
+      await prisma.application.create({
+        data: {
+          clientId: demoClientId,
+          clientSecret: '50759abd32ce4b92aff4086cba90d6d4e9d0521d41b959397443ef8a02cda229',
+          name: 'Demo App',
+          description: 'Zeta OAuth2 演示应用',
+          homepage: 'http://localhost:3002',
+          redirectUris: ['http://localhost:3002/callback'],
+          logo: null,
+          scopes: ['read:user', 'read:email'],
+          isActive: true,
+          userId: demoUser.id,
+        },
+      })
+      console.log('✅ Created demo OAuth application')
+    }
+    else {
+      console.log('Demo OAuth application already exists, skipping...')
+    }
+  }
+
   console.log('✅ Database seed completed!')
 }
 
