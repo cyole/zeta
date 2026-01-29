@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { IsNotEmpty, IsNumber, IsOptional, IsString, IsUrl } from 'class-validator'
+import { IsNumber, IsOptional, IsString, IsUrl } from 'class-validator'
 
 export class RedirectUriDto {
   @ApiProperty({ description: 'OAuth 回调地址', required: false })
