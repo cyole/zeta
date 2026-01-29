@@ -31,7 +31,7 @@ export function useOAuth() {
   async function loginWithDingTalk() {
     dingtalkLoading.value = true
     try {
-      const oauthConfig = await get<OAuthConfig>('/dingtalk/config')
+      const oauthConfig = await get<OAuthConfig>('/auth/dingtalk/config')
       const state = crypto.randomUUID()
       const params = new URLSearchParams({
         response_type: 'code',

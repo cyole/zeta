@@ -85,7 +85,8 @@ onMounted(async () => {
       description: '欢迎回来！',
       color: 'success',
     })
-    navigateTo('/dashboard')
+    const redirect = (route.query.redirect as string) || '/workspace'
+    navigateTo(redirect)
   }
   catch (e: any) {
     error.value = e.data?.message || e.message || `${providerName}登录失败`
