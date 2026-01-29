@@ -52,11 +52,13 @@ async function exchangeToken(code: string): Promise<void> {
       throw new Error(errorData.message || 'Token exchange failed')
     }
 
-    const data = await response.json() as TokenResponse
+    // 后端响应格式: { success: true, data: { accessToken, refreshToken, ... }, timestamp: ... }
+    const wrapper = await response.json() as { success: boolean, data: TokenResponse }
+    const tokenData = wrapper.data
 
-    globalThis.localStorage.setItem('access_token', data.accessToken)
-    if (data.refreshToken) {
-      globalThis.localStorage.setItem('refresh_token', data.refreshToken)
+    globalThis.localStorage.setItem('access_token', tokenData.accessToken)
+    if (tokenData.refreshToken) {
+      globalThis.localStorage.setItem('refresh_token', tokenData.refreshToken)
     }
 
     // Fetch user info immediately after token exchange
@@ -82,8 +84,9 @@ async function fetchUserInfo(): Promise<void> {
     })
 
     if (response.ok) {
-      const user = await response.json()
-      globalThis.localStorage.setItem('user_info', JSON.stringify(user))
+      // 后端响应格式: { success: true, data: { user, application }, timestamp: ... }
+      const wrapper = await response.json() as { success: boolean, data: { user: unknown, application: unknown } }
+      globalThis.localStorage.setItem('user_info', JSON.stringify(wrapper.data))
     }
   }
   catch (e) {

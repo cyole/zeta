@@ -82,9 +82,10 @@ async function fetchUserInfo(): Promise<void> {
     })
 
     if (response.ok) {
-      const user = await response.json() as UserInfo
-      userInfo.value = user
-      storage.setItem('user_info', JSON.stringify(user))
+      // 后端响应格式: { success: true, data: { user, application }, timestamp: ... }
+      const wrapper = await response.json() as { success: boolean, data: { user: UserInfo } }
+      userInfo.value = wrapper.data.user
+      storage.setItem('user_info', JSON.stringify(wrapper.data))
       isLoggedIn.value = true
       error.value = null
     }
