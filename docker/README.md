@@ -1,4 +1,71 @@
-# Zeta 生产环境部署
+# Zeta 部署指南
+
+本目录包含 Zeta 应用的 Docker 部署配置。
+
+---
+
+## 环境说明
+
+| 环境 | 配置文件 | 端口 | 用途 |
+|------|----------|------|------|
+| 生产环境 | `docker-compose.yml` | 3000 | 正式运行环境 |
+| 测试环境 | `docker-compose.test.yml` | 8000 | 测试/预发布环境 |
+| 开发环境 | `docker-compose.dev.yml` | - | 本地开发（仅 DB） |
+
+---
+
+## 测试环境部署
+
+### 快速开始
+
+```bash
+# 1. 克隆代码
+git clone <repository-url> zeta
+cd zeta
+
+# 2. 配置测试环境变量
+cp docker/.env.test.example docker/.env.test
+vim docker/.env.test
+# 修改 FRONTEND_URL 为测试域名，如 http://test.your-domain.com
+
+# 3. 启动测试环境
+docker-compose -f docker-compose.test.yml --env-file docker/.env.test up -d
+
+# 4. 查看日志
+docker-compose -f docker-compose.test.yml logs -f
+
+# 5. 访问测试环境
+# 前端: http://your-server:8000
+```
+
+### 常用命令（测试环境）
+
+```bash
+# 启动测试环境
+docker-compose -f docker-compose.test.yml --env-file docker/.env.test up -d
+
+# 停止测试环境
+docker-compose -f docker-compose.test.yml --env-file docker/.env.test down
+
+# 查看日志
+docker-compose -f docker-compose.test.yml logs -f
+
+# 重新构建
+docker-compose -f docker-compose.test.yml --env-file docker/.env.test up -d --build
+```
+
+### 与生产环境共存
+
+测试环境和生产环境可以在同一服务器上同时运行：
+
+- **生产环境**: 端口 3000
+- **测试环境**: 端口 8000
+- 使用独立的容器名（带 `-test` 后缀）
+- 使用独立的 volumes 和 networks
+
+---
+
+## 生产环境部署
 
 ## 快速开始
 

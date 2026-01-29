@@ -96,6 +96,8 @@ pnpm dev
 
 ## 生产部署
 
+### 生产环境
+
 ```bash
 # 克隆代码后进入 docker 目录
 cd docker
@@ -108,9 +110,34 @@ cp .env.example .env
 docker-compose up -d
 ```
 
-**仅对外暴露 3000 端口**，数据库、Redis、后端 API 均在内网访问。
+访问: http://your-server:3000
 
-详细部署说明请查看 [部署文档](./docs/deployment.md)
+### 测试环境
+
+```bash
+# 克隆代码后进入项目根目录
+cd zeta
+
+# 复制并配置测试环境变量
+cp docker/.env.test.example docker/.env.test
+# 修改 .env.test 中的 FRONTEND_URL 等配置
+
+# 启动测试环境
+docker-compose -f docker-compose.test.yml --env-file docker/.env.test up -d
+```
+
+访问: http://your-server:8000
+
+**环境对比：**
+
+| 环境 | 配置文件 | 端口 | 数据库 |
+|------|----------|------|--------|
+| 生产 | `docker/docker-compose.yml` | 3000 | `zeta` |
+| 测试 | `docker-compose.test.yml` | 8000 | `zeta_test` |
+
+测试环境和生产环境可在同一服务器上同时运行，使用独立的容器、数据库和网络。
+
+详细部署说明请查看 [部署文档](./docker/README.md)
 
 ---
 
@@ -148,14 +175,17 @@ zeta/
 ├── packages/
 │   └── shared/                 # 共享类型和常量
 │
-├── docker/                     # 生产环境 Docker 配置
-│   ├── docker-compose.yml      # 完整服务编排
-│   ├── .env.example            # 环境变量模板
+├── docker/                     # Docker 配置
+│   ├── docker-compose.yml      # 生产环境服务编排
+│   ├── .env.example            # 生产环境变量模板
+│   ├── .env.test.example       # 测试环境变量模板
 │   ├── Dockerfile.server       # 后端镜像
 │   ├── Dockerfile.web          # 前端镜像
-│   └── nginx/                  # Nginx 配置
+│   ├── nginx/                  # Nginx 配置
+│   └── README.md               # 部署详细说明
 │
 ├── docker-compose.dev.yml      # 开发环境（仅 DB）
+├── docker-compose.test.yml     # 测试环境服务编排
 ├── docs/                       # 项目文档
 │   ├── development.md          # 开发指南
 │   ├── deployment.md           # 部署指南

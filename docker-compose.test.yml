@@ -1,0 +1,91 @@
+# Zeta 测试环境部署配置
+#
+# 使用方法:
+#   1. cp docker/.env.test.example docker/.env.test
+#   2. 编辑 docker/.env.test 修改配置
+#   3. docker-compose -f docker-compose.test.yml --env-file docker/.env.test up -d
+#
+# 与生产环境区别:
+#   - 使用不同的端口 (3001) 避免冲突
+#   - 容器名带 -test 后缀
+#   - 使用独立的 volumes 和 networks
+
+services:
+  # PostgreSQL Database - 测试环境
+  postgres:
+    image: postgres:16-alpine
+    container_name: zeta-postgres-test
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres_test_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - zeta-test-network
+
+  # Redis Cache - 测试环境
+  redis:
+    image: redis:7-alpine
+    container_name: zeta-redis-test
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - redis_test_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - zeta-test-network
+
+  # NestJS Backend - 测试环境
+  server:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.server
+    container_name: zeta-server-test
+    restart: unless-stopped
+    env_file:
+      - docker/.env.test
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - zeta-test-network
+
+  # Nuxt Frontend with Nginx - 测试环境 (端口 8000)
+  web:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.web
+    container_name: zeta-web-test
+    restart: unless-stopped
+    ports:
+      - '8000:80'
+    depends_on:
+      - server
+    networks:
+      - zeta-test-network
+
+volumes:
+  postgres_test_data:
+  redis_test_data:
+
+networks:
+  zeta-test-network:
+    driver: bridge
