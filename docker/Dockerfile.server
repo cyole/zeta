@@ -24,6 +24,10 @@ FROM node:20-alpine AS production
 
 RUN corepack enable && corepack prepare pnpm@9.15.0 --activate
 
+# Create non-root user
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nodejs -u 1001
+
 WORKDIR /app
 
 ENV NODE_ENV=production
@@ -41,4 +45,15 @@ EXPOSE 3001
 
 WORKDIR /app/apps/server
 
-CMD ["node", "dist/main.js"]
+# Change ownership to non-root user
+RUN chown -R nodejs:nodejs /app
+
+# Switch to non-root user
+USER nodejs
+
+# Health check - check if server is responding
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+    CMD wget --no-verbose --tries=1 --spider http://localhost:3001/api || exit 1
+
+# Run migrations before starting
+CMD ["sh", "-c", "npx prisma migrate deploy && node dist/main.js"]
