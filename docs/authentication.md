@@ -21,8 +21,8 @@ Zeta 支持三种登录方式：
 | 方式         | 端点                      | 说明             |
 | ------------ | ------------------------- | ---------------- |
 | 邮箱密码     | `POST /api/auth/login`    | 传统登录方式     |
-| GitHub OAuth | `GET /api/oauth/github`   | 跳转 GitHub 授权 |
-| 钉钉 OAuth   | `GET /api/oauth/dingtalk` | 跳转钉钉扫码授权 |
+| GitHub OAuth | `GET /api/oauth2/github`   | 跳转 GitHub 授权 |
+| 钉钉 OAuth   | `GET /api/oauth2/dingtalk` | 跳转钉钉扫码授权 |
 
 ### 数据流
 
@@ -90,9 +90,11 @@ Content-Type: application/json
 
 **关键文件**：
 
-- 控制器：`apps/server/src/modules/auth/auth.controller.ts`
-- 服务：`apps/server/src/modules/auth/auth.service.ts`
-- JWT 策略：`apps/server/src/modules/auth/strategies/jwt.strategy.ts`
+| 文件                                      | 说明           |
+| ----------------------------------------- | -------------- |
+| `apps/server/src/modules/auth/`           | 认证模块       |
+| `apps/server/src/modules/auth/strategies/` | JWT 策略       |
+| `apps/server/src/common/guards/`          | 认证守卫       |
 
 **登录逻辑**：
 
@@ -115,34 +117,34 @@ Content-Type: application/json
 2. 点击 **New OAuth App**
 3. 填写应用信息：
 
-| 字段                       | 开发环境                                          | 生产环境                                                |
-| -------------------------- | ------------------------------------------------- | ------------------------------------------------------- |
-| Application name           | Zeta Dev                                          | Zeta                                                    |
-| Homepage URL               | `http://localhost:3000`                           | `https://your-domain.com`                               |
-| Authorization callback URL | `http://localhost:3001/api/oauth/github/callback` | `https://api.your-domain.com/api/oauth/github/callback` |
+| 字段                       | 开发环境                                          | 生产环境                                              |
+| -------------------------- | ------------------------------------------------- | ----------------------------------------------------- |
+| Application name           | Zeta Dev                                          | Zeta                                                  |
+| Homepage URL               | `http://localhost:3000`                           | `https://your-domain.com`                             |
+| Authorization callback URL | `http://localhost:3000/auth/callback/github`      | `https://your-domain.com/auth/callback/github`        |
 
 4. 创建后获取 **Client ID** 和 **Client Secret**
 
 #### 2. 配置环境变量
 
-在 `apps/server/.env` 中添加：
+在 `docker/.env` 或 `apps/server/.env` 中添加：
 
 ```bash
 GITHUB_CLIENT_ID=你的_client_id
 GITHUB_CLIENT_SECRET=你的_client_secret
-GITHUB_CALLBACK_URL=http://localhost:3001/api/oauth/github/callback
+GITHUB_CALLBACK_URL=http://localhost:3000/auth/callback/github
 ```
 
 ### OAuth 流程
 
 ```
-1. 前端跳转: window.location.href = `${apiBase}/oauth/github`
+1. 前端跳转: window.location.href = `${apiBase}/oauth2/github`
        ↓
 2. 后端生成 state，重定向到 GitHub 授权页
        ↓
 3. 用户在 GitHub 授权
        ↓
-4. GitHub 回调: /api/oauth/github/callback?code=xxx&state=xxx
+4. GitHub 回调后端: /api/oauth2/github/callback?code=xxx&state=xxx
        ↓
 5. 后端用 code 换取 access token
        ↓
@@ -183,8 +185,8 @@ https://github.com/login/oauth/authorize?
 
 1. 在应用详情 → **登录与分享** → **登录应用**
 2. 添加回调域名：
-   - 开发环境：`localhost:3001`
-   - 生产环境：`api.your-domain.com`
+   - 开发环境：`localhost:3000`
+   - 生产环境：`your-domain.com`
 
 #### 3. 申请权限
 
@@ -196,24 +198,24 @@ https://github.com/login/oauth/authorize?
 
 #### 4. 配置环境变量
 
-在 `apps/server/.env` 中添加：
+在 `docker/.env` 或 `apps/server/.env` 中添加：
 
 ```bash
-DINGTALK_CLIENT_ID=你的_appkey
-DINGTALK_CLIENT_SECRET=你的_appsecret
-DINGTALK_CALLBACK_URL=http://localhost:3001/api/oauth/dingtalk/callback
+DINGTALK_APP_KEY=你的_appkey
+DINGTALK_APP_SECRET=你的_appsecret
+DINGTALK_CALLBACK_URL=http://localhost:3000/auth/callback/dingtalk
 ```
 
 ### OAuth 流程
 
 ```
-1. 前端跳转: window.location.href = `${apiBase}/oauth/dingtalk`
+1. 前端跳转: window.location.href = `${apiBase}/oauth2/dingtalk`
        ↓
 2. 后端生成 state，重定向到钉钉授权页
        ↓
 3. 用户扫码/确认授权
        ↓
-4. 钉钉回调: /api/oauth/dingtalk/callback?authCode=xxx&state=xxx
+4. 钉钉回调后端: /api/oauth2/dingtalk/callback?authCode=xxx&state=xxx
        ↓
 5. 后端用 authCode 换取 access token
        ↓
@@ -232,13 +234,15 @@ https://login.dingtalk.com/oauth2/auth?
   client_id=[AppKey]&
   redirect_uri=[回调地址]&
   scope=openid&
-  state=[随机值]
+  state=[随机值]&
+  prompt=consent
 ```
 
 ### 注意事项
 
 - 钉钉可能不返回用户邮箱，系统会生成占位符：`${unionId}@dingtalk.placeholder`
 - 需要在钉钉开放平台配置服务器出口 IP（生产环境）
+- OAuth 用户默认角色为 `FRONTEND`
 
 ---
 
@@ -309,21 +313,21 @@ Authorization: Bearer <access_token>
 
 ```typescript
 // 用户权限
-'user:read' // 查看用户
-'user:create' // 创建用户
-'user:update' // 更新用户
-'user:delete' // 删除用户
-'user:assign-role' // 分配角色
+'user:read'           // 查看用户
+'user:create'         // 创建用户
+'user:update'         // 更新用户
+'user:delete'         // 删除用户
+'user:assign-role'    // 分配角色
 
 // 角色权限
-'role:read' // 查看角色
-'role:create' // 创建角色
-'role:update' // 更新角色
-'role:delete' // 删除角色
+'role:read'           // 查看角色
+'role:create'         // 创建角色
+'role:update'         // 更新角色
+'role:delete'         // 删除角色
 'role:assign-permission' // 分配权限
 
 // 权限权限
-'permission:read' // 查看权限
+'permission:read'     // 查看权限
 ```
 
 ### 后端使用
@@ -363,7 +367,7 @@ const { isSuperAdmin, isAdmin, hasPermission, hasRole } = usePermissions();
 ### 完整示例
 
 ```bash
-# apps/server/.env
+# docker/.env 或 apps/server/.env
 
 # 数据库
 DATABASE_URL="postgresql://user:pass@localhost:5432/zeta"
@@ -371,6 +375,7 @@ DATABASE_URL="postgresql://user:pass@localhost:5432/zeta"
 # Redis
 REDIS_HOST=localhost
 REDIS_PORT=6379
+REDIS_PASSWORD=your-redis-password
 
 # JWT
 JWT_SECRET=your-jwt-secret-at-least-32-characters
@@ -384,12 +389,12 @@ FRONTEND_URL=http://localhost:3000
 # GitHub OAuth
 GITHUB_CLIENT_ID=your_github_client_id
 GITHUB_CLIENT_SECRET=your_github_client_secret
-GITHUB_CALLBACK_URL=http://localhost:3001/api/oauth/github/callback
+GITHUB_CALLBACK_URL=http://localhost:3000/auth/callback/github
 
 # DingTalk OAuth
-DINGTALK_CLIENT_ID=your_dingtalk_appkey
-DINGTALK_CLIENT_SECRET=your_dingtalk_appsecret
-DINGTALK_CALLBACK_URL=http://localhost:3001/api/oauth/dingtalk/callback
+DINGTALK_APP_KEY=your_dingtalk_appkey
+DINGTALK_APP_SECRET=your_dingtalk_appsecret
+DINGTALK_CALLBACK_URL=http://localhost:3000/auth/callback/dingtalk
 ```
 
 ### 前端环境变量
@@ -415,12 +420,14 @@ NUXT_PUBLIC_API_BASE=http://localhost:3001/api
 
 ### 后端
 
-| 文件                                 | 说明                         |
-| ------------------------------------ | ---------------------------- |
-| `apps/server/src/modules/auth/`      | 认证模块                     |
-| `apps/server/src/modules/oauth/`     | OAuth 模块                   |
-| `apps/server/src/common/guards/`     | 认证守卫                     |
-| `apps/server/src/common/decorators/` | 装饰器（@Public, @Roles 等） |
+| 文件                                 | 说明                     |
+| ------------------------------------ | ------------------------ |
+| `apps/server/src/modules/auth/`      | 认证模块                 |
+| `apps/server/src/modules/dingtalk/`  | 钉钉 OAuth 模块          |
+| `apps/server/src/modules/oauth2/`    | OAuth2 通用模块          |
+| `apps/server/src/common/guards/`     | 认证守卫                 |
+| `apps/server/src/common/decorators/` | 装饰器（@Public, @Roles） |
+| `apps/server/src/config/configuration.ts` | OAuth 配置          |
 
 ### 前端
 
