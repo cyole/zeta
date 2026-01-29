@@ -9,7 +9,7 @@
 [![Nuxt](https://img.shields.io/badge/Nuxt-4.x-green)](https://nuxt.com)
 [![pnpm](https://img.shields.io/badge/pnpm-9%2B-blue)](https://pnpm.io)
 
-[开发文档](./docs/development.md) • [部署文档](./docs/deployment.md) • [认证文档](./docs/authentication.md)
+[开发文档](./docs/development.md) • [部署文档](./docs/deployment.md) • [认证文档](./docs/authentication.md) • [OAuth2接入](./docs/oauth2-integration.md)
 
 </div>
 
@@ -29,15 +29,15 @@ Zeta 是一个开箱即用的前端提效平台，提供完整的用户认证、
 
 ## 技术栈
 
-| 层级     | 技术选型                  |
-| -------- | ------------------------- |
-| 后端框架 | NestJS v11                |
+| 层级     | 技术选型                   |
+| -------- | -------------------------- |
+| 后端框架 | NestJS v11                 |
 | 数据库   | PostgreSQL 16 + Prisma ORM |
-| 缓存     | Redis 7                   |
-| 前端框架 | Nuxt 4 (SPA模式)          |
-| UI框架   | Nuxt UI v4                |
-| 构建工具 | pnpm + Turborepo          |
-| 部署     | Docker Compose            |
+| 缓存     | Redis 7                    |
+| 前端框架 | Nuxt 4 (SPA模式)           |
+| UI框架   | Nuxt UI v4                 |
+| 构建工具 | pnpm + Turborepo           |
+| 部署     | Docker Compose             |
 
 ---
 
@@ -45,12 +45,12 @@ Zeta 是一个开箱即用的前端提效平台，提供完整的用户认证、
 
 ### 环境要求
 
-| 工具            | 最低版本  |
-| --------------- | --------- |
-| Node.js         | >= 20.0   |
-| pnpm            | >= 9.0    |
-| Docker          | 最新版    |
-| Docker Compose  | 最新版    |
+| 工具           | 最低版本 |
+| -------------- | -------- |
+| Node.js        | >= 20.0  |
+| pnpm           | >= 9.0   |
+| Docker         | 最新版   |
+| Docker Compose | 最新版   |
 
 ### 开发环境
 
@@ -80,6 +80,7 @@ pnpm dev
 ```
 
 访问：
+
 - 前端: http://localhost:3000
 - 后端 API: http://localhost:3001/api
 - API 文档: http://localhost:3001/api/docs
@@ -130,10 +131,10 @@ docker-compose -f docker-compose.test.yml --env-file docker/.env.test up -d
 
 **环境对比：**
 
-| 环境 | 配置文件 | 端口 | 数据库 |
-|------|----------|------|--------|
-| 生产 | `docker/docker-compose.yml` | 3000 | `zeta` |
-| 测试 | `docker-compose.test.yml` | 8000 | `zeta_test` |
+| 环境 | 配置文件                    | 端口 | 数据库      |
+| ---- | --------------------------- | ---- | ----------- |
+| 生产 | `docker/docker-compose.yml` | 3000 | `zeta`      |
+| 测试 | `docker-compose.test.yml`   | 8000 | `zeta_test` |
 
 测试环境和生产环境可在同一服务器上同时运行，使用独立的容器、数据库和网络。
 
@@ -230,12 +231,12 @@ cd docker && docker-compose logs -f    # 查看日志
 
 ### 认证模块
 
-| 方式         | 说明                     |
-| ------------ | ------------------------ |
-| 邮箱密码     | 传统注册/登录            |
+| 方式         | 说明                         |
+| ------------ | ---------------------------- |
+| 邮箱密码     | 传统注册/登录                |
 | JWT Token    | Access Token + Refresh Token |
-| GitHub OAuth | 第三方登录               |
-| 钉钉 OAuth   | 扫码登录                  |
+| GitHub OAuth | 第三方登录                   |
+| 钉钉 OAuth   | 扫码登录                     |
 
 ### 权限模块 (RBAC)
 
@@ -295,11 +296,12 @@ MAIL_PASSWORD=your-email-password
 
 ## 文档
 
-| 文档               | 说明                       |
-| ------------------ | -------------------------- |
-| [开发指南](./docs/development.md)     | 开发环境设置、项目架构、API 开发 |
-| [部署指南](./docs/deployment.md)     | 生产部署、环境配置、故障排查     |
-| [认证文档](./docs/authentication.md) | OAuth 配置、权限系统、Token 机制 |
+| 文档                                        | 说明                                |
+| ------------------------------------------- | ----------------------------------- |
+| [开发指南](./docs/development.md)           | 开发环境设置、项目架构、API 开发    |
+| [部署指南](./docs/deployment.md)            | 生产部署、环境配置、故障排查        |
+| [认证文档](./docs/authentication.md)        | OAuth 配置、权限系统、Token 机制    |
+| [OAuth2 接入](./docs/oauth2-integration.md) | 第三方应用接入 Zeta OAuth2 服务指南 |
 
 ---
 
