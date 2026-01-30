@@ -1,3 +1,5 @@
+name: zeta-prod
+
 services:
   # PostgreSQL Database - internal only, no exposed ports
   postgres:

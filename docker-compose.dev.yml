@@ -1,3 +1,5 @@
+name: zeta-dev
+
 # Development docker-compose (only PostgreSQL and Redis)
 services:
   postgres:
