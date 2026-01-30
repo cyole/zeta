@@ -13,8 +13,8 @@ COPY apps/server ./apps/server
 # Install dependencies
 RUN pnpm install --frozen-lockfile
 
-# Generate Prisma client (use --schema to skip prisma.config.ts which requires DATABASE_URL)
-RUN pnpm --filter @zeta/server prisma generate --schema=apps/server/prisma/schema.prisma
+# Generate Prisma client
+RUN cd apps/server && pnpm prisma generate
 
 # Build the server
 RUN pnpm --filter @zeta/server build
