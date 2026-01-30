@@ -13,8 +13,8 @@ COPY apps/web ./apps/web
 # Install dependencies
 RUN pnpm install --frozen-lockfile
 
-# Build the web app
-RUN pnpm --filter @zeta/web build
+# Build the web app (use relative path for API calls in Docker)
+RUN NUXT_PUBLIC_API_BASE=/api pnpm --filter @zeta/web build
 
 # Production stage with Nginx
 FROM nginx:alpine AS production
