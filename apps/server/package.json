@@ -20,7 +20,7 @@
     "prisma:migrate": "prisma migrate dev",
     "prisma:migrate:prod": "prisma migrate deploy",
     "prisma:migrate:reset": "prisma migrate reset",
-    "prisma:seed": "ts-node prisma/seed.ts",
+    "prisma:seed": "tsx prisma/seed.ts",
     "prisma:studio": "prisma studio"
   },
   "dependencies": {
@@ -70,8 +70,8 @@
     "source-map-support": "^0.5.21",
     "ts-jest": "^29.4.6",
     "ts-loader": "^9.5.4",
-    "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   }
 }
