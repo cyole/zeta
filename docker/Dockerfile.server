@@ -13,11 +13,11 @@ COPY apps/server ./apps/server
 # Install dependencies
 RUN pnpm install --frozen-lockfile
 
-# Build the server
-RUN pnpm --filter @zeta/server build
-
 # Generate Prisma client
 RUN cd apps/server && pnpm prisma generate
+
+# Build the server
+RUN pnpm --filter @zeta/server build
 
 # Production stage
 FROM node:20-alpine AS production
