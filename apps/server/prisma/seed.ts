@@ -100,17 +100,12 @@ async function main() {
     })
   }
 
-  // Assign permissions to roles
+  // Assign permissions to roles (only add missing, don't remove existing)
   console.log('Assigning permissions to roles...')
   for (const [roleName, permissionNames] of Object.entries(rolePermissions)) {
     const role = await prisma.role.findUnique({ where: { name: roleName } })
     if (!role)
       continue
-
-    // Delete existing role permissions for this role
-    await prisma.rolePermission.deleteMany({
-      where: { roleId: role.id },
-    })
 
     for (const permissionName of permissionNames) {
       const permission = await prisma.permission.findUnique({
@@ -119,6 +114,7 @@ async function main() {
       if (!permission)
         continue
 
+      // Only create if not exists, preserve any custom permissions
       await prisma.rolePermission.upsert({
         where: {
           roleId_permissionId: {
@@ -133,39 +129,6 @@ async function main() {
         },
       })
     }
-  }
-
-  // Delete old roles (FRONTEND, BACKEND, TESTER)
-  console.log('Cleaning up old roles...')
-  const oldRoleNames = ['FRONTEND', 'BACKEND', 'TESTER']
-  for (const roleName of oldRoleNames) {
-    const oldRole = await prisma.role.findUnique({
-      where: { name: roleName },
-    })
-    if (oldRole) {
-      await prisma.rolePermission.deleteMany({
-        where: { roleId: oldRole.id },
-      })
-      await prisma.role.delete({
-        where: { id: oldRole.id },
-      })
-      console.log(`✅ Deleted old role: ${roleName}`)
-    }
-  }
-
-  // Delete old permission (user:assign-permission)
-  console.log('Cleaning up old permission...')
-  const oldPermission = await prisma.permission.findUnique({
-    where: { name: 'user:assign-permission' },
-  })
-  if (oldPermission) {
-    await prisma.rolePermission.deleteMany({
-      where: { permissionId: oldPermission.id },
-    })
-    await prisma.permission.delete({
-      where: { id: oldPermission.id },
-    })
-    console.log('✅ Deleted old permission: user:assign-permission')
   }
 
   // Create default super admin user
