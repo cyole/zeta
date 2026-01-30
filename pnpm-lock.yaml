@@ -17,6 +17,9 @@ importers:
       eslint-plugin-format:
         specifier: ^1.3.1
         version: 1.3.1(eslint@9.39.2(jiti@2.6.1))
+      pnpm:
+        specifier: ^10.28.2
+        version: 10.28.2
 
   apps/demo-app:
     dependencies:
@@ -7058,6 +7061,11 @@ packages:
 
   pnpm-workspace-yaml@1.5.0:
     resolution: {integrity: sha512-PxdyJuFvq5B0qm3s9PaH/xOtSxrcvpBRr+BblhucpWjs8c79d4b7/cXhyY4AyHOHCnqklCYZTjfl0bT/mFVTRw==}
+
+  pnpm@10.28.2:
+    resolution: {integrity: sha512-QYcvA3rSL3NI47Heu69+hnz9RI8nJtnPdMCPGVB8MdLI56EVJbmD/rwt9kC1Q43uYCPrsfhO1DzC1lTSvDJiZA==}
+    engines: {node: '>=18.12'}
+    hasBin: true
 
   postcss-calc@10.1.1:
     resolution: {integrity: sha512-NYEsLHh8DgG/PRH2+G9BTuUdtf9ViS+vdoQ0YA5OQdGsfN4ztiwtDWNtBl9EKeqNMFnIu8IKZ0cLxEQ5r5KVMw==}
@@ -16934,6 +16942,8 @@ snapshots:
   pnpm-workspace-yaml@1.5.0:
     dependencies:
       yaml: 2.8.2
+
+  pnpm@10.28.2: {}
 
   postcss-calc@10.1.1(postcss@8.5.6):
     dependencies:
