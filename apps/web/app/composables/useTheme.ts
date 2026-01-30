@@ -128,16 +128,24 @@ export function useTheme() {
     if (!import.meta.client)
       return
 
-    // Load primary color
+    // Load primary color, or set default to teal
     const savedPrimary = localStorage.getItem(STORAGE_KEYS.primary) as PrimaryColor | null
     if (savedPrimary && primaryColors.some(c => c.value === savedPrimary)) {
       primaryColor.value = savedPrimary
     }
+    else {
+      // No saved value - ensure default is teal
+      primaryColor.value = 'teal'
+    }
 
-    // Load neutral color
+    // Load neutral color, or set default to neutral
     const savedNeutral = localStorage.getItem(STORAGE_KEYS.neutral) as NeutralColor | null
     if (savedNeutral && neutralColors.some(c => c.value === savedNeutral)) {
       neutralColor.value = savedNeutral
+    }
+    else {
+      // No saved value - ensure default is neutral
+      neutralColor.value = 'neutral'
     }
 
     // Load radius
