@@ -8,6 +8,11 @@ export default defineNuxtConfig({
   // SPA mode - no SSR
   ssr: false,
 
+  // Static generation for Docker deployment
+  nitro: {
+    preset: 'static',
+  },
+
   modules: ['@nuxt/ui'],
 
   icon: {
